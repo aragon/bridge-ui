@@ -10,20 +10,10 @@ import { INVALID_CHAIN_ID, METAMASK_IS_NOT_AVAILABLE } from "../lib/errors";
 const WelcomePage = ({ connectionSetter, addressSetter }) => {
   const router = useRouter();
   const wallet = useWallet();
-  const [connecting, setConnecting] = useState(false)
-  const [space, setSpace] = useState(null)
+  // const [connecting, setConnecting] = useState(false)
   const isConnected = wallet.status === "connected"
   connectionSetter(isConnected)
   addressSetter(wallet.account);
-
-  useEffect(() => {
-    fetch('https://hub.snapshot.page/api/spaces')
-      .then(response => response.json())
-      .then(data => data["aragon"])
-      // .then(entries => entries[0])
-      .then(entry => setSpace(entry))
-      // .then(console.log)
-  })
 
   // CALLBACK
   function onWalletConnect() {
@@ -91,10 +81,6 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
           </div>
         }
       />
-      <Box heading="Snapshot Sandbox">
-        {!space ? <p>No space available yet.</p> : <p>{ space.name }</p>}
-        {!space ? <p>No space available yet.</p> : <p>{ space.symbol }</p>}
-      </Box>
     </Fragment>
   );
 };

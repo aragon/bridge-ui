@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useRouter, withRouter } from "next/router";
 import { GU, Box, Button } from "@aragon/ui";
 
@@ -51,6 +51,16 @@ const PROBLEMS = [
 
 const ProblemsPage = (props) => {
   const router = useRouter();
+  const [proposals, setProposals] = useState([])
+
+  useEffect(() => {
+    fetch('https://hub.snapshot.page/api/aragon/proposals')
+      .then(response => response.json())
+      .then(data => Object.values(data))
+      .then(proposals => setProposals(proposals))
+      // .then(console.log)
+  })
+  
   return (
     <Fragment>
       <Breadcrumbs/>
@@ -71,7 +81,9 @@ const ProblemsPage = (props) => {
           width: "100%",
         }}
       >
-        <div style={{ width: "75%" }}>{PROBLEMS.map(dataToCards)}</div>
+        <div style={{ width: "75%" }}>
+          {proposals.length === 0 ? <p>loading...</p> : proposals.map(dataToCards) }
+        </div>
         <div style={{ width: "25%" }}>
           <Box style={{ position: "fixed" }}>
             <div
@@ -83,9 +95,7 @@ const ProblemsPage = (props) => {
               }}
             >
               <img
-                style={{
-                  display: "block",
-                }}
+                style={{display: "block",}}
                 src={PROBLEM_ICON}
                 alt=""
               />
@@ -119,15 +129,15 @@ const ProblemsPage = (props) => {
 
 export default withRouter(ProblemsPage);
 
-function dataToCards({ title, description, reporter, no_upvotes, no_downvotes }, index) {
+function dataToCards( proposal , index) {
   return (
     <ProblemDescription
       key={index}
-      title={title}
-      description={description}
-      reporter={reporter}
-      no_upvotes={no_upvotes}
-      no_downvotes={no_downvotes}
+      title={proposal.msg.payload.name}
+      description={proposal.msg.payload.body}
+      reporter={proposal.address}
+      no_upvotes={42}
+      no_downvotes={42}
     />
   );
 }
