@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Card, GU, textStyle, useTheme } from "@aragon/ui";
+import { Card, GU, useTheme } from "@aragon/ui";
 
 function ProjectDescription({ illustration, subtitle, title }) {
   const theme = useTheme();

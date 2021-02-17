@@ -1,16 +1,16 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { NextComponentType, NextPageContext } from "next";
 import { AppInitialProps } from "next/app";
 import NextHead from "next/head";
 import { Router } from "next/router";
 import { UseWalletProvider } from "use-wallet";
 import { EthNetworkID } from "dvote-js";
-import { UsePoolProvider, UseProcessProvider } from "@vocdoni/react-hooks";
 import { Main, Layout } from "@aragon/ui";
+import { UsePoolProvider, UseProcessProvider } from '@vocdoni/react-hooks'
+import { UseTokenProvider } from '../lib/hooks/tokens'
 
 import Footer from "../components/footer";
-import { UseTokenProvider } from "../lib/hooks/tokens";
-import { Navbar } from "../components/Navbar";
+import Navbar from "../components/Navbar";
 import "../styles/index.less";
 
 type NextAppProps = AppInitialProps & {
@@ -22,6 +22,8 @@ const BridgeApp: FC<NextAppProps> = ({ Component, pageProps }) => {
   const chainId = parseInt(process.env.ETH_CHAIN_ID);
   const bootnodeUri = process.env.BOOTNODES_URL;
   const networkId = process.env.ETH_NETWORK_ID as EthNetworkID;
+  const [ connected, setConnectionState] = useState(false);
+  const [ address, setAddress] = useState("");
 
   return (
     <UsePoolProvider bootnodeUri={bootnodeUri} networkId={networkId}>
@@ -36,10 +38,13 @@ const BridgeApp: FC<NextAppProps> = ({ Component, pageProps }) => {
               <title>Apollo</title>
             </NextHead>
             <Main layout={false}>
-              <Navbar />
+              <Navbar connected={connected} address={address} />
               <Layout>
                 <div>
-                  <Component {...pageProps} />
+                  <Component
+                    connectionSetter={setConnectionState}
+                    addressSetter={setAddress}
+                  />
                 </div>
               </Layout>
               <Footer />

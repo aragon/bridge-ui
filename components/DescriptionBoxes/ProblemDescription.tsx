@@ -84,8 +84,7 @@ function ProblemDescription({
 }
 
 ProblemDescription.propTypes = {
-  illustration: PropTypes.node.isRequired,
-  subtitle: PropTypes.node.isRequired,
+  description: PropTypes.node.isRequired,
   title: PropTypes.node.isRequired,
 };
 

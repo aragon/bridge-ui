@@ -32,7 +32,7 @@ function Breadcrumbs() {
       <>
         {breadcrumbs.map((breadcrumb, i) => {
           return (
-            <Link href={breadcrumb.href}>
+            <Link key={i} href={breadcrumb.href}>
               <a> / {breadcrumb.breadcrumb}</a>
             </Link>
           );
