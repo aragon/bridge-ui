@@ -1,5 +1,5 @@
-import React, { Fragment, useState } from "react";
-import { Button, Split, IconEthereum, GU } from "@aragon/ui";
+import React, { Fragment, useEffect, useState } from "react";
+import { Button, Split, IconEthereum, GU, Box } from "@aragon/ui";
 import { useRouter, withRouter } from "next/router";
 
 import Title from "../components/Title";
@@ -11,9 +11,19 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
   const router = useRouter();
   const wallet = useWallet();
   const [connecting, setConnecting] = useState(false)
+  const [space, setSpace] = useState(null)
   const isConnected = wallet.status === "connected"
   connectionSetter(isConnected)
   addressSetter(wallet.account);
+
+  useEffect(() => {
+    fetch('https://hub.snapshot.page/api/spaces')
+      .then(response => response.json())
+      .then(data => data["aragon"])
+      // .then(entries => entries[0])
+      .then(entry => setSpace(entry))
+      // .then(console.log)
+  })
 
   // CALLBACK
   function onWalletConnect() {
@@ -81,6 +91,10 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
           </div>
         }
       />
+      <Box heading="Snapshot Sandbox">
+        {!space ? <p>No space available yet.</p> : <p>{ space.name }</p>}
+        {!space ? <p>No space available yet.</p> : <p>{ space.symbol }</p>}
+      </Box>
     </Fragment>
   );
 };
