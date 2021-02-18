@@ -11,30 +11,28 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
   const router = useRouter();
   const wallet = useWallet();
   // const [connecting, setConnecting] = useState(false) //TODO find out what this did.
-  const isConnected = wallet.status === "connected"
-  connectionSetter(isConnected)
-  addressSetter(wallet.account)
+  const isConnected = wallet.status === "connected";
+  connectionSetter(isConnected);
+  addressSetter(wallet.account);
 
   // CALLBACK
   function onWalletConnect() {
-
     if (wallet.status === "connected") {
-      console.log("After connecting, the wallet^s address is: " + wallet.account)
       connectionSetter(true);
       addressSetter(wallet.account);
       router.push("/problems");
     }
-    
+
     // setConnecting(true);
-    return wallet.connect("injected")
+    return wallet
+      .connect("injected")
       .then(() => {
-        if (!wallet.connectors.injected) throw new Error(METAMASK_IS_NOT_AVAILABLE);
-        console.log("After connecting, the wallet^s status is: " + wallet.status == "connected")
+        if (!wallet.connectors.injected)
+          throw new Error(METAMASK_IS_NOT_AVAILABLE);
         router.push("/problems");
       })
       .catch((err) => {
         // setConnecting(false);
-
         if (
           (err && err.message == INVALID_CHAIN_ID) ||
           err instanceof ChainUnsupportedError

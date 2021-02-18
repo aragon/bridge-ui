@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types'
+import PropTypes from "prop-types";
 import Link from "next/link";
 import { Header, Button, GU, useLayout } from "@aragon/ui";
 import { APOLLO_BRANDING } from "../lib/constants";
 
-export default function Navbar({connected, address}) {
+export default function Navbar({ connected, address }) {
   const { layoutWidth } = useLayout();
 
   return (
@@ -23,7 +23,7 @@ export default function Navbar({connected, address}) {
             }}
             mode="strong"
             wide
-            label={ (connected ? ("Connected: " +  address) : "Disconnected")}
+            label={connected ? "Connected: " + address : "Disconnected"}
           />
         }
       />
@@ -34,4 +34,4 @@ export default function Navbar({connected, address}) {
 Navbar.propTypes = {
   connected: PropTypes.bool.isRequired,
   address: PropTypes.string,
-}
+};

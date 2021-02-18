@@ -13,23 +13,28 @@ import ReportProblemIndicator from "../../components/ReportProblemIndiactor";
 const ProblemsPage = (props) => {
   const router = useRouter();
 
-  const [hasFetched, setHasFetched] = useState(false)
+  const [hasFetched, setHasFetched] = useState(false);
   const [proposals, setProposals] = useState<Proposal[]>([]);
   useEffect(() => {
-    console.log("first effect")
-    // if(no_fetch > 2 ) return
     fetch("https://hub.snapshot.page/api/aragon/proposals")
-    .then((response) => response.json())
-    .then((data) => Object.values(data).slice(1,7))
-    .then((data) => data.map(d => { 
-      return new Proposal(d.authorIpfsHash, d.msg.payload.name, d.msg.payload.body, d.address)
-    }))
+      .then((response) => response.json())
+      .then((data) => Object.values(data).slice(1, 7))
+      .then((data) =>
+        data.map((d) => {
+          return new Proposal(
+            d.authorIpfsHash,
+            d.msg.payload.name,
+            d.msg.payload.body,
+            d.address
+          );
+        })
+      )
       .then((proposals) => {
-        setProposals(proposals)
-        setHasFetched(true)
+        setProposals(proposals);
+        setHasFetched(true);
       });
   }, []);
-  
+
   return (
     <Fragment>
       <Breadcrumbs />
@@ -49,11 +54,11 @@ const ProblemsPage = (props) => {
           {proposals.length === 0 ? (
             <p>loading...</p>
           ) : (
-              proposals.map((p, i) => dataToCards(p, i))
+            proposals.map((p, i) => <ProblemDescription key={i} problem={p} />)
           )}
         </div>
         <div style={{ width: "25%" }}>
-          <ReportProblemIndicator/>
+          <ReportProblemIndicator />
         </div>
       </section>
     </Fragment>
@@ -62,26 +67,16 @@ const ProblemsPage = (props) => {
 
 export default withRouter(ProblemsPage);
 
-//TODO put this inside component?
-function dataToCards(proposal, index) {
-  return (
-    <ProblemDescription
-      key={index}
-      problem={proposal}
-    />
-  )
-}
-
 export class Proposal {
-  hash: String
-  title: String
-  description: String
-  reporter: String
+  hash: String;
+  title: String;
+  description: String;
+  reporter: String;
 
   constructor(proposal, title, description, reporter) {
-    this.hash = proposal
-    this.title =  title
-    this.description =  description
-    this.reporter =  reporter
+    this.hash = proposal;
+    this.title = title;
+    this.description = description;
+    this.reporter = reporter;
   }
 }

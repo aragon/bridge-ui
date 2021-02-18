@@ -1,6 +1,4 @@
-//TODO merge this component with ProblemDescription component
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { Card, GU, useTheme, Button } from "@aragon/ui";
 import VotingButtons from "../VotingButtons";
 import { Proposal } from "../../pages/problems";
@@ -9,10 +7,10 @@ function ProblemDescription({ problem }) {
   const theme = useTheme();
 
   function countVotes(kind: String): number {
-    if (kind === 'up') {
-      return votes.filter(v => v.choice === 1).length
-    } else if (kind === 'down') {
-      return votes.filter(v => v.choice === 2).length
+    if (kind === "up") {
+      return votes.filter((v) => v.choice === 1).length;
+    } else if (kind === "down") {
+      return votes.filter((v) => v.choice === 2).length;
     }
   }
 
@@ -21,14 +19,11 @@ function ProblemDescription({ problem }) {
     fetch("https://hub.snapshot.page/api/aragon/proposal/" + problem.hash)
       .then((response) => response.json())
       .then((data) => Object.values(data))
-      .then((votes) =>
-        votes.map((vote) => {
+      .then((votes) => {
+        let mapped_votes = votes.map((vote) => {
           return new Vote(problem, vote.msg.payload.choice);
-        })
-      )
-      .then((mapped_votes) => {
-        let newVotes = votes.concat(mapped_votes);
-        setVotes(newVotes);
+        });
+        setVotes(mapped_votes);
       });
   }, []);
 
@@ -93,10 +88,7 @@ function ProblemDescription({ problem }) {
         </div>
       </section>
       {votes.length === 0 ? (
-        <VotingButtons
-          no_upvotes={-1}
-          no_downvotes={-1}
-        />
+        <VotingButtons no_upvotes={-1} no_downvotes={-1} />
       ) : (
         <VotingButtons
           no_upvotes={countVotes("up")}

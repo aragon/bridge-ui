@@ -28,13 +28,7 @@ function VotingButtons({ no_upvotes, no_downvotes }) {
         >
           <img src={UPARROW_ICON} alt="" width="32" height="32" />
         </Button>
-        <p
-          style={{
-            fontSize: "16px",
-          }}
-        >
-          {no_upvotes}
-        </p>
+        <p style={{ fontSize: "16px" }}>{no_upvotes}</p>
       </div>
       <div
         style={{
@@ -48,13 +42,7 @@ function VotingButtons({ no_upvotes, no_downvotes }) {
         >
           <img src={DOWNARROW_ICON} alt="" width="32" height="32" />
         </Button>
-        <p
-          style={{
-            fontSize: "16px",
-          }}
-        >
-          {no_downvotes}
-        </p>
+        <p style={{ fontSize: "16px" }}>{no_downvotes}</p>
       </div>
     </section>
   );
