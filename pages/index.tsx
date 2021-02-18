@@ -13,7 +13,7 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
   // const [connecting, setConnecting] = useState(false) //TODO find out what this did.
   const isConnected = wallet.status === "connected"
   connectionSetter(isConnected)
-  addressSetter(wallet.account);
+  addressSetter(wallet.account)
 
   // CALLBACK
   function onWalletConnect() {

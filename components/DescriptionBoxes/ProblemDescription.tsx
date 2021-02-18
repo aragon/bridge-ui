@@ -1,23 +1,37 @@
 //TODO merge this component with ProblemDescription component
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Card, GU, useTheme, Button } from "@aragon/ui";
-import {
-  DOWNARROW_ICON,
-  PROBLEM_RED,
-  SOLUTION_BLUE,
-  UPARROW_ICON,
-} from "../../lib/constants";
 import VotingButtons from "../VotingButtons";
+import { Proposal } from "../../pages/problems";
 
-function ProblemDescription({
-  title,
-  description,
-  reporter,
-  no_upvotes,
-  no_downvotes,
-}) {
+function ProblemDescription({ problem }) {
   const theme = useTheme();
+
+  function countVotes(kind: String): number {
+    if (kind === 'up') {
+      return votes.filter(v => v.choice === 1).length
+    } else if (kind === 'down') {
+      return votes.filter(v => v.choice === 2).length
+    }
+  }
+
+  const [votes, setVotes] = useState<Vote[]>([]);
+  useEffect(() => {
+    fetch("https://hub.snapshot.page/api/aragon/proposal/" + problem.hash)
+      .then((response) => response.json())
+      .then((data) => Object.values(data))
+      .then((votes) =>
+        votes.map((vote) => {
+          return new Vote(problem, vote.msg.payload.choice);
+        })
+      )
+      .then((mapped_votes) => {
+        let newVotes = votes.concat(mapped_votes);
+        setVotes(newVotes);
+      });
+  }, []);
+
   return (
     <Card
       width="95%"
@@ -45,7 +59,7 @@ function ProblemDescription({
             color: `${theme.surfaceContentSecondary}`,
           }}
         >
-          Reported by: {reporter}
+          Reported by: {problem.reporter}
         </p>
         <Button href="/solutions" external={false} mode="strong">
           Solutions
@@ -66,7 +80,7 @@ function ProblemDescription({
               marginBottom: `${0.5 * GU}px`,
             }}
           >
-            {title}
+            {problem.title}
           </h1>
           <p
             style={{
@@ -74,18 +88,33 @@ function ProblemDescription({
               color: `${theme.surfaceContentSecondary}`,
             }}
           >
-            {description}
+            {problem.description}
           </p>
         </div>
       </section>
-      <VotingButtons no_upvotes={no_upvotes} no_downvotes={no_downvotes} />
+      {votes.length === 0 ? (
+        <VotingButtons
+          no_upvotes={-1}
+          no_downvotes={-1}
+        />
+      ) : (
+        <VotingButtons
+          no_upvotes={countVotes("up")}
+          no_downvotes={countVotes("down")}
+        />
+      )}
     </Card>
   );
 }
 
-ProblemDescription.propTypes = {
-  description: PropTypes.node.isRequired,
-  title: PropTypes.node.isRequired,
-};
-
 export default ProblemDescription;
+
+class Vote {
+  proposal: Proposal;
+  choice: number;
+
+  constructor(proposal, choice) {
+    this.proposal = proposal;
+    this.choice = choice;
+  }
+}

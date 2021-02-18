@@ -1,49 +1,35 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useRouter, withRouter } from "next/router";
-import { GU, Box, Button } from "@aragon/ui";
+import { GU } from "@aragon/ui";
 
 import Title from "../../components/Title";
-import { ARAGON_LOGO, PROBLEM_ICON } from "../../lib/constants";
+import { ARAGON_LOGO } from "../../lib/constants";
 import "../../styles/index.less";
 import Header from "../../components/Header";
 import ProblemDescription from "../../components/DescriptionBoxes/ProblemDescription";
 import Breadcrumbs from "../../components/Breadcrumb";
+import ReportProblemIndicator from "../../components/ReportProblemIndiactor";
 
 const ProblemsPage = (props) => {
   const router = useRouter();
 
-  const [no_fetch, setHasFetched] = useState(0)
+  const [hasFetched, setHasFetched] = useState(false)
   const [proposals, setProposals] = useState<Proposal[]>([]);
   useEffect(() => {
     console.log("first effect")
-    if(no_fetch > 2 ) return
+    // if(no_fetch > 2 ) return
     fetch("https://hub.snapshot.page/api/aragon/proposals")
     .then((response) => response.json())
-    .then((data) => Object.values(data).slice(1,5))
+    .then((data) => Object.values(data).slice(1,7))
     .then((data) => data.map(d => { 
       return new Proposal(d.authorIpfsHash, d.msg.payload.name, d.msg.payload.body, d.address)
     }))
-      .then((proposals) => setProposals(proposals));
-    setHasFetched(no_fetch + 1)
-  }, [proposals]);
+      .then((proposals) => {
+        setProposals(proposals)
+        setHasFetched(true)
+      });
+  }, []);
   
-  const [votes, setVotes] = useState<Vote[]>([]);
-  useEffect(() => {
-    console.log("second effect")
-    for (let p of proposals) {
-      fetch("https://hub.snapshot.page/api/aragon/proposal/" + p.hash)
-        .then((response) => response.json())
-        .then((data) => Object.values(data))
-        .then((votes) => votes.map((vote) => {
-          return new Vote(p, vote.msg.payload.choice)
-        }))
-        .then(mapped_votes => {
-          let newVotes = votes.concat(mapped_votes)
-          setVotes(newVotes)
-        })
-    }
-  }, [proposals]);
-
   return (
     <Fragment>
       <Breadcrumbs />
@@ -63,42 +49,11 @@ const ProblemsPage = (props) => {
           {proposals.length === 0 ? (
             <p>loading...</p>
           ) : (
-              proposals.map((p, i) => dataToCards(votes, p, i))
+              proposals.map((p, i) => dataToCards(p, i))
           )}
         </div>
         <div style={{ width: "25%" }}>
-          <Box style={{ position: "fixed" }}>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <img style={{ display: "block" }} src={PROBLEM_ICON} alt="" />
-              <h1
-                style={{
-                  fontSize: "25px",
-                  fontWeight: "bold",
-                  marginTop: `${1.5 * GU}px`,
-                  marginBottom: `${0.5 * GU}px`,
-                }}
-              >
-                Report a Problem
-              </h1>
-              <p
-                style={{
-                  fontSize: "16px",
-                  marginBottom: `${2 * GU}px`,
-                  // color: `${theme.surfaceContentSecondary}`,
-                }}
-              >
-                ... and get rewarded
-              </p>
-              <Button mode="negative" label="Create new problem" />
-            </div>
-          </Box>
+          <ReportProblemIndicator/>
         </div>
       </section>
     </Fragment>
@@ -107,54 +62,26 @@ const ProblemsPage = (props) => {
 
 export default withRouter(ProblemsPage);
 
-function dataToCards(votes, proposal, index) {
-  // console.log(votes)
-  let relevant_votes = votes.filter(vote => vote.proposal.hash == proposal.hash)
-  let upvotes = 0
-  let downvotes = 0
-  relevant_votes.forEach(vote => {
-    if (vote.choice === 1) {
-      upvotes++;
-    } else if (vote.choice === 2) {
-      downvotes++;
-    }
-  })
+//TODO put this inside component?
+function dataToCards(proposal, index) {
   return (
     <ProblemDescription
       key={index}
-      title={proposal.title}
-      description={proposal.description}
-      reporter={proposal.reporter}
-      no_upvotes={upvotes}
-      no_downvotes={downvotes}
+      problem={proposal}
     />
   )
 }
 
-class Proposal {
+export class Proposal {
   hash: String
   title: String
   description: String
   reporter: String
-  // upvote: number
-  // downvote: number
 
   constructor(proposal, title, description, reporter) {
     this.hash = proposal
     this.title =  title
     this.description =  description
     this.reporter =  reporter
-    // this.upvote = 0
-    // this.downvote = 0
-  }
-}
-
-class Vote {
-  proposal: Proposal
-  choice: number
-
-  constructor(proposal, choice) {
-    this.proposal = proposal
-    this.choice = choice
   }
 }
