@@ -9,61 +9,44 @@ import Header from "../../components/Header";
 import ProblemDescription from "../../components/DescriptionBoxes/ProblemDescription";
 import Breadcrumbs from "../../components/Breadcrumb";
 
-const PROBLEMS = [
-  {
-    project: "Aragon",
-    product: "Apollo",
-    title: "Not enough money",
-    description: "Switzerland is expensive af.",
-    reporter: "Me",
-    no_upvotes: 42,
-    no_downvotes: 42,
-  },
-  {
-    project: "Aragon",
-    product: "Apollo",
-    title: "Lockdown",
-    description: "Meeting people online is just not the same.",
-    reporter: "Me",
-    no_upvotes: 42,
-    no_downvotes: 42,
-  },
-  {
-    project: "Aragon",
-    product: "Apollo",
-    title: "House MD not on netflix",
-    description: "I don't care whose fault it is, just fix it pls.",
-    reporter: "Me",
-    no_upvotes: 42,
-    no_downvotes: 42,
-  },
-  {
-    project: "Aragon",
-    product: "Apollo",
-    title: "Linear Gradients in React",
-    description:
-      "Different browsers support different gradient functions. Don't know how to express that in react css.",
-    reporter: "Me",
-    no_upvotes: 42,
-    no_downvotes: 42,
-  },
-];
-
 const ProblemsPage = (props) => {
   const router = useRouter();
-  const [proposals, setProposals] = useState([])
 
+  const [no_fetch, setHasFetched] = useState(0)
+  const [proposals, setProposals] = useState<Proposal[]>([]);
   useEffect(() => {
-    fetch('https://hub.snapshot.page/api/aragon/proposals')
-      .then(response => response.json())
-      .then(data => Object.values(data))
-      .then(proposals => setProposals(proposals))
-      // .then(console.log)
-  })
+    console.log("first effect")
+    if(no_fetch > 2 ) return
+    fetch("https://hub.snapshot.page/api/aragon/proposals")
+    .then((response) => response.json())
+    .then((data) => Object.values(data).slice(1,5))
+    .then((data) => data.map(d => { 
+      return new Proposal(d.authorIpfsHash, d.msg.payload.name, d.msg.payload.body, d.address)
+    }))
+      .then((proposals) => setProposals(proposals));
+    setHasFetched(no_fetch + 1)
+  }, [proposals]);
   
+  const [votes, setVotes] = useState<Vote[]>([]);
+  useEffect(() => {
+    console.log("second effect")
+    for (let p of proposals) {
+      fetch("https://hub.snapshot.page/api/aragon/proposal/" + p.hash)
+        .then((response) => response.json())
+        .then((data) => Object.values(data))
+        .then((votes) => votes.map((vote) => {
+          return new Vote(p, vote.msg.payload.choice)
+        }))
+        .then(mapped_votes => {
+          let newVotes = votes.concat(mapped_votes)
+          setVotes(newVotes)
+        })
+    }
+  }, [proposals]);
+
   return (
     <Fragment>
-      <Breadcrumbs/>
+      <Breadcrumbs />
       <Header
         illustration={ARAGON_LOGO}
         title="Apollo"
@@ -75,14 +58,13 @@ const ProblemsPage = (props) => {
         topSpacing={7 * GU}
         bottomSpacing={5 * GU}
       />
-      <section
-        style={{
-          display: "flex",
-          width: "100%",
-        }}
-      >
+      <section style={{ display: "flex", width: "100%" }}>
         <div style={{ width: "75%" }}>
-          {proposals.length === 0 ? <p>loading...</p> : proposals.map(dataToCards) }
+          {proposals.length === 0 ? (
+            <p>loading...</p>
+          ) : (
+              proposals.map((p, i) => dataToCards(votes, p, i))
+          )}
         </div>
         <div style={{ width: "25%" }}>
           <Box style={{ position: "fixed" }}>
@@ -94,11 +76,7 @@ const ProblemsPage = (props) => {
                 alignItems: "center",
               }}
             >
-              <img
-                style={{display: "block",}}
-                src={PROBLEM_ICON}
-                alt=""
-              />
+              <img style={{ display: "block" }} src={PROBLEM_ICON} alt="" />
               <h1
                 style={{
                   fontSize: "25px",
@@ -118,7 +96,7 @@ const ProblemsPage = (props) => {
               >
                 ... and get rewarded
               </p>
-              <Button mode="negative" label="Create new problem"/>
+              <Button mode="negative" label="Create new problem" />
             </div>
           </Box>
         </div>
@@ -129,15 +107,54 @@ const ProblemsPage = (props) => {
 
 export default withRouter(ProblemsPage);
 
-function dataToCards( proposal , index) {
+function dataToCards(votes, proposal, index) {
+  // console.log(votes)
+  let relevant_votes = votes.filter(vote => vote.proposal.hash == proposal.hash)
+  let upvotes = 0
+  let downvotes = 0
+  relevant_votes.forEach(vote => {
+    if (vote.choice === 1) {
+      upvotes++;
+    } else if (vote.choice === 2) {
+      downvotes++;
+    }
+  })
   return (
     <ProblemDescription
       key={index}
-      title={proposal.msg.payload.name}
-      description={proposal.msg.payload.body}
-      reporter={proposal.address}
-      no_upvotes={42}
-      no_downvotes={42}
+      title={proposal.title}
+      description={proposal.description}
+      reporter={proposal.reporter}
+      no_upvotes={upvotes}
+      no_downvotes={downvotes}
     />
-  );
+  )
+}
+
+class Proposal {
+  hash: String
+  title: String
+  description: String
+  reporter: String
+  // upvote: number
+  // downvote: number
+
+  constructor(proposal, title, description, reporter) {
+    this.hash = proposal
+    this.title =  title
+    this.description =  description
+    this.reporter =  reporter
+    // this.upvote = 0
+    // this.downvote = 0
+  }
+}
+
+class Vote {
+  proposal: Proposal
+  choice: number
+
+  constructor(proposal, choice) {
+    this.proposal = proposal
+    this.choice = choice
+  }
 }

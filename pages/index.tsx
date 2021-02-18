@@ -10,7 +10,7 @@ import { INVALID_CHAIN_ID, METAMASK_IS_NOT_AVAILABLE } from "../lib/errors";
 const WelcomePage = ({ connectionSetter, addressSetter }) => {
   const router = useRouter();
   const wallet = useWallet();
-  // const [connecting, setConnecting] = useState(false)
+  // const [connecting, setConnecting] = useState(false) //TODO find out what this did.
   const isConnected = wallet.status === "connected"
   connectionSetter(isConnected)
   addressSetter(wallet.account);
@@ -33,7 +33,7 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
         router.push("/problems");
       })
       .catch((err) => {
-        setConnecting(false);
+        // setConnecting(false);
 
         if (
           (err && err.message == INVALID_CHAIN_ID) ||

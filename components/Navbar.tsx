@@ -25,20 +25,6 @@ export default function Navbar({connected, address}) {
             wide
             label={ (connected ? ("Connected: " +  address) : "Disconnected")}
           />
-          // <div>
-            // {/* <Button
-            //   style={{ marginRight: 2 * GU }}
-            //   href="/"
-            //   external={false}
-            //   label="Projects"
-            // />
-            // <Button
-            //   style={{ marginRight: 2 * GU }}
-            //   href="/"
-            //   external={false}
-            //   label="Docs"
-            // /> */}
-          // {/* </div> */}
         }
       />
     </div>
