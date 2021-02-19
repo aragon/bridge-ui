@@ -14,3 +14,7 @@ export const PROBLEM_ICON = "/media/problem-icon.png"
 export const SOLUTION_ICON = "/media/solution-icon.png"
 export const UPARROW_ICON = "/media/arrow-up-circle.svg"
 export const DOWNARROW_ICON = "/media/arrow-down-circle.svg"
+
+export const HUB_URL="https://testnet.snapshot.page"
+export const IPFS_GATEWAY="gateway.ipfs.io"
+export const DEFAULT_NETWORK=1

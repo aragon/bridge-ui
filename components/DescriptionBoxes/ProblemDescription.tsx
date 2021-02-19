@@ -6,17 +6,14 @@ import { Proposal } from "../../pages/problems";
 function ProblemDescription({ problem }) {
   const theme = useTheme();
 
-  function countVotes(kind: String): number {
-    if (kind === "up") {
-      return votes.filter((v) => v.choice === 1).length;
-    } else if (kind === "down") {
-      return votes.filter((v) => v.choice === 2).length;
-    }
-  }
+  // STATE & EFFECT ======================================================================
 
   const [votes, setVotes] = useState<Vote[]>([]);
   useEffect(() => {
-    fetch("https://hub.snapshot.page/api/aragon/proposal/" + problem.hash)
+    fetch(
+      `https://testnet.snapshot.page/api/${problem.space}/proposal/` +
+        problem.hash
+    )
       .then((response) => response.json())
       .then((data) => Object.values(data))
       .then((votes) => {
@@ -26,6 +23,18 @@ function ProblemDescription({ problem }) {
         setVotes(mapped_votes);
       });
   }, []);
+
+  // HELPERS =============================================================================
+
+  function countVotes(kind: String): number {
+    if (kind === "up") {
+      return votes.filter((v) => v.choice === 1).length;
+    } else if (kind === "down") {
+      return votes.filter((v) => v.choice === 2).length;
+    }
+  }
+
+  // RENDERER ============================================================================
 
   return (
     <Card
@@ -47,7 +56,6 @@ function ProblemDescription({ problem }) {
           borderRadius: "10px",
         }}
       >
-        {/* TODO extract this into component */}
         <p
           style={{
             fontSize: "14px",
