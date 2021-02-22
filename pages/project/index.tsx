@@ -58,7 +58,7 @@ const ProjectPage = (props) => {
       />
       <CardLayout rowHeight={33 * GU} columnWidthMin={31 * GU}>
         {PRODUCTS.map(
-          ({ img, label, url, no_problems, no_solutions }, index) => (
+          ({ img, label, no_problems, no_solutions }, index) => (
             <ProductCard
               key={index}
               img={img}

@@ -95,14 +95,10 @@ function ProblemDescription({ problem }) {
           </p>
         </div>
       </section>
-      {votes.length === 0 ? (
-        <VotingButtons no_upvotes={-1} no_downvotes={-1} />
-      ) : (
-        <VotingButtons
-          no_upvotes={countVotes("up")}
-          no_downvotes={countVotes("down")}
-        />
-      )}
+      <VotingButtons
+        no_upvotes={countVotes("up")}
+        no_downvotes={countVotes("down")}
+      />
     </Card>
   );
 }

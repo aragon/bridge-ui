@@ -10,7 +10,7 @@ import ProblemDescription from "../../components/DescriptionBoxes/ProblemDescrip
 import Breadcrumbs from "../../components/Breadcrumb";
 import ReportProblemIndicator from "../../components/ReportProblemIndiactor";
 
-const ProblemsPage = ({ space = "aragon" }) => {
+const ProblemsPage = ({space="aragon"}) => {
   const router = useRouter();
 
   // STATE & EFFECT ======================================================================
@@ -19,7 +19,7 @@ const ProblemsPage = ({ space = "aragon" }) => {
   useEffect(() => {
     fetch(`https://testnet.snapshot.page/api/${space}/proposals`)
       .then((response) => response.json())
-      .then((data) => Object.values(data).slice(1, 7))
+      .then((data) => Object.values(data))
       .then((data) =>
         data.map((d) => {
           return new Proposal(
