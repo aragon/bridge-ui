@@ -1,13 +1,8 @@
 import React from "react";
-import { Box, GU, useTheme, Button } from "@aragon/ui";
+import { Box, GU, Button } from "@aragon/ui";
 import { PROBLEM_ICON } from "../lib/constants";
-import { useSigner } from "@vocdoni/react-hooks";
-import { useWallet } from "use-wallet";
 
 function ReportProblemIndicator() {
-  const theme = useTheme();
-  const signer = useSigner();
-  const wallet = useWallet();
 
   // RENDERER ============================================================================
 

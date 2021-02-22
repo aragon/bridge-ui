@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
-import Link from "next/link";
-import { Header, Button, GU, useLayout } from "@aragon/ui";
+// import Link from "next/link";
+import { Header, Button, GU, useLayout, Link } from "@aragon/ui";
 import { APOLLO_BRANDING } from "../lib/constants";
 
 export default function Navbar({ connected, address }) {
@@ -11,8 +11,7 @@ export default function Navbar({ connected, address }) {
       <Header
         style={{ padding: 2 * GU }}
         primary={
-          //TODO Make this change mouse on hover.
-          <Link href="/">
+          <Link href="/" external={false}>
             <img src={APOLLO_BRANDING} />
           </Link>
         }

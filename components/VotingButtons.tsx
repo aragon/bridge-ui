@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, useTheme, GU } from "@aragon/ui";
+import { Button, useTheme, GU, Link } from "@aragon/ui";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useRouter } from "next/router";
 import { useWallet } from "use-wallet";
@@ -100,12 +100,12 @@ function VotingButtons({ no_upvotes, no_downvotes }) {
           flexDirection: "column",
         }}
       >
-        <Button
+        <Link
           style={{ marginBottom: `${1 * GU}px`, marginRight: `${1 * GU}px` }}
           onClick={() => vote(true)}
         >
-          <img src={UPARROW_ICON} alt="" width="50" height="50" />
-        </Button>
+          <img src={UPARROW_ICON} alt="" width="64" height="64" />
+        </Link>
         <p style={{ fontSize: "16px" }}>{no_upvotes}</p>
       </div>
       <div
@@ -115,12 +115,12 @@ function VotingButtons({ no_upvotes, no_downvotes }) {
           flexDirection: "column",
         }}
       >
-        <Button
+        <Link
           style={{ marginBottom: `${1 * GU}px`, marginRight: `${1 * GU}px` }}
           onClick={() => vote(false)}
         >
-          <img src={DOWNARROW_ICON} alt="" width="50" height="50" />
-        </Button>
+          <img src={DOWNARROW_ICON} alt="" width="64" height="64" />
+        </Link>
         <p style={{ fontSize: "16px" }}>{no_downvotes}</p>
       </div>
     </section>
