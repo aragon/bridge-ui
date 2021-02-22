@@ -95,6 +95,7 @@ function ProblemDescription({ problem }) {
         </div>
       </section>
       <VotingButtons
+        proposal={problem.hash}
         no_upvotes={countVotes("up")}
         no_downvotes={countVotes("down")}
       />

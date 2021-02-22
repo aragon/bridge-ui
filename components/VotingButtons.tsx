@@ -1,21 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Button, useTheme, GU, Link } from "@aragon/ui";
+import React, { useEffect } from "react";
+import { useTheme, GU, Link } from "@aragon/ui";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useRouter } from "next/router";
 import { useWallet } from "use-wallet";
-import { JsonRpcProvider } from "@ethersproject/providers";
-import networks from "@snapshot-labs/snapshot.js/src/networks.json";
 
 import { DOWNARROW_ICON, HUB_URL, UPARROW_ICON } from "../lib/constants";
 
-function VotingButtons({ no_upvotes, no_downvotes }) {
+function VotingButtons({ proposal, no_upvotes, no_downvotes }) {
   const router = useRouter();
   const signer = useSigner();
   const wallet = useWallet();
 
   // STATE & EFFECT ======================================================================
-
-  // const [signature, setSignature] = useState("");
 
   useEffect(() => {
     if (wallet?.account && wallet?.connectors?.injected) return;
@@ -25,30 +21,12 @@ function VotingButtons({ no_upvotes, no_downvotes }) {
 
   // HELPERS =============================================================================
 
-  const providers = {};
-
-  async function getBlockNumber(provider) {
-    try {
-      const blockNumber: any = await provider.getBlockNumber();
-      return parseInt(blockNumber);
-    } catch (e) {
-      return Promise.reject();
-    }
-  }
-
-  //TODO make this work using the snapshot.js library
-  function getProvider(network: string) {
-    const url: string = networks[network].rpc[0];
-    if (!providers[network]) providers[network] = new JsonRpcProvider(url);
-    return providers[network];
-  }
-
   async function vote(up: Boolean) {
     const version = "0.1.3";
     const type = "vote";
     const payload = {
-      proposal: "QmcPkyCFFKNpUDPdtLTvzHjsQa3z3uGCqdzqVdQj3LQhMD",
-      choice: 1,
+      proposal: proposal,
+      choice: (up ? 1 : 2),
       metadata: {},
     };
     const envelope: any = {
