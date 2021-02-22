@@ -10,7 +10,7 @@ import ProblemDescription from "../../components/DescriptionBoxes/ProblemDescrip
 import Breadcrumbs from "../../components/Breadcrumb";
 import ReportProblemIndicator from "../../components/ReportProblemIndiactor";
 
-const ProblemsPage = ({space="aragon"}) => {
+const ProblemsPage = ({ space = "aragon" }) => {
   const router = useRouter();
 
   // STATE & EFFECT ======================================================================

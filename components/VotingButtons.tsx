@@ -22,19 +22,19 @@ function VotingButtons({ no_upvotes, no_downvotes }) {
 
     wallet.connect("injected");
   }, [wallet?.account]);
-  
+
   // HELPERS =============================================================================
-  
+
   const providers = {};
 
   async function getBlockNumber(provider) {
-      try {
-        const blockNumber: any = await provider.getBlockNumber();
-        return parseInt(blockNumber);
-      } catch (e) {
-        return Promise.reject();
-      }
+    try {
+      const blockNumber: any = await provider.getBlockNumber();
+      return parseInt(blockNumber);
+    } catch (e) {
+      return Promise.reject();
     }
+  }
 
   //TODO make this work using the snapshot.js library
   function getProvider(network: string) {
@@ -78,6 +78,7 @@ function VotingButtons({ no_upvotes, no_downvotes }) {
     };
 
     fetch(url, init);
+    //TODO handle errors
   }
 
   const theme = useTheme();
@@ -103,7 +104,7 @@ function VotingButtons({ no_upvotes, no_downvotes }) {
           style={{ marginBottom: `${1 * GU}px`, marginRight: `${1 * GU}px` }}
           onClick={() => vote(true)}
         >
-          <img src={UPARROW_ICON} alt="" width="32" height="32" />
+          <img src={UPARROW_ICON} alt="" width="50" height="50" />
         </Button>
         <p style={{ fontSize: "16px" }}>{no_upvotes}</p>
       </div>
@@ -117,8 +118,8 @@ function VotingButtons({ no_upvotes, no_downvotes }) {
         <Button
           style={{ marginBottom: `${1 * GU}px`, marginRight: `${1 * GU}px` }}
           onClick={() => vote(false)}
-          >
-          <img src={DOWNARROW_ICON} alt="" width="32" height="32" />
+        >
+          <img src={DOWNARROW_ICON} alt="" width="50" height="50" />
         </Button>
         <p style={{ fontSize: "16px" }}>{no_downvotes}</p>
       </div>

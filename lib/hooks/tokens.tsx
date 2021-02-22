@@ -76,7 +76,7 @@ export function useTokens(addresses: string[]) {
 }
 
 export function UseTokenProvider({ children }) {
-    // TODO: Use swr
+    // TO DO: Use swr
 
     const tokens = useRef(new Map<string, TokenInfo>())
     const { poolPromise } = usePool()

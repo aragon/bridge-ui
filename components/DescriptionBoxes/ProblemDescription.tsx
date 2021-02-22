@@ -11,8 +11,7 @@ function ProblemDescription({ problem }) {
   const [votes, setVotes] = useState<Vote[]>([]);
   useEffect(() => {
     fetch(
-      `https://testnet.snapshot.page/api/${problem.space}/proposal/` +
-        problem.hash
+      `https://testnet.snapshot.page/api/${problem.space}/proposal/${problem.hash}`
     )
       .then((response) => response.json())
       .then((data) => Object.values(data))

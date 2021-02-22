@@ -31,19 +31,19 @@ const ProposalForm = () => {
 
     wallet.connect("injected");
   }, [wallet?.account]);
-  
+
   // HELPERS =============================================================================
-  
+
   const providers = {};
 
   async function getBlockNumber(provider) {
-      try {
-        const blockNumber: any = await provider.getBlockNumber();
-        return parseInt(blockNumber);
-      } catch (e) {
-        return Promise.reject();
-      }
+    try {
+      const blockNumber: any = await provider.getBlockNumber();
+      return parseInt(blockNumber);
+    } catch (e) {
+      return Promise.reject();
     }
+  }
 
   //TODO make this work using the snapshot.js library
   function getProvider(network: string) {
@@ -100,7 +100,7 @@ const ProposalForm = () => {
       body: description,
       choices: ["upvote", "downvote"],
       start: Math.round(Date.now() / 1e3),
-      end: Math.round((Date.now() / 1e3) + 86400), //currently hardcoded to one day.
+      end: Math.round(Date.now() / 1e3 + 86400), //currently hardcoded to one day.
       snapshot: snapshot,
       metadata: {
         strategies: space.strategies,
@@ -133,7 +133,7 @@ const ProposalForm = () => {
     };
 
     var res = await fetch(url, init);
-    router.push("/problems")
+    router.push("/problems");
   }
 
   // RENDERER ============================================================================
@@ -141,16 +141,14 @@ const ProposalForm = () => {
   return (
     <Fragment>
       <Breadcrumbs />
-      <SignatureTest signer={signer} signature=""/>
+      <SignatureTest signer={signer} signature="" />
       <Title
         title="New Problem"
         subtitle="Fill out the form to create a new problem"
         topSpacing={7 * GU}
         bottomSpacing={5 * GU}
       />
-      <div
-        style={{ width: "80%" }}
-      >
+      <div style={{ width: "80%" }}>
         <Field label="Problem title:">
           <TextInput
             value={title}
@@ -179,9 +177,8 @@ const ProposalForm = () => {
 
 export default withRouter(ProposalForm);
 
-
-function SignatureTest({signer, signature}) {
-  return(
+function SignatureTest({ signer, signature }) {
+  return (
     <div>
       <h2>Signer</h2>
       <p>
@@ -189,7 +186,6 @@ function SignatureTest({signer, signature}) {
         {signer ? " ready" : " unavailable (Please, install MetaMask)"}
       </p>
       {signature ? <p>Signature: {signature}</p> : null}
-  </div>
-  )
+    </div>
+  );
 }
-

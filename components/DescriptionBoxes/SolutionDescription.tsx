@@ -2,12 +2,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Card, GU, useTheme, Button } from "@aragon/ui";
-import {
-  DOWNARROW_ICON,
-  PROBLEM_RED,
-  SOLUTION_BLUE,
-  UPARROW_ICON,
-} from "../../lib/constants";
 import VotingButtons from "../VotingButtons";
 
 function SolutionDescription({
@@ -38,7 +32,6 @@ function SolutionDescription({
           borderRadius: "10px",
         }}
       >
-        {/* TODO extract this into component */}
         <p
           style={{
             fontSize: "14px",
