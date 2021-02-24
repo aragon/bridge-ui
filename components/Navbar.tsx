@@ -11,18 +11,16 @@ export default function Navbar({ connected, address }) {
       <Header
         style={{ padding: 2 * GU }}
         primary={
-            <Link href="/" passHref>
-              <AragonLink external={false}>
-                <img src={APOLLO_BRANDING} />
-              </AragonLink>
-            </Link>
+          <Link href="/" passHref>
+            <AragonLink external={false}>
+              <img src={APOLLO_BRANDING} />
+            </AragonLink>
+          </Link>
         }
         //TODO Use AddressField to display the address. (Not implemented as I can't make the address fiel align properly)
         secondary={
           <Button
-            style={{
-              background: "#59A0FF",
-            }}
+            style={{ background: "#59A0FF" }}
             mode="strong"
             wide
             label={connected ? "Connected: " + address : "Disconnected"}

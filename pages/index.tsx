@@ -1,6 +1,6 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { Button, Split, IconEthereum, GU, Box } from "@aragon/ui";
-import { useRouter, withRouter } from "next/router";
+import React, { Fragment } from "react";
+import { Button, Split, IconEthereum, GU } from "@aragon/ui";
+import { useRouter } from "next/router";
 
 import Title from "../components/Title";
 import "../styles/index.less";
@@ -29,11 +29,11 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
       .then(() => {
         if (!wallet.connectors.injected)
           throw new Error(METAMASK_IS_NOT_AVAILABLE);
-          let urlObject = {
-            pathname: `/[project]/problems`,
-            query: { project:"aragon" },
-          }
-          router.push(urlObject);
+        let urlObject = {
+          pathname: `/[project]/problems`,
+          query: { project: "aragon" },
+        };
+        router.push(urlObject);
       })
       .catch((err) => {
         // setConnecting(false);
