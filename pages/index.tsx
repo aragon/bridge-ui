@@ -87,4 +87,4 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
   );
 };
 
-export default withRouter(WelcomePage);
+export default WelcomePage;
