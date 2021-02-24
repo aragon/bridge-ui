@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Card, GU, useTheme, Button } from "@aragon/ui";
 import VotingButtons from "../VotingButtons";
-import { Proposal } from "../../pages/problems";
+import { Proposal } from "../../pages/[project]/problems/index";
+import Link from "next/link";
 
 function ProblemDescription({ problem }) {
   const theme = useTheme();
@@ -9,6 +10,9 @@ function ProblemDescription({ problem }) {
   // STATE & EFFECT ======================================================================
 
   const [votes, setVotes] = useState<Vote[]>([]);
+
+  // get all votes related to a particular problem/Solution of a praticular project from
+  // snapshot
   useEffect(() => {
     fetch(
       `https://testnet.snapshot.page/api/${problem.space}/proposal/${problem.hash}`
@@ -63,9 +67,17 @@ function ProblemDescription({ problem }) {
         >
           Reported by: {problem.reporter}
         </p>
-        <Button href="/solutions" external={false} mode="strong">
-          Solutions
-        </Button>
+        <Link
+          href={{
+            pathname: "/[project]/[problem]/solutions",
+            query: { project: problem.space, problem: problem.hash },
+          }}
+          passHref
+        >
+          <Button external={false} mode="strong">
+            Solutions
+          </Button>
+        </Link>
       </section>
       <section
         style={{

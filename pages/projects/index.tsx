@@ -4,7 +4,6 @@ import { useRouter, withRouter } from "next/router";
 
 import Title from "../../components/Title";
 import ProjectCard from "../../components/Cards/ProjectCard";
-import ProblemsPage from "../problems"
 import { ARAGON_LOGO } from "../../lib/constants";
 import "../../styles/index.less";
 
@@ -16,7 +15,7 @@ const ProjectsPage = ({ connectionSetter }) => {
     fetch(`https://testnet.snapshot.page/api/spaces`)
       .then((response) => response.json())
       .then((data) => Object.values(data).slice(13, 20))
-      .then((data:Project[]) => setProjects(data))
+      .then((data: Project[]) => setProjects(data));
   }, []);
 
   return (
@@ -48,9 +47,12 @@ const ProjectsPage = ({ connectionSetter }) => {
             label={project.name}
             symbol={project.symbol}
             onOpen={() => {
-              router.push("/problems");
+              let urlObject = {
+                pathname: `/[project]/problems`,
+                query: { project: project.name },
+              };
+              router.push(urlObject);
             }}
-            //TODO find out how to best pass projects into problems page
           />
         ))}
       </CardLayout>
@@ -58,29 +60,29 @@ const ProjectsPage = ({ connectionSetter }) => {
   );
 };
 
-export default withRouter(ProjectsPage);
+export default ProjectsPage;
 
 export interface Project {
-  name:       string;
-  network:    string;
-  symbol:     string;
+  name: string;
+  network: string;
+  symbol: string;
   strategies: Strategy[];
-  members:    string[];
-  filters:    Filters;
+  members: string[];
+  filters: Filters;
 }
 
 export interface Filters {
   defaultTab: string;
-  minScore:   number;
+  minScore: number;
 }
 
 export interface Strategy {
-  name:   string;
+  name: string;
   params: Params;
 }
 
 export interface Params {
-  address:  string;
-  symbol:   string;
+  address: string;
+  symbol: string;
   decimals: number;
 }

@@ -2,28 +2,31 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useRouter, withRouter } from "next/router";
 import { GU } from "@aragon/ui";
 
-import Title from "../../components/Title";
-import { ARAGON_LOGO } from "../../lib/constants";
-import "../../styles/index.less";
-import Header from "../../components/Header";
-import ProblemDescription from "../../components/DescriptionBoxes/ProblemDescription";
-import Breadcrumbs from "../../components/Breadcrumb";
-import ReportProblemIndicator from "../../components/ReportProblemIndiactor";
+import Title from "../../../components/Title";
+import { ARAGON_LOGO } from "../../../lib/constants";
+import "../../../styles/index.less";
+import Header from "../../../components/Header";
+import ProblemDescription from "../../../components/DescriptionBoxes/ProblemDescription";
+import Breadcrumbs from "../../../components/Breadcrumb";
+import ReportProblemIndicator from "../../../components/ReportProblemIndiactor";
 
-const ProblemsPage = ({ space = "aragon" }) => {
+const ProblemsPage = () => {
   const router = useRouter();
+  const { project } = router.query;
 
   // STATE & EFFECT ======================================================================
 
   const [proposals, setProposals] = useState<Proposal[]>([]);
+
+  // get all problems related to a particular project from snapshot
   useEffect(() => {
-    fetch(`https://testnet.snapshot.page/api/${space}/proposals`)
+    fetch(`https://testnet.snapshot.page/api/${project}/proposals`)
       .then((response) => response.json())
       .then((data) => Object.values(data))
       .then((data) =>
         data.map((d) => {
           return new Proposal(
-            space,
+            project,
             d.authorIpfsHash,
             d.msg.payload.name,
             d.msg.payload.body,
@@ -43,7 +46,7 @@ const ProblemsPage = ({ space = "aragon" }) => {
       <Breadcrumbs />
       <Header
         illustration={ARAGON_LOGO}
-        title={space}
+        title={project}
         subtitle="A universally verifiable, censorship-resistant and anonymous voting & grants execution engine."
       />
       <Title
@@ -68,7 +71,7 @@ const ProblemsPage = ({ space = "aragon" }) => {
   );
 };
 
-export default withRouter(ProblemsPage);
+export default ProblemsPage;
 
 export class Proposal {
   space: String;

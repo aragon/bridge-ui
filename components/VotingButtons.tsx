@@ -7,6 +7,7 @@ import { useWallet } from "use-wallet";
 import { DOWNARROW_ICON, HUB_URL, UPARROW_ICON } from "../lib/constants";
 
 function VotingButtons({ proposal, no_upvotes, no_downvotes }) {
+  const theme = useTheme();
   const router = useRouter();
   const signer = useSigner();
   const wallet = useWallet();
@@ -21,12 +22,13 @@ function VotingButtons({ proposal, no_upvotes, no_downvotes }) {
 
   // HELPERS =============================================================================
 
+  //post vote message for particular problem/solution of particular project on snapshot
   async function vote(up: Boolean) {
     const version = "0.1.3";
     const type = "vote";
     const payload = {
       proposal: proposal,
-      choice: (up ? 1 : 2),
+      choice: up ? 1 : 2, //upvote indexed with 1, downvotes with 2
       metadata: {},
     };
     const envelope: any = {
@@ -41,7 +43,6 @@ function VotingButtons({ proposal, no_upvotes, no_downvotes }) {
     };
 
     envelope.sig = await signer.signMessage(envelope.msg);
-    // setSignature(envelope.sig);
     const url = `${HUB_URL}/api/message`;
 
     const headers = new Headers();
@@ -59,7 +60,8 @@ function VotingButtons({ proposal, no_upvotes, no_downvotes }) {
     //TODO handle errors
   }
 
-  const theme = useTheme();
+  // RENDERER ============================================================================
+
   return (
     <section
       style={{

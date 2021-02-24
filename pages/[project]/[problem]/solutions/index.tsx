@@ -2,12 +2,12 @@ import React, { Fragment } from "react";
 import { useRouter, withRouter } from "next/router";
 import { GU, Box, Button } from "@aragon/ui";
 
-import Title from "../../components/Title";
-import { SOLUTION_ICON } from "../../lib/constants";
-import "../../styles/index.less";
-import Header from "../../components/Header";
-import Breadcrumbs from "../../components/Breadcrumb";
-import SolutionDescription from "../../components/DescriptionBoxes/SolutionDescription";
+import Title from "../../../../components/Title";
+import { SOLUTION_ICON } from "../../../../lib/constants";
+import "../../../../styles/index.less";
+import Header from "../../../../components/Header";
+import Breadcrumbs from "../../../../components/Breadcrumb";
+import SolutionDescription from "../../../../components/DescriptionBoxes/SolutionDescription";
 
 const SOLUTIONS = [
   {
@@ -51,8 +51,8 @@ const SolutionsPage = () => {
     <Fragment>
       <Breadcrumbs />
       <Header
-        title={ SOLUTIONS[0].project.title}
-        subtitle={ SOLUTIONS[0].project.description}
+        title={SOLUTIONS[0].project.title}
+        subtitle={SOLUTIONS[0].project.description}
       />
       <Title
         title="Solutions"
@@ -85,7 +85,7 @@ const SolutionsPage = () => {
                   marginTop: `${1.5 * GU}px`,
                   marginBottom: `${0.5 * GU}px`,
                 }}
-                >
+              >
                 Report a Solution
               </h1>
               <p
@@ -96,7 +96,7 @@ const SolutionsPage = () => {
               >
                 ... and get rewarded
               </p>
-              <Button mode="strong" label="Create new solution"/>
+              <Button mode="strong" label="Create new solution" />
             </div>
           </Box>
         </div>

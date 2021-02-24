@@ -29,7 +29,11 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
       .then(() => {
         if (!wallet.connectors.injected)
           throw new Error(METAMASK_IS_NOT_AVAILABLE);
-        router.push("/problems");
+          let urlObject = {
+            pathname: `/[project]/problems`,
+            query: { project:"aragon" },
+          }
+          router.push(urlObject);
       })
       .catch((err) => {
         // setConnecting(false);
