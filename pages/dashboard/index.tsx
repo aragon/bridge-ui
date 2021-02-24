@@ -19,7 +19,7 @@ const DashboardPage = props => {
     const [blockNumber, setBlockNumber] = useState(0)
     const [loadingProcesses, setLoadingProcesses] = useState(false)
     const [processes, setProcesses] = useState<ProcessInfo[]>([])
-    const [tokenAddrs, setTokenAddrs] = useState(allTokens)  // TODO: Use setTokenAddrs( [myTokenAddr] ) to filter
+    const [tokenAddrs, setTokenAddrs] = useState(allTokens)  // TO DO: Use setTokenAddrs( [myTokenAddr] ) to filter
     const tokenInfos = useTokens(tokenAddrs)
 
     // Block update

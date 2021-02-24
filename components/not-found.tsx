@@ -3,7 +3,7 @@ import { main } from "../i18n"
 
 const NotFound = props => <div id="page-body">
     <div className="not-found body-card center">
-        <h1>Vocdoni Bridge</h1>
+        <h1>Apollo</h1>
         <p>{main.notFound}</p>
     </div>
 </div>

@@ -6,14 +6,14 @@ type Props = {
     onClick?: () => any
 }
 
-export default function Button({ children, ...props }: Props) {
+export default function Button(props: Props) {
     if (props.onClick) return <div className="button accent-2" onClick={() => props.onClick()}>
-        {children}
+        {props.children}
     </div>
 
     return <Link href={props.href}>
         <div className="button accent-2">
-            {children}
+            {props.children}
         </div>
     </Link>
 }

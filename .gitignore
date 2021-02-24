@@ -2,3 +2,6 @@ build
 .next
 node_modules
 .vscode
+components/Sandbox
+pages/vocdoniWelcome
+pages/vocdoniProcess
