@@ -16,6 +16,9 @@ const ProblemsPage = () => {
 
   // STATE & EFFECT ======================================================================
 
+  const [activeProposals, setActiveProposals] = useState<Proposal[]>([])
+  const [closedProposals, setClosedProposals] = useState<Proposal[]>([])
+  const [pendingProposals, setPendingProposals] = useState<Proposal[]>([])
   const [proposals, setProposals] = useState<Proposal[]>([]);
 
   // get all problems related to a particular project from snapshot
@@ -23,7 +26,14 @@ const ProblemsPage = () => {
     fetch(`https://testnet.snapshot.page/api/${project}/proposals`)
       .then((response) => response.json())
       .then((data) => Object.values(data))
-      .then((data: Proposal[]) => setProposals(data)) //cast data to Proposal interface.
+      .then((data: Proposal[]) => {  //cast data to Proposal interface.
+        setProposals(data)
+        let curr_date = Math.round(Date.now() / 1e3)
+        setClosedProposals(data.filter(p => p.msg.payload.end < curr_date))
+        setPendingProposals(data.filter(p => p.msg.payload.start > curr_date))
+        setActiveProposals(data.filter(p => p.msg.payload.start < curr_date && curr_date < p.msg.payload.end))
+        console.log(activeProposals)
+      })
   }, []);
 
   // RENDERER ============================================================================
@@ -47,7 +57,7 @@ const ProblemsPage = () => {
           {proposals.length === 0 ? (
             <p>loading...</p>
           ) : (
-              proposals.map((p: Proposal, i) => <ProblemDescription key={ i } project={ project } problem={p}   />)
+            proposals.map((p: Proposal, i) => <ProblemDescription key={ i } project={ project } problem={p}   />)
           )}
         </div>
         <div style={{ width: "25%" }}>
