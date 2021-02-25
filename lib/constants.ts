@@ -6,6 +6,7 @@ export const SOLUTION_BLUE = "#23A7F2"
 
 
 // URL's
+export const FAVICON = "/media/favicon.svg"
 export const FALLBACK_TOKEN_ICON = "/media/coin.svg"
 export const ARAGON_LOGO = "/media/aragon_logo.png"
 export const APOLLO_LOGO = "/media/apollo_logo.png"

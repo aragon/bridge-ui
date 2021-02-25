@@ -12,6 +12,7 @@ import { UseTokenProvider } from '../lib/hooks/tokens'
 import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
 import "../styles/index.less";
+import { FAVICON } from "../lib/constants";
 
 type NextAppProps = AppInitialProps & {
   Component: NextComponentType<NextPageContext, any, any>;
@@ -35,6 +36,7 @@ const BridgeApp: FC<NextAppProps> = ({ Component, pageProps }) => {
                 name="viewport"
                 content="width=device-width, initial-scale=1.0"
               />
+              <link rel="icon" href={FAVICON}></link>
               <title>Apollo</title>
             </NextHead>
             <Main layout={false}>

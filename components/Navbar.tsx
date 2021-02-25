@@ -17,7 +17,8 @@ export default function Navbar({ connected, address }) {
             </AragonLink>
           </Link>
         }
-        //TODO Use AddressField to display the address. (Not implemented as I can't make the address fiel align properly)
+        // TODO Use AddressField to display the address. (Not implemented as I can't make
+        // the address fiel align properly)
         secondary={
           <Button
             style={{ background: "#59A0FF" }}
