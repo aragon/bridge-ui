@@ -23,20 +23,7 @@ const ProblemsPage = () => {
     fetch(`https://testnet.snapshot.page/api/${project}/proposals`)
       .then((response) => response.json())
       .then((data) => Object.values(data))
-      .then((data) =>
-        data.map((d) => {
-          return new Proposal(
-            project,
-            d.authorIpfsHash,
-            d.msg.payload.name,
-            d.msg.payload.body,
-            d.address
-          );
-        })
-      )
-      .then((proposals) => {
-        setProposals(proposals);
-      });
+      .then((data: Proposal[]) => setProposals(data)) //cast data to Proposal interface.
   }, []);
 
   // RENDERER ============================================================================
@@ -60,7 +47,7 @@ const ProblemsPage = () => {
           {proposals.length === 0 ? (
             <p>loading...</p>
           ) : (
-            proposals.map((p, i) => <ProblemDescription key={i} problem={p} />)
+              proposals.map((p: Proposal, i) => <ProblemDescription key={ i } project={ project } problem={p}   />)
           )}
         </div>
         <div style={{ width: "25%" }}>
@@ -73,18 +60,43 @@ const ProblemsPage = () => {
 
 export default ProblemsPage;
 
-export class Proposal {
-  space: String;
-  hash: String;
-  title: String;
-  description: String;
-  reporter: String;
+export interface Proposal {
+  address:         string;
+  msg:             Msg;
+  sig:             string;
+  authorIpfsHash:  string;
+  relayerIpfsHash: string;
+}
 
-  constructor(space, proposal, title, description, reporter) {
-    this.space = space;
-    this.hash = proposal;
-    this.title = title;
-    this.description = description;
-    this.reporter = reporter;
-  }
+export interface Msg {
+  version:   string;
+  timestamp: string;
+  space:     string;
+  type:      string;
+  payload:   Payload;
+}
+
+export interface Payload {
+  end:      number;
+  body:     string;
+  name:     string;
+  start:    number;
+  choices:  string[];
+  metadata: Metadata;
+  snapshot: number;
+}
+
+export interface Metadata {
+  strategies: Strategy[];
+}
+
+export interface Strategy {
+  name:   string;
+  params: Params;
+}
+
+export interface Params {
+  symbol:    string;
+  address:   string;
+  decimals?: number;
 }

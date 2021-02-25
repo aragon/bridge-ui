@@ -15,7 +15,7 @@ const ProjectsPage = ({ connectionSetter }) => {
     fetch(`https://testnet.snapshot.page/api/spaces`)
       .then((response) => response.json())
       .then((data) => Object.values(data).slice(13, 20))
-      .then((data: Project[]) => setProjects(data));
+      .then((data: Project[]) => setProjects(data)); //cast data to Project interface.
   }, []);
 
   return (
