@@ -18,7 +18,7 @@ export default function Navbar({ connected, address }) {
           </Link>
         }
         // TODO Use AddressField to display the address. (Not implemented as I can't make
-        // the address fiel align properly)
+        // the address field align properly)
         secondary={
           <Button
             style={{ background: "#59A0FF" }}
