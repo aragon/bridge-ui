@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Button, Split, CardLayout, GU } from "@aragon/ui";
-import { useRouter, withRouter } from "next/router";
+import { useRouter } from "next/router";
 
 import Title from "../../components/Title";
 import ProjectCard from "../../components/Cards/ProjectCard";

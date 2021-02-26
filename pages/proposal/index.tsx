@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useRouter, withRouter } from "next/router";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useWallet } from "use-wallet";
-import { GU, Button, Field, TextInput } from "@aragon/ui";
+import { GU, Button, Field, TextInput, DateRangePicker } from "@aragon/ui";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import networks from "@snapshot-labs/snapshot.js/src/networks.json";
 
@@ -23,8 +23,10 @@ const ProposalForm = () => {
   const [description, setDescription] = useState(
     "Comprehensive problem description"
   );
-
-  // const [signature, setSignature] = useState("");
+  const [range, setRange] = useState({
+    start: null,
+    end: null,
+  });
 
   useEffect(() => {
     if (wallet?.account && wallet?.connectors?.injected) return;
@@ -99,8 +101,8 @@ const ProposalForm = () => {
       name: title,
       body: description,
       choices: ["upvote", "downvote"],
-      start: Math.round(Date.now() / 1e3),
-      end: Math.round(Date.now() / 1e3 + 86400), //currently hardcoded to one day.
+      start: Math.round(new Date(range.start).getTime() / 1e3),
+      end: Math.round(new Date(range.end).getTime() / 1e3),
       snapshot: snapshot,
       metadata: {
         strategies: space.strategies,
@@ -116,9 +118,8 @@ const ProposalForm = () => {
         payload,
       }),
     };
-
     envelope.sig = await signer.signMessage(envelope.msg);
-    // setSignature(envelope.sig);
+
     const url = `${HUB_URL}/api/message`;
 
     const headers = new Headers();
@@ -133,7 +134,11 @@ const ProposalForm = () => {
     };
 
     var res = await fetch(url, init);
-    router.push("/problems");
+    if (res.ok) {
+      router.push("/aragon/problems");
+    } else {
+      //TODO add toast or something to indicate failure to client
+    }
   }
 
   // RENDERER ============================================================================
@@ -141,14 +146,13 @@ const ProposalForm = () => {
   return (
     <Fragment>
       <Breadcrumbs />
-      <SignatureTest signer={signer} signature="" />
       <Title
         title="New Problem"
         subtitle="Fill out the form to create a new problem"
         topSpacing={7 * GU}
         bottomSpacing={5 * GU}
       />
-      <div style={{ width: "80%" }}>
+      <div style={{ paddingLeft: `${2 * GU}px`, width: "80%" }}>
         <Field label="Problem title:">
           <TextInput
             value={title}
@@ -162,7 +166,17 @@ const ProposalForm = () => {
             onChange={(event) => setDescription(event.target.value)}
           />
         </Field>
+        <Field label="Voting window" onChange={setRange}>
+          <div style={{ marginTop: `${2 * GU}px` }}>
+            <DateRangePicker
+              startDate={range.start}
+              endDate={range.end}
+              onChange={setRange}
+            />
+          </div>
+        </Field>
         <Button
+          style={{ marginTop: `${3 * GU}px` }}
           mode="strong"
           external={false}
           wide={false}
@@ -176,16 +190,3 @@ const ProposalForm = () => {
 };
 
 export default withRouter(ProposalForm);
-
-function SignatureTest({ signer, signature }) {
-  return (
-    <div>
-      <h2>Signer</h2>
-      <p>
-        The signer is{" "}
-        {signer ? " ready" : " unavailable (Please, install MetaMask)"}
-      </p>
-      {signature ? <p>Signature: {signature}</p> : null}
-    </div>
-  );
-}
