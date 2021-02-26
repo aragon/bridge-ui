@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useRouter, withRouter } from "next/router";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useWallet } from "use-wallet";
-import { GU, Button, Field, TextInput } from "@aragon/ui";
+import { GU, Button, Field, TextInput, DateRangePicker } from "@aragon/ui";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import networks from "@snapshot-labs/snapshot.js/src/networks.json";
 
@@ -23,8 +23,10 @@ const ProposalForm = () => {
   const [description, setDescription] = useState(
     "Comprehensive problem description"
   );
-
-  // const [signature, setSignature] = useState("");
+  const [range, setRange] = useState({
+    start: null,
+    end: null,
+  });
 
   useEffect(() => {
     if (wallet?.account && wallet?.connectors?.injected) return;
@@ -141,14 +143,13 @@ const ProposalForm = () => {
   return (
     <Fragment>
       <Breadcrumbs />
-      <SignatureTest signer={signer} signature="" />
       <Title
         title="New Problem"
         subtitle="Fill out the form to create a new problem"
         topSpacing={7 * GU}
         bottomSpacing={5 * GU}
       />
-      <div style={{ width: "80%" }}>
+      <div style={{ paddingLeft: `${2 * GU}px`, width: "80%" }}>
         <Field label="Problem title:">
           <TextInput
             value={title}
@@ -162,7 +163,13 @@ const ProposalForm = () => {
             onChange={(event) => setDescription(event.target.value)}
           />
         </Field>
+        <Field label="Voting window" onChange={setRange}>
+          <div style={{ marginTop: `${2 * GU}px` }}>
+            <DateRangePicker />
+          </div>
+        </Field>
         <Button
+          style={{ marginTop: `${3 * GU}px` }}
           mode="strong"
           external={false}
           wide={false}
@@ -176,16 +183,3 @@ const ProposalForm = () => {
 };
 
 export default withRouter(ProposalForm);
-
-function SignatureTest({ signer, signature }) {
-  return (
-    <div>
-      <h2>Signer</h2>
-      <p>
-        The signer is{" "}
-        {signer ? " ready" : " unavailable (Please, install MetaMask)"}
-      </p>
-      {signature ? <p>Signature: {signature}</p> : null}
-    </div>
-  );
-}
