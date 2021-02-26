@@ -27,7 +27,6 @@ const ProjectsPage = ({ connectionSetter }) => {
       .then((data) => Object.values(data).slice(13, 20))
       .then((data: Project[]) => setProjects(data)) //cast data to Project interface.
       .catch((reason) => {
-        console.log(reason);
         setError(reason);
       });
   }, []);
@@ -55,23 +54,32 @@ const ProjectsPage = ({ connectionSetter }) => {
           </div>
         }
       />
-      <CardLayout rowHeight={33 * GU} columnWidthMin={31 * GU}>
-        {projects.map((project, index) => (
-          <ProjectCard
-            key={index}
-            img={ARAGON_LOGO}
-            label={project.name}
-            symbol={project.symbol}
-            onOpen={() => {
-              let urlObject = {
-                pathname: `/[project]/problems`,
-                query: { project: project.name },
-              };
-              router.push(urlObject);
-            }}
-          />
-        ))}
-      </CardLayout>
+      {error ? (
+        <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
+          <h2>
+            Unfortunately, there was an error when retrieving this problem
+            proposal.
+          </h2>
+        </div>
+      ) : (
+        <CardLayout rowHeight={33 * GU} columnWidthMin={31 * GU}>
+          {projects.map((project, index) => (
+            <ProjectCard
+              key={index}
+              img={ARAGON_LOGO}
+              label={project.name}
+              symbol={project.symbol}
+              onOpen={() => {
+                let urlObject = {
+                  pathname: `/[project]/problems`,
+                  query: { project: project.name },
+                };
+                router.push(urlObject);
+              }}
+            />
+          ))}
+        </CardLayout>
+      )}
     </Fragment>
   );
 };

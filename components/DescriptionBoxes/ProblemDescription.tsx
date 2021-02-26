@@ -33,7 +33,6 @@ function ProblemDescription({ project, problem }: ProblemDescriptionInfo) {
         setVotes(mapped_votes);
       })
       .catch((reason) => {
-        console.log(reason);
         setError(reason);
       });
   }, []);

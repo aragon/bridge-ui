@@ -53,7 +53,6 @@ const ProblemsPage = () => {
         setProposalCategories(categories);
       })
       .catch((reason) => {
-        console.log(reason);
         setError(reason);
       });
   }, []);
