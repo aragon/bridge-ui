@@ -101,8 +101,8 @@ const ProposalForm = () => {
       name: title,
       body: description,
       choices: ["upvote", "downvote"],
-      start: Math.round(Date.now() / 1e3),
-      end: Math.round(Date.now() / 1e3 + 86400), //currently hardcoded to one day.
+      start: Math.round(new Date(range.start).getTime() / 1e3),
+      end: Math.round(new Date(range.end).getTime() / 1e3),
       snapshot: snapshot,
       metadata: {
         strategies: space.strategies,
@@ -118,9 +118,8 @@ const ProposalForm = () => {
         payload,
       }),
     };
-
     envelope.sig = await signer.signMessage(envelope.msg);
-    // setSignature(envelope.sig);
+
     const url = `${HUB_URL}/api/message`;
 
     const headers = new Headers();
@@ -135,7 +134,11 @@ const ProposalForm = () => {
     };
 
     var res = await fetch(url, init);
-    router.push("/problems");
+    if (res.ok) {
+      router.push("/aragon/problems");
+    } else {
+      //TODO add toast or something to indicate failure to client
+    }
   }
 
   // RENDERER ============================================================================
@@ -165,7 +168,11 @@ const ProposalForm = () => {
         </Field>
         <Field label="Voting window" onChange={setRange}>
           <div style={{ marginTop: `${2 * GU}px` }}>
-            <DateRangePicker />
+            <DateRangePicker
+              startDate={range.start}
+              endDate={range.end}
+              onChange={setRange}
+            />
           </div>
         </Field>
         <Button
