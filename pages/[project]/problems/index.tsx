@@ -15,16 +15,13 @@ const ProblemsPage = () => {
   const { project } = router.query;
 
   // STATE & EFFECT ======================================================================
+
+  const [error, setError] = useState(null);
   const [selected, setSelected] = useState(0);
-
-  type ProposalCategories = {
-    active: Proposal[]
-    closed: Proposal[]
-    pending: Proposal[]
-    all: Proposal[]
-  }
-
-  const [proposals, setProposals] = useState<ProposalCategories>({
+  const [
+    proposalCategories,
+    setProposalCategories,
+  ] = useState<ProposalCategories>({
     active: [],
     closed: [],
     pending: [],
@@ -40,13 +37,18 @@ const ProblemsPage = () => {
         let curr_date = Math.round(Date.now() / 1e3);
         let categories: ProposalCategories = {
           active: data.filter(
-                (p) =>
-              p.msg.payload.start < curr_date && curr_date < p.msg.payload.end),
+            (p) =>
+              p.msg.payload.start < curr_date && curr_date < p.msg.payload.end
+          ),
           closed: data.filter((p) => p.msg.payload.end < curr_date),
           pending: data.filter((p) => p.msg.payload.start > curr_date),
           all: data,
-        }
-        setProposals(categories)
+        };
+        setProposalCategories(categories);
+      })
+      .catch((reason) => {
+        console.log(reason);
+        setError(reason);
       });
   }, []);
 
@@ -82,19 +84,27 @@ const ProblemsPage = () => {
                 }}
               >
                 <DropDown
-                  items={[ "Active", "Close", "Pending", "All", ]}
+                  items={["Active", "Close", "Pending", "All"]}
                   selected={selected}
                   onChange={setSelected}
                 />
               </div>
             }
           />
-          {!proposals ? (
-            <p>loading...</p>
+          {error ? (
+            <p>Oops, something seems to have gone wrong!</p>
+          ) : Object.values(proposalCategories)[selected].length === 0 ? (
+            <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
+              <h2>
+                There are no problems in the selected category.
+              </h2>
+            </div>
           ) : (
-            Object.values(proposals)[selected].map((p: Proposal, i) => (
-                <ProblemDescription key={i} project={project} problem={p} />
-              ))
+            Object.values(proposalCategories)[
+              selected
+            ].map((p: Proposal, i) => (
+              <ProblemDescription key={i} project={project} problem={p} />
+            ))
           )}
         </div>
         <div style={{ width: "25%", paddingTop: `${6 * GU}px` }}>
@@ -106,6 +116,15 @@ const ProblemsPage = () => {
 };
 
 export default ProblemsPage;
+
+// TYPES =================================================================================
+
+type ProposalCategories = {
+  active: Proposal[];
+  closed: Proposal[];
+  pending: Proposal[];
+  all: Proposal[];
+};
 
 export interface Proposal {
   address: string;
