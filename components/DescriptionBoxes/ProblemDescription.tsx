@@ -3,8 +3,14 @@ import { Card, GU, useTheme, Button } from "@aragon/ui";
 import VotingButtons from "../VotingButtons";
 import { Proposal } from "../../pages/[project]/problems/index";
 import Link from "next/link";
+import { Project } from "../../pages/projects";
 
-function ProblemDescription({ problem }) {
+type ProblemDescriptionInfo = {
+  project: string | string[],
+  problem: Proposal
+}
+
+function ProblemDescription( {project, problem}:ProblemDescriptionInfo ) {
   const theme = useTheme();
 
   // STATE & EFFECT ======================================================================
@@ -15,7 +21,7 @@ function ProblemDescription({ problem }) {
   // snapshot
   useEffect(() => {
     fetch(
-      `https://testnet.snapshot.page/api/${problem.space}/proposal/${problem.hash}`
+      `https://testnet.snapshot.page/api/${project}/proposal/${problem.authorIpfsHash}`
     )
       .then((response) => response.json())
       .then((data) => Object.values(data))
@@ -29,7 +35,7 @@ function ProblemDescription({ problem }) {
 
   // HELPERS =============================================================================
 
-  function countVotes(kind: String): number {
+  function countVotes(kind: string): number {
     if (kind === "up") {
       return votes.filter((v) => v.choice === 1).length;
     } else if (kind === "down") {
@@ -65,12 +71,12 @@ function ProblemDescription({ problem }) {
             color: `${theme.surfaceContentSecondary}`,
           }}
         >
-          Reported by: {problem.reporter}
+          Reported by: {problem.address}
         </p>
         <Link
           href={{
             pathname: "/[project]/[problem]/solutions",
-            query: { project: problem.space, problem: problem.hash },
+            query: { project: project, problem: problem.authorIpfsHash },
           }}
           passHref
         >
@@ -94,7 +100,7 @@ function ProblemDescription({ problem }) {
               marginBottom: `${0.5 * GU}px`,
             }}
           >
-            {problem.title}
+            {problem.msg.payload.name}
           </h1>
           <p
             style={{
@@ -102,12 +108,12 @@ function ProblemDescription({ problem }) {
               color: `${theme.surfaceContentSecondary}`,
             }}
           >
-            {problem.description}
+            {problem.msg.payload.body}
           </p>
         </div>
       </section>
       <VotingButtons
-        proposal={problem.hash}
+        proposal={problem.authorIpfsHash}
         no_upvotes={countVotes("up")}
         no_downvotes={countVotes("down")}
       />

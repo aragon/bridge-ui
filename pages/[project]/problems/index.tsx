@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useRouter, withRouter } from "next/router";
-import { GU } from "@aragon/ui";
+import { useRouter } from "next/router";
+import { GU, Split, DropDown } from "@aragon/ui";
 
 import Title from "../../../components/Title";
 import { ARAGON_LOGO } from "../../../lib/constants";
@@ -15,27 +15,38 @@ const ProblemsPage = () => {
   const { project } = router.query;
 
   // STATE & EFFECT ======================================================================
+  const [selected, setSelected] = useState(0);
 
-  const [proposals, setProposals] = useState<Proposal[]>([]);
+  type ProposalCategories = {
+    active: Proposal[]
+    closed: Proposal[]
+    pending: Proposal[]
+    all: Proposal[]
+  }
+
+  const [proposals, setProposals] = useState<ProposalCategories>({
+    active: [],
+    closed: [],
+    pending: [],
+    all: [],
+  });
 
   // get all problems related to a particular project from snapshot
   useEffect(() => {
     fetch(`https://testnet.snapshot.page/api/${project}/proposals`)
       .then((response) => response.json())
       .then((data) => Object.values(data))
-      .then((data) =>
-        data.map((d) => {
-          return new Proposal(
-            project,
-            d.authorIpfsHash,
-            d.msg.payload.name,
-            d.msg.payload.body,
-            d.address
-          );
-        })
-      )
-      .then((proposals) => {
-        setProposals(proposals);
+      .then((data: Proposal[]) => {
+        let curr_date = Math.round(Date.now() / 1e3);
+        let categories: ProposalCategories = {
+          active: data.filter(
+                (p) =>
+              p.msg.payload.start < curr_date && curr_date < p.msg.payload.end),
+          closed: data.filter((p) => p.msg.payload.end < curr_date),
+          pending: data.filter((p) => p.msg.payload.start > curr_date),
+          all: data,
+        }
+        setProposals(categories)
       });
   }, []);
 
@@ -49,21 +60,44 @@ const ProblemsPage = () => {
         title={project}
         subtitle="A universally verifiable, censorship-resistant and anonymous voting & grants execution engine."
       />
-      <Title
-        title="Problems"
-        subtitle="List of problems reported by the community"
-        topSpacing={7 * GU}
-        bottomSpacing={5 * GU}
-      />
-      <section style={{ display: "flex", width: "100%" }}>
+      <section
+        style={{ display: "flex", width: "100%", marginTop: `${5 * GU}px` }}
+      >
         <div style={{ width: "75%" }}>
-          {proposals.length === 0 ? (
+          <Split
+            primary={
+              <Title
+                title="Problems"
+                subtitle="List of problems reported by the community"
+                bottomSpacing={0 * GU}
+              />
+            }
+            secondary={
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                  justifyContent: "center",
+                  padding: `${10 * GU}px ${2 * GU}px ${8 * GU}px`,
+                }}
+              >
+                <DropDown
+                  items={[ "Active", "Close", "Pending", "All", ]}
+                  selected={selected}
+                  onChange={setSelected}
+                />
+              </div>
+            }
+          />
+          {!proposals ? (
             <p>loading...</p>
           ) : (
-            proposals.map((p, i) => <ProblemDescription key={i} problem={p} />)
+            Object.values(proposals)[selected].map((p: Proposal, i) => (
+                <ProblemDescription key={i} project={project} problem={p} />
+              ))
           )}
         </div>
-        <div style={{ width: "25%" }}>
+        <div style={{ width: "25%", paddingTop: `${6 * GU}px` }}>
           <ReportProblemIndicator />
         </div>
       </section>
@@ -73,18 +107,43 @@ const ProblemsPage = () => {
 
 export default ProblemsPage;
 
-export class Proposal {
-  space: String;
-  hash: String;
-  title: String;
-  description: String;
-  reporter: String;
+export interface Proposal {
+  address: string;
+  msg: Msg;
+  sig: string;
+  authorIpfsHash: string;
+  relayerIpfsHash: string;
+}
 
-  constructor(space, proposal, title, description, reporter) {
-    this.space = space;
-    this.hash = proposal;
-    this.title = title;
-    this.description = description;
-    this.reporter = reporter;
-  }
+export interface Msg {
+  version: string;
+  timestamp: string;
+  space: string;
+  type: string;
+  payload: Payload;
+}
+
+export interface Payload {
+  end: number;
+  body: string;
+  name: string;
+  start: number;
+  choices: string[];
+  metadata: Metadata;
+  snapshot: number;
+}
+
+export interface Metadata {
+  strategies: Strategy[];
+}
+
+export interface Strategy {
+  name: string;
+  params: Params;
+}
+
+export interface Params {
+  symbol: string;
+  address: string;
+  decimals?: number;
 }
