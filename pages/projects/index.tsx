@@ -10,13 +10,29 @@ import "../../styles/index.less";
 const ProjectsPage = ({ connectionSetter }) => {
   const router = useRouter();
 
+  // STATE & EFFECT ======================================================================
+
+  const [error, setError] = useState(null);
   const [projects, setProjects] = useState<Project[]>([]);
+
   useEffect(() => {
     fetch(`https://testnet.snapshot.page/api/spaces`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+      })
       .then((data) => Object.values(data).slice(13, 20))
-      .then((data: Project[]) => setProjects(data)); //cast data to Project interface.
+      .then((data: Project[]) => setProjects(data)) //cast data to Project interface.
+      .catch((reason) => {
+        console.log(reason);
+        setError(reason);
+      });
   }, []);
+
+  // RENDERER ============================================================================
 
   return (
     <Fragment>
@@ -61,6 +77,8 @@ const ProjectsPage = ({ connectionSetter }) => {
 };
 
 export default ProjectsPage;
+
+// TYPES =================================================================================
 
 export interface Project {
   name: string;

@@ -3,14 +3,11 @@ import { Box, GU, Button } from "@aragon/ui";
 import { PROBLEM_ICON } from "../lib/constants";
 
 function ReportProblemIndicator() {
-
   // RENDERER ============================================================================
 
   return (
     //FIXME Scrolling doesn't work when mouse is on the problem indicator.
-    <Box style={{
-      position: "fixed",
-    }}>
+    <Box style={{ position: "fixed" }}>
       <div
         style={{
           width: "100%",

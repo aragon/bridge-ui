@@ -3,18 +3,13 @@ import { Card, GU, useTheme, Button } from "@aragon/ui";
 import VotingButtons from "../VotingButtons";
 import { Proposal } from "../../pages/[project]/problems/index";
 import Link from "next/link";
-import { Project } from "../../pages/projects";
 
-type ProblemDescriptionInfo = {
-  project: string | string[],
-  problem: Proposal
-}
-
-function ProblemDescription( {project, problem}:ProblemDescriptionInfo ) {
+function ProblemDescription({ project, problem }: ProblemDescriptionInfo) {
   const theme = useTheme();
 
   // STATE & EFFECT ======================================================================
 
+  const [error, setError] = useState(null);
   const [votes, setVotes] = useState<Vote[]>([]);
 
   // get all votes related to a particular problem/Solution of a praticular project from
@@ -23,13 +18,23 @@ function ProblemDescription( {project, problem}:ProblemDescriptionInfo ) {
     fetch(
       `https://testnet.snapshot.page/api/${project}/proposal/${problem.authorIpfsHash}`
     )
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+      })
       .then((data) => Object.values(data))
       .then((votes) => {
         let mapped_votes = votes.map((vote) => {
           return new Vote(problem, vote.msg.payload.choice);
         });
         setVotes(mapped_votes);
+      })
+      .catch((reason) => {
+        console.log(reason);
+        setError(reason);
       });
   }, []);
 
@@ -45,7 +50,24 @@ function ProblemDescription( {project, problem}:ProblemDescriptionInfo ) {
 
   // RENDERER ============================================================================
 
-  return (
+  return error ? (
+    <Card
+      width="95%"
+      height="auto"
+      style={{
+        marginTop: `${4 * GU}px`,
+        background: "#FFF4F6",
+        borderRadious: `10px`,
+      }}
+    >
+      <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
+        <h2>
+          Unfortunately, there was an error when retrieving this problem
+          proposal.
+        </h2>
+      </div>
+    </Card>
+  ) : (
     <Card
       width="95%"
       height="auto"
@@ -123,6 +145,8 @@ function ProblemDescription( {project, problem}:ProblemDescriptionInfo ) {
 
 export default ProblemDescription;
 
+// TYPES =================================================================================
+
 class Vote {
   proposal: Proposal;
   choice: number;
@@ -132,3 +156,8 @@ class Vote {
     this.choice = choice;
   }
 }
+
+type ProblemDescriptionInfo = {
+  project: string | string[];
+  problem: Proposal;
+};

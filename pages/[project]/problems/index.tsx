@@ -31,7 +31,13 @@ const ProblemsPage = () => {
   // get all problems related to a particular project from snapshot
   useEffect(() => {
     fetch(`https://testnet.snapshot.page/api/${project}/proposals`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+      })
       .then((data) => Object.values(data))
       .then((data: Proposal[]) => {
         let curr_date = Math.round(Date.now() / 1e3);
@@ -84,7 +90,7 @@ const ProblemsPage = () => {
                 }}
               >
                 <DropDown
-                  items={["Active", "Close", "Pending", "All"]}
+                  items={["Active", "Closed", "Pending", "All"]}
                   selected={selected}
                   onChange={setSelected}
                 />
@@ -92,12 +98,12 @@ const ProblemsPage = () => {
             }
           />
           {error ? (
-            <p>Oops, something seems to have gone wrong!</p>
+            <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
+              <h2>Oops, something seems to have gone wrong!</h2>
+            </div>
           ) : Object.values(proposalCategories)[selected].length === 0 ? (
             <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
-              <h2>
-                There are no problems in the selected category.
-              </h2>
+              <h2>There are no problems in the selected category.</h2>
             </div>
           ) : (
             Object.values(proposalCategories)[
