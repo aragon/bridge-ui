@@ -10,13 +10,28 @@ import "../../styles/index.less";
 const ProjectsPage = ({ connectionSetter }) => {
   const router = useRouter();
 
+  // STATE & EFFECT ======================================================================
+
+  const [error, setError] = useState(null);
   const [projects, setProjects] = useState<Project[]>([]);
+
   useEffect(() => {
     fetch(`https://testnet.snapshot.page/api/spaces`)
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+      })
       .then((data) => Object.values(data).slice(13, 20))
-      .then((data: Project[]) => setProjects(data)); //cast data to Project interface.
+      .then((data: Project[]) => setProjects(data)) //cast data to Project interface.
+      .catch((reason) => {
+        setError(reason);
+      });
   }, []);
+
+  // RENDERER ============================================================================
 
   return (
     <Fragment>
@@ -39,28 +54,39 @@ const ProjectsPage = ({ connectionSetter }) => {
           </div>
         }
       />
-      <CardLayout rowHeight={33 * GU} columnWidthMin={31 * GU}>
-        {projects.map((project, index) => (
-          <ProjectCard
-            key={index}
-            img={ARAGON_LOGO}
-            label={project.name}
-            symbol={project.symbol}
-            onOpen={() => {
-              let urlObject = {
-                pathname: `/[project]/problems`,
-                query: { project: project.name },
-              };
-              router.push(urlObject);
-            }}
-          />
-        ))}
-      </CardLayout>
+      {error ? (
+        <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
+          <h2>
+            Unfortunately, there was an error when retrieving this problem
+            proposal.
+          </h2>
+        </div>
+      ) : (
+        <CardLayout rowHeight={33 * GU} columnWidthMin={31 * GU}>
+          {projects.map((project, index) => (
+            <ProjectCard
+              key={index}
+              img={ARAGON_LOGO}
+              label={project.name}
+              symbol={project.symbol}
+              onOpen={() => {
+                let urlObject = {
+                  pathname: `/[project]/problems`,
+                  query: { project: project.name },
+                };
+                router.push(urlObject);
+              }}
+            />
+          ))}
+        </CardLayout>
+      )}
     </Fragment>
   );
 };
 
 export default ProjectsPage;
+
+// TYPES =================================================================================
 
 export interface Project {
   name: string;
