@@ -7,7 +7,10 @@ function ReportProblemIndicator() {
   // RENDERER ============================================================================
 
   return (
-    <Box style={{ position: "fixed" }}>
+    //FIXME Scrolling doesn't work when mouse is on the problem indicator.
+    <Box style={{
+      position: "fixed",
+    }}>
       <div
         style={{
           width: "100%",

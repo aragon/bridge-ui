@@ -35,7 +35,7 @@ function ProblemDescription( {project, problem}:ProblemDescriptionInfo ) {
 
   // HELPERS =============================================================================
 
-  function countVotes(kind: String): number {
+  function countVotes(kind: string): number {
     if (kind === "up") {
       return votes.filter((v) => v.choice === 1).length;
     } else if (kind === "down") {
