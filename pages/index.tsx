@@ -20,7 +20,11 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
     if (wallet.status === "connected") {
       connectionSetter(true);
       addressSetter(wallet.account);
-      router.push("/problems");
+      let urlObject = {
+        pathname: `/[project]/problems`,
+        query: { project: "aragon" },
+      };
+      router.push(urlObject);
     }
 
     // setConnecting(true);

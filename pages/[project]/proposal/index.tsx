@@ -1,20 +1,20 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useRouter, withRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useWallet } from "use-wallet";
 import { GU, Button, Field, TextInput, DateRangePicker } from "@aragon/ui";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import networks from "@snapshot-labs/snapshot.js/src/networks.json";
 
-import { HUB_URL } from "../../lib/constants";
-import Title from "../../components/Title";
-import "../../styles/index.less";
-import Breadcrumbs from "../../components/Breadcrumb";
+import { HUB_URL } from "../../../lib/constants";
+import Title from "../../../components/Title";
+import "../../../styles/index.less";
+import Breadcrumbs from "../../../components/Breadcrumb";
 
 const ProposalForm = () => {
-  const router = useRouter();
   const signer = useSigner();
   const wallet = useWallet();
+  const router = useRouter();
 
   // STATE & EFFECT ======================================================================
 
@@ -34,7 +34,12 @@ const ProposalForm = () => {
   // HELPERS =============================================================================
 
   function areInputsMissing() {
-    return title.length === 0 || description.length === 0 || range.start === null || range.end === null
+    return (
+      title.length === 0 ||
+      description.length === 0 ||
+      range.start === null ||
+      range.end === null
+    );
   }
 
   const providers = {};
@@ -136,7 +141,7 @@ const ProposalForm = () => {
 
     var res = await fetch(url, init);
     if (res.ok) {
-      router.push("/aragon/problems");
+      router.back();
     } else {
       //TODO add toast or something to indicate failure to client
     }
@@ -163,7 +168,7 @@ const ProposalForm = () => {
         <Field label="Problem description:" required={true}>
           <TextInput
             placeholder="Comprehensive problem description"
-            wide={ true }
+            wide={true}
             multiline={true}
             onChange={(event) => setDescription(event.target.value)}
           />
@@ -192,4 +197,4 @@ const ProposalForm = () => {
   );
 };
 
-export default withRouter(ProposalForm);
+export default ProposalForm;

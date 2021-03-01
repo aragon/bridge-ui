@@ -113,7 +113,7 @@ const ProblemsPage = () => {
           )}
         </div>
         <div style={{ width: "25%", paddingTop: `${6 * GU}px` }}>
-          <ReportProblemIndicator />
+          <ReportProblemIndicator projectName={ project }/>
         </div>
       </section>
     </Fragment>
