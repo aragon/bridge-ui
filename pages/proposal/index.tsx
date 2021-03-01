@@ -7,7 +7,6 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import networks from "@snapshot-labs/snapshot.js/src/networks.json";
 
 import { HUB_URL } from "../../lib/constants";
-
 import Title from "../../components/Title";
 import "../../styles/index.less";
 import Breadcrumbs from "../../components/Breadcrumb";
@@ -19,10 +18,8 @@ const ProposalForm = () => {
 
   // STATE & EFFECT ======================================================================
 
-  const [title, setTitle] = useState("Short summary of the problem");
-  const [description, setDescription] = useState(
-    "Comprehensive problem description"
-  );
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [range, setRange] = useState({
     start: null,
     end: null,
@@ -153,20 +150,21 @@ const ProposalForm = () => {
         bottomSpacing={5 * GU}
       />
       <div style={{ paddingLeft: `${2 * GU}px`, width: "80%" }}>
-        <Field label="Problem title:">
+        <Field label="Problem title:" required={true}>
           <TextInput
-            value={title}
+            placeholder="Short summary of the problem"
             onChange={(event) => setTitle(event.target.value)}
           />
         </Field>
-        <Field label="Problem description:">
+        <Field label="Problem description:" required={true}>
           <TextInput
-            value={description}
-            multiLine={true}
+            placeholder="Comprehensive problem description"
+            wide={ true }
+            multiline={true}
             onChange={(event) => setDescription(event.target.value)}
           />
         </Field>
-        <Field label="Voting window" onChange={setRange}>
+        <Field label="Voting window" onChange={setRange} required={true}>
           <div style={{ marginTop: `${2 * GU}px` }}>
             <DateRangePicker
               startDate={range.start}
