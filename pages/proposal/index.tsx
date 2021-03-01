@@ -33,6 +33,10 @@ const ProposalForm = () => {
 
   // HELPERS =============================================================================
 
+  function areInputsMissing() {
+    return title.length === 0 || description.length === 0 || range.start === null || range.end === null
+  }
+
   const providers = {};
 
   async function getBlockNumber(provider) {
@@ -145,7 +149,7 @@ const ProposalForm = () => {
       <Breadcrumbs />
       <Title
         title="New Problem"
-        subtitle="Fill out the form to create a new problem"
+        subtitle="Please fill out all the required fields of the form to create a new problem."
         topSpacing={7 * GU}
         bottomSpacing={5 * GU}
       />
@@ -176,6 +180,7 @@ const ProposalForm = () => {
         <Button
           style={{ marginTop: `${3 * GU}px` }}
           mode="strong"
+          disabled={areInputsMissing()}
           external={false}
           wide={false}
           onClick={() => createProblem()}
