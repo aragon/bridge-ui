@@ -1,28 +1,25 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useRouter, withRouter } from "next/router";
+import { useRouter } from "next/router";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useWallet } from "use-wallet";
 import { GU, Button, Field, TextInput, DateRangePicker } from "@aragon/ui";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import networks from "@snapshot-labs/snapshot.js/src/networks.json";
 
-import { HUB_URL } from "../../lib/constants";
-
-import Title from "../../components/Title";
-import "../../styles/index.less";
-import Breadcrumbs from "../../components/Breadcrumb";
+import { HUB_URL } from "../../../lib/constants";
+import Title from "../../../components/Title";
+import "../../../styles/index.less";
+import Breadcrumbs from "../../../components/Breadcrumb";
 
 const ProposalForm = () => {
-  const router = useRouter();
   const signer = useSigner();
   const wallet = useWallet();
+  const router = useRouter();
 
   // STATE & EFFECT ======================================================================
 
-  const [title, setTitle] = useState("Short summary of the problem");
-  const [description, setDescription] = useState(
-    "Comprehensive problem description"
-  );
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [range, setRange] = useState({
     start: null,
     end: null,
@@ -35,6 +32,15 @@ const ProposalForm = () => {
   }, [wallet?.account]);
 
   // HELPERS =============================================================================
+
+  function areInputsMissing() {
+    return (
+      title.length === 0 ||
+      description.length === 0 ||
+      range.start === null ||
+      range.end === null
+    );
+  }
 
   const providers = {};
 
@@ -135,7 +141,7 @@ const ProposalForm = () => {
 
     var res = await fetch(url, init);
     if (res.ok) {
-      router.push("/aragon/problems");
+      router.back();
     } else {
       //TODO add toast or something to indicate failure to client
     }
@@ -148,25 +154,26 @@ const ProposalForm = () => {
       <Breadcrumbs />
       <Title
         title="New Problem"
-        subtitle="Fill out the form to create a new problem"
+        subtitle="Please fill out all the required fields of the form to create a new problem."
         topSpacing={7 * GU}
         bottomSpacing={5 * GU}
       />
       <div style={{ paddingLeft: `${2 * GU}px`, width: "80%" }}>
-        <Field label="Problem title:">
+        <Field label="Problem title:" required={true}>
           <TextInput
-            value={title}
+            placeholder="Short summary of the problem"
             onChange={(event) => setTitle(event.target.value)}
           />
         </Field>
-        <Field label="Problem description:">
+        <Field label="Problem description:" required={true}>
           <TextInput
-            value={description}
-            multiLine={true}
+            placeholder="Comprehensive problem description"
+            wide={true}
+            multiline={true}
             onChange={(event) => setDescription(event.target.value)}
           />
         </Field>
-        <Field label="Voting window" onChange={setRange}>
+        <Field label="Voting window" onChange={setRange} required={true}>
           <div style={{ marginTop: `${2 * GU}px` }}>
             <DateRangePicker
               startDate={range.start}
@@ -178,6 +185,7 @@ const ProposalForm = () => {
         <Button
           style={{ marginTop: `${3 * GU}px` }}
           mode="strong"
+          disabled={areInputsMissing()}
           external={false}
           wide={false}
           onClick={() => createProblem()}
@@ -189,4 +197,4 @@ const ProposalForm = () => {
   );
 };
 
-export default withRouter(ProposalForm);
+export default ProposalForm;

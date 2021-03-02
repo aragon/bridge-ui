@@ -1,8 +1,9 @@
 import React from "react";
+import Link from "next/link";
 import { Box, GU, Button } from "@aragon/ui";
 import { PROBLEM_ICON } from "../lib/constants";
 
-function ReportProblemIndicator() {
+function ReportProblemIndicator({ projectName }) {
   // RENDERER ============================================================================
 
   return (
@@ -30,12 +31,20 @@ function ReportProblemIndicator() {
         <p style={{ fontSize: "16px", marginBottom: `${2 * GU}px` }}>
           ... and get rewarded
         </p>
-        <Button
-          mode="negative"
-          external={false}
-          label="Create new problem"
-          href="/proposal"
-        />
+        <Link
+          href={{
+            pathname: "/[project]/proposal",
+            query: { project: projectName },
+          }}
+          passHref
+        >
+          <Button
+            mode="negative"
+            external={false}
+            label="Create new problem"
+            href="/proposal"
+          />
+        </Link>
       </div>
     </Box>
   );
