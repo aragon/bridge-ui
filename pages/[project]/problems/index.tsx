@@ -68,7 +68,7 @@ const ProblemsPage = () => {
         subtitle="A universally verifiable, censorship-resistant and anonymous voting & grants execution engine."
       />
       <section
-        style={{ display: "flex", width: "100%", marginTop: `${5 * GU}px`, marginBottom: `${5 * GU}px`}}
+        style={{ display: "flex", width: "100%", marginTop: `${5 * GU}px` }}
       >
         <div style={{ width: "75%" }}>
           <Split
@@ -112,7 +112,7 @@ const ProblemsPage = () => {
             ))
           )}
         </div>
-        <div style={{ width: "25%", paddingTop: `${6 * GU}px`, marginBottom: `${6 * GU}px`, paddingBottom: `${6 * GU}px` }}>
+        <div style={{ width: "25%", paddingTop: `${6 * GU}px` }}>
           <ReportProblemIndicator />
         </div>
       </section>

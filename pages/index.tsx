@@ -55,8 +55,8 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
   }
 
   return (
-    <div style={{height:`${100 * GU}px`}}>
-      <Split 
+    <Fragment>
+      <Split
         primary={
           <Title
             title="Welcome"
@@ -83,7 +83,7 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
           </div>
         }
       />
-    </div>
+    </Fragment>
   );
 };
 

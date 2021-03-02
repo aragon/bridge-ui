@@ -1,13 +1,15 @@
-import React from "react";
-import { APOLLO_BRANDING_GREY } from "../lib/constants";
+import Link from "next/link";
+// import AppContext from './app-context'
+// import { useContext } from "react"
 
-export default function Footer() {
+type Props = {
+  children?: any;
+};
+
+export default function Footer({ children, ...props }: Props) {
   return (
     <div id="footer">
       <div className="left">
-        <img src={APOLLO_BRANDING_GREY} alt="" />
-      </div>
-      <div className="right" style={{paddingTop:"auto", paddingBottom:"auto"}}>
         <a href="https://discord.gg/sQCxgYs" target="_blank">
           Discord
         </a>{" "}
@@ -19,8 +21,8 @@ export default function Footer() {
         <a href="https://t.me/vocdoni" target="_blank">
           Telegram
         </a>
-          {" "} - Aragon {new Date().getFullYear()}
       </div>
+      <div className="right">Aragon {new Date().getFullYear()}</div>
     </div>
   );
 }
