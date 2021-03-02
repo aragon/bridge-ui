@@ -1,12 +1,6 @@
-import Link from "next/link";
-// import AppContext from './app-context'
-// import { useContext } from "react"
+import React from "react";
 
-type Props = {
-  children?: any;
-};
-
-export default function Footer({ children, ...props }: Props) {
+export default function Footer() {
   return (
     <div id="footer">
       <div className="left">
