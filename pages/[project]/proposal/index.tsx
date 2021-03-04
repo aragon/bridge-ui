@@ -158,7 +158,7 @@ const ProposalForm = () => {
         topSpacing={7 * GU}
         bottomSpacing={5 * GU}
       />
-      <div style={{ paddingLeft: `${2 * GU}px`, width: "80%" }}>
+      <div style={{ paddingLeft: `${2 * GU}px`, width: "80%", marginBottom: "150px"}}>
         <Field label="Problem title:" required={true}>
           <TextInput
             placeholder="Short summary of the problem"
