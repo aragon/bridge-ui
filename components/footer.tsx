@@ -1,28 +1,26 @@
-import Link from "next/link";
-// import AppContext from './app-context'
-// import { useContext } from "react"
+import React from "react";
+import { APOLLO_BRANDING_GREY } from "../lib/constants";
 
-type Props = {
-  children?: any;
-};
-
-export default function Footer({ children, ...props }: Props) {
+export default function Footer() {
   return (
     <div id="footer">
       <div className="left">
-        <a href="https://discord.gg/sQCxgYs" target="_blank">
+        <img src={APOLLO_BRANDING_GREY} alt="" />
+      </div>
+      <div className="right" style={{paddingTop:"auto", paddingBottom:"auto"}}>
+        <a href="https://discord.gg/7VvnTy4U" target="_blank">
           Discord
         </a>{" "}
         ·{" "}
-        <a href="https://twitter.com/vocdoni" target="_blank">
+        <a href="https://twitter.com/aragonproject" target="_blank">
           Twitter
         </a>{" "}
         ·{" "}
-        <a href="https://t.me/vocdoni" target="_blank">
-          Telegram
+        <a href="https://www.youtube.com/channel/UCODiU_-FWhr4SVOoBlm-qaQ" target="_blank">
+          Youtube
         </a>
+          {" "} - Aragon {new Date().getFullYear()}
       </div>
-      <div className="right">Aragon {new Date().getFullYear()}</div>
     </div>
   );
 }

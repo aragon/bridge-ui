@@ -42,7 +42,6 @@ function ReportProblemIndicator({ projectName }) {
             mode="negative"
             external={false}
             label="Create new problem"
-            href="/proposal"
           />
         </Link>
       </div>
