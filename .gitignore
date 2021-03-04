@@ -5,3 +5,4 @@ node_modules
 components/Sandbox
 pages/vocdoniWelcome
 pages/vocdoniProcess
+backend/dev-data/**

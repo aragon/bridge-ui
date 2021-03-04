@@ -1,0 +1,22 @@
+{
+  "extends": "@ethereumjs/config-tsc",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "removeComments": true,
+    "strictPropertyInitialization": false,
+    "outDir": "./dist",
+    "inlineSources": true,
+    "types": [
+      "jest",
+      "node"
+    ],
+    "lib": [
+      "dom",
+      "es2018"
+    ]
+  },
+  "include": [
+    "./src/**/*",
+    "./lib/**/*",
+  ]
+}
