@@ -147,6 +147,37 @@ const ProposalForm = () => {
     }
   }
 
+  async function simpleGet() {
+    const url = `http://127.0.0.1:4040/simple`;
+    var res = await fetch(url);
+    if (res.ok) {
+      console.log(res)
+    } else {
+      console.log(res)
+    }
+  }
+
+  async function simplePost() {
+    const url = `http://127.0.0.1:4040/simple`;
+    const headers = new Headers();
+    const mode: RequestMode = "cors";
+
+    const init = {
+      method: "POST",
+      headers,
+      mode: mode,
+      body: "this is a very good body.",
+    };
+
+    var res = await fetch(url, init);
+    if (res.ok) {
+      res.json().then(console.log)
+    } else {
+      console.log(res)
+    }
+  }
+
+
   // RENDERER ============================================================================
 
   return (
@@ -185,13 +216,26 @@ const ProposalForm = () => {
         <Button
           style={{ marginTop: `${3 * GU}px` }}
           mode="strong"
-          disabled={areInputsMissing()}
+          // disabled={areInputsMissing()}
           external={false}
           wide={false}
-          onClick={() => createProblem()}
+          // onClick={() => createProblem()}
+          onClick={() => simpleGet()}
         >
-          Submit Problem
+          Submit GET
         </Button>
+        <Button
+          style={{ marginTop: `${3 * GU}px` }}
+          mode="strong"
+          // disabled={areInputsMissing()}
+          external={false}
+          wide={false}
+          // onClick={() => createProblem()}
+          onClick={() => simplePost()}
+        >
+          Submit POST
+        </Button>
+
       </div>
     </Fragment>
   );
