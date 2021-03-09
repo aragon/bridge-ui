@@ -6,12 +6,7 @@ import fastify, {
 const fetch = require("node-fetch");
 
 import Configuration from "./config/Configuration";
-import Provider from "./provider/Provider";
-import Wallet from "./wallet/Wallet";
-
 import Database from "./db/Database";
-import Whitelist, { ListItem } from "./db/Whitelist";
-import Admin from "./db/Admin";
 
 export default class Bootstrap {
   /**
@@ -20,20 +15,6 @@ export default class Bootstrap {
    * @private
    */
   private server: FastifyInstance;
-
-  /**
-   * @property {Whitelist} whitelist
-   *
-   * @private
-   */
-  private whitelist: Whitelist;
-
-  /**
-   * @property {Provider} provider
-   *
-   * @private
-   */
-  private provider: Provider;
 
   /**
    * @property {Database} database
@@ -50,7 +31,6 @@ export default class Bootstrap {
   constructor(private config: Configuration) {
     this.setServer();
     this.setDatabase();
-    this.setProvider();
     this.registerSimpleRoute();
     this.registerProposalRoute();
   }
@@ -80,7 +60,9 @@ export default class Bootstrap {
   }
 
   /**
-   * Register test routes
+   * Register test routes.
+   *
+   * These routes are used to test things during development.
    *
    * @method registerTestRoute
    *
@@ -114,7 +96,11 @@ export default class Bootstrap {
   /**
    * Register route for new proposal
    *
-   * @method registerTestRoute
+   * Upon receiving a request this method forwards the proposal to Snapshot. Snapshot
+   * acknowledges the proposal by sending back a hash. his hash is then stored in the
+   * database with the corresponding space name.
+   *
+   * @method registerProposalRoute
    *
    * @returns {void}
    *
@@ -192,7 +178,7 @@ export default class Bootstrap {
   /**
    * Initiates the database instance
    *
-   * @method setProvider
+   * @method setDatabase
    *
    * @returns {void}
    *
@@ -200,19 +186,6 @@ export default class Bootstrap {
    */
   private setDatabase(): void {
     this.db = new Database(this.config.database);
-  }
-
-  /**
-   * Initiates the provider instance
-   *
-   * @method setProvider
-   *
-   * @returns {void}
-   *
-   * @private
-   */
-  private setProvider(): void {
-    this.provider = new Provider(this.config.ethereum, new Wallet(this.db));
   }
 }
 
