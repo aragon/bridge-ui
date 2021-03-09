@@ -18,7 +18,7 @@ export const config: Config = {
         port: 5432
     },
     server: {
-        host: '0.0.0.0',
+        host: '127.0.0.1',
         port: 4040
     }
 } 

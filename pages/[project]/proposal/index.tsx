@@ -60,45 +60,6 @@ const ProposalForm = () => {
     return providers[network];
   }
 
-  const space = {
-    name: "Aragon",
-    network: "1",
-    symbol: "ANT",
-    skin: "aragon",
-    domain: "gov.aragon.org",
-    strategies: [
-      {
-        name: "erc20-balance-of",
-        params: {
-          address: "0xa117000000f279D81A1D3cc75430fAA017FA5A2e",
-          symbol: "ANT",
-          decimals: 18,
-        },
-      },
-      {
-        name: "balancer",
-        params: {
-          address: "0xa117000000f279D81A1D3cc75430fAA017FA5A2e",
-          symbol: "ANT BPT",
-        },
-      },
-    ],
-    members: [
-      "0xf08b64258465A9896691E23caaF9E6C830ec4b9D",
-      "0x4cB3FD420555A09bA98845f0B816e45cFb230983",
-      "0xa1d4c9e0a46068afa3d8424b0618218bf85ccaaa",
-    ],
-    filters: {
-      defaultTab: "core",
-      minScore: 0,
-      onlyMembers: true,
-      invalids: [
-        "QmPNvdddbA1gQ8PCQxnEjhTeGSTvkdCarwkRyzgeoFHSgH",
-        "QmNTgjdR3rNj25Ah6PxYzAzb8cD7cT6HmKoFFmKADrr2gC",
-      ],
-    },
-  };
-
   async function createProblem() {
     const version = "0.1.3";
     const type = "proposal";
@@ -111,7 +72,7 @@ const ProposalForm = () => {
       end: Math.round(new Date(range.end).getTime() / 1e3),
       snapshot: snapshot,
       metadata: {
-        strategies: space.strategies,
+        strategies: aragonSpace.strategies,
       },
     };
     const envelope: any = {
@@ -119,30 +80,31 @@ const ProposalForm = () => {
       msg: JSON.stringify({
         version: version,
         timestamp: (Date.now() / 1e3).toFixed(),
-        space: space.skin,
+        space: aragonSpace.skin,
         type: type,
         payload,
       }),
     };
-    envelope.sig = await signer.signMessage(envelope.msg);
+    // envelope.sig = await signer.signMessage(envelope.msg);
 
-    const url = `${HUB_URL}/api/message`;
+    // console.log(envelope.sig );
 
-    const headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    const mode: RequestMode = "cors";
+    const url = `http://127.0.0.1:4040/proposal`;
 
     const init = {
       method: "POST",
-      headers,
-      mode: mode,
       body: JSON.stringify(envelope),
     };
 
     var res = await fetch(url, init);
     if (res.ok) {
-      router.back();
+      //TODO add back (removed for testing)
+      // router.back();
+      // console.log(res.body)
+      console.log("yey!")
     } else {
+      console.log("ney!")
+      console.log(res.body)
       //TODO add toast or something to indicate failure to client
     }
   }
@@ -160,18 +122,18 @@ const ProposalForm = () => {
   async function simplePost() {
     const url = `http://127.0.0.1:4040/simple`;
     const headers = new Headers();
-    const mode: RequestMode = "cors";
+    // const mode: RequestMode = "cors";
 
     const init = {
       method: "POST",
       headers,
-      mode: mode,
+      // mode: mode,
       body: "this is a very good body.",
     };
 
     var res = await fetch(url, init);
     if (res.ok) {
-      res.json().then(console.log)
+      res.json().then(data => data.address)
     } else {
       console.log(res)
     }
@@ -183,6 +145,7 @@ const ProposalForm = () => {
   return (
     <Fragment>
       <Breadcrumbs />
+      <SignatureTest signer={signer} signature="" />
       <Title
         title="New Problem"
         subtitle="Please fill out all the required fields of the form to create a new problem."
@@ -216,29 +179,68 @@ const ProposalForm = () => {
         <Button
           style={{ marginTop: `${3 * GU}px` }}
           mode="strong"
-          // disabled={areInputsMissing()}
+          disabled={areInputsMissing()}
           external={false}
           wide={false}
-          // onClick={() => createProblem()}
-          onClick={() => simpleGet()}
+          onClick={() => createProblem()}
         >
-          Submit GET
+          Submit
         </Button>
-        <Button
-          style={{ marginTop: `${3 * GU}px` }}
-          mode="strong"
-          // disabled={areInputsMissing()}
-          external={false}
-          wide={false}
-          // onClick={() => createProblem()}
-          onClick={() => simplePost()}
-        >
-          Submit POST
-        </Button>
-
       </div>
     </Fragment>
   );
 };
 
 export default ProposalForm;
+
+function SignatureTest({ signer, signature }) {
+  return (
+    <div>
+      <h2>Signer</h2>
+      <p>
+        The signer is{" "}
+        {signer ? " ready" : " unavailable (Please, install MetaMask)"}
+      </p>
+      {signature ? <p>Signature: {signature}</p> : null}
+    </div>
+  );
+}
+
+const aragonSpace = {
+  name: "Aragon",
+  network: "1",
+  symbol: "ANT",
+  skin: "aragon",
+  domain: "gov.aragon.org",
+  strategies: [
+    {
+      name: "erc20-balance-of",
+      params: {
+        address: "0xa117000000f279D81A1D3cc75430fAA017FA5A2e",
+        symbol: "ANT",
+        decimals: 18,
+      },
+    },
+    {
+      name: "balancer",
+      params: {
+        address: "0xa117000000f279D81A1D3cc75430fAA017FA5A2e",
+        symbol: "ANT BPT",
+      },
+    },
+  ],
+  members: [
+    "0xf08b64258465A9896691E23caaF9E6C830ec4b9D",
+    "0x4cB3FD420555A09bA98845f0B816e45cFb230983",
+    "0xa1d4c9e0a46068afa3d8424b0618218bf85ccaaa",
+  ],
+  filters: {
+    defaultTab: "core",
+    minScore: 0,
+    onlyMembers: true,
+    invalids: [
+      "QmPNvdddbA1gQ8PCQxnEjhTeGSTvkdCarwkRyzgeoFHSgH",
+      "QmNTgjdR3rNj25Ah6PxYzAzb8cD7cT6HmKoFFmKADrr2gC",
+    ],
+  },
+};

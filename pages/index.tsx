@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { Button, Split, IconEthereum, GU } from "@aragon/ui";
 import { useRouter } from "next/router";
 
@@ -14,6 +14,7 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
   const isConnected = wallet.status === "connected";
   connectionSetter(isConnected);
   addressSetter(wallet.account);
+
 
   // CALLBACK
   function onWalletConnect() {
@@ -88,7 +89,7 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
         }
       />
     </div>
-  );
+    );
 };
 
 export default WelcomePage;

@@ -47,12 +47,12 @@ function VotingButtons({ proposal, no_upvotes, no_downvotes }) {
 
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
-    const mode: RequestMode = "cors";
+    // const mode: RequestMode = "cors";
 
     const init = {
       method: "POST",
       headers,
-      mode: mode,
+      // mode: mode,
       body: JSON.stringify(envelope),
     };
 
