@@ -86,7 +86,6 @@ const ProposalForm = () => {
       }),
     };
     envelope.sig = await signer.signMessage(envelope.msg);
-    // console.log(envelope.sig );
 
     const url = `${BACKEND_URL}/proposal`;
 
@@ -97,17 +96,11 @@ const ProposalForm = () => {
 
     var res = await fetch(url, init);
     if (res.ok) {
-      //TODO add back (removed for testing)
-      // router.back();
-      // console.log(res.body)
-      console.log("yey!")
+      router.back();
     } else {
-      console.log("ney!")
-      console.log(res.body)
       //TODO add toast or something to indicate failure to client
     }
   }
-
 
   // RENDERER ============================================================================
 
@@ -121,7 +114,13 @@ const ProposalForm = () => {
         topSpacing={7 * GU}
         bottomSpacing={5 * GU}
       />
-      <div style={{ paddingLeft: `${2 * GU}px`, width: "80%", marginBottom: "150px"}}>
+      <div
+        style={{
+          paddingLeft: `${2 * GU}px`,
+          width: "80%",
+          marginBottom: "150px",
+        }}
+      >
         <Field label="Problem title:" required={true}>
           <TextInput
             placeholder="Short summary of the problem"

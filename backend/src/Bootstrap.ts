@@ -1,4 +1,8 @@
-import fastify, { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import fastify, {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+} from "fastify";
 const fetch = require("node-fetch");
 
 import Configuration from "./config/Configuration";
@@ -36,7 +40,7 @@ export default class Bootstrap {
    *
    * @private
    */
-  private database: Database;
+  private db: Database;
 
   /**
    * @param {Configuration} config
@@ -48,7 +52,7 @@ export default class Bootstrap {
     this.setDatabase();
     this.setProvider();
     this.registerSimpleRoute();
-    this.registerProposlRoute();
+    this.registerProposalRoute();
   }
 
   /**
@@ -75,7 +79,7 @@ export default class Bootstrap {
     );
   }
 
-    /**
+  /**
    * Register test routes
    *
    * @method registerTestRoute
@@ -87,25 +91,22 @@ export default class Bootstrap {
   private registerSimpleRoute() {
     this.server.get(
       "/simple",
-      (request: FastifyRequest, reply: FastifyReply) => {
-        console.log("SIMPLE>>>>>>>GET")
-        reply
-        .code(200)
-        .header('Access-Control-Allow-Origin', '*')
-        .header('Content-Type', 'application/json; charset=utf-8')
-        .send({ hello: 'world' })
-      }
-    );
-
-    this.server.post(
-      "/simple",
-      (request: FastifyRequest, reply: FastifyReply) => {
-        console.log("SIMPLE>>>>>>>POST")
+      async (request: FastifyRequest, reply: FastifyReply) => {
         reply
           .code(200)
-          .header('Content-Type', 'application/json; charset=utf-8')
-          .header('Access-Control-Allow-Origin', '*')
-          .send({ requestBOdy: request.body })
+          .header("Access-Control-Allow-Origin", "*")
+          .header("Content-Type", "application/json; charset=utf-8")
+          .send({ hello: "world" });
+      }
+    );
+    this.server.post(
+      "/simple",
+      async (request: FastifyRequest, reply: FastifyReply) => {
+        reply
+          .code(200)
+          .header("Content-Type", "application/json; charset=utf-8")
+          .header("Access-Control-Allow-Origin", "*")
+          .send({ requestBOdy: request.body });
       }
     );
   }
@@ -119,44 +120,57 @@ export default class Bootstrap {
    *
    * @private
    */
-  private registerProposlRoute() {
-    this.server.post <{ Body: ProposalMessage }>(
+  private registerProposalRoute() {
+    this.server.post<{ Body: ProposalMessage }>(
       "/proposal",
       async (request: FastifyRequest, reply: FastifyReply) => {
-        console.log("PROPOSAL>>>>>>>POST")
-
-        const HUB_URL = "https://testnet.snapshot.page"
+        const HUB_URL = "https://testnet.snapshot.page";
         const url = `${HUB_URL}/api/message`;
-
         const init = {
           method: "POST",
           headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
+            Accept: "application/json",
+            "Content-Type": "application/json",
           },
           body: request.body,
         };
-    
-        fetch(url, init).then((res: Response) => {
-          if (res.ok) {
-            console.log("yay from backend")
-            console.log(res.body)
-          } else {
-            console.log("nay from backend")
-            console.log(res.statusText)
-            res.text().then(console.log)
-          }
-        }).then(
-          reply
-            .code(200)
-            .header('Content-Type', 'application/json; charset=utf-8')
-            .header('Access-Control-Allow-Origin', '*')
-            .send({ requestBody: request.body })
-        )
+
+        fetch(url, init)
+          .then((res: Response) => {
+            if (res.ok) {
+              return res.json();
+            } else {
+              throw Error(res.statusText);
+            }
+          })
+          .then(async (data: ProposalResponse) => {
+            try {
+              const hash = data.ipfsHash;
+              await this.db.addProblemProposal<String>(hash);
+            } catch (error) {
+              console.error(error);
+              reply
+                .code(200)
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Content-Type", "application/json; charset=utf-8")
+                .send(error);
+            }
+
+            reply
+              .code(200)
+              .header("Content-Type", "application/json; charset=utf-8")
+              .header("Access-Control-Allow-Origin", "*");
+          })
+          .catch((error: Error) =>
+            reply
+              .code(500)
+              .header("Content-Type", "application/json; charset=utf-8")
+              .header("Access-Control-Allow-Origin", "*")
+              .send(error)
+          );
       }
     );
   }
-
 
   /**
    * Initiates the server instance
@@ -185,7 +199,7 @@ export default class Bootstrap {
    * @private
    */
   private setDatabase(): void {
-    this.database = new Database(this.config.database);
+    this.db = new Database(this.config.database);
   }
 
   /**
@@ -198,35 +212,36 @@ export default class Bootstrap {
    * @private
    */
   private setProvider(): void {
-    this.provider = new Provider(
-      this.config.ethereum,
-      new Wallet(this.database)
-    );
+    this.provider = new Provider(this.config.ethereum, new Wallet(this.db));
   }
 }
 
 // TYPES =================================================================================
 
+export interface ProposalResponse {
+  ipfsHash: string;
+}
+
 export interface ProposalMessage {
-  sig:     string;
+  sig: string;
   address: string;
-  msg:     Msg;
+  msg: Msg;
 }
 
 export interface Msg {
-  version:   string;
+  version: string;
   timestamp: string;
-  space:     string;
-  type:      string;
-  payload:   Payload;
+  space: string;
+  type: string;
+  payload: Payload;
 }
 
 export interface Payload {
-  name:     string;
-  body:     string;
-  choices:  string[];
-  start:    number;
-  end:      number;
+  name: string;
+  body: string;
+  choices: string[];
+  start: number;
+  end: number;
   snapshot: number;
   metadata: Metadata;
 }
@@ -236,12 +251,12 @@ export interface Metadata {
 }
 
 export interface Strategy {
-  name:   string;
+  name: string;
   params: Params;
 }
 
 export interface Params {
-  address:   string;
-  symbol:    string;
+  address: string;
+  symbol: string;
   decimals?: number;
 }
