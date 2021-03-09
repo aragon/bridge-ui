@@ -72,8 +72,11 @@ export default class Bootstrap {
    */
   private registerSimpleRoute() {
     this.server.get(
-      "/simple",
+      "/simple/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
+        console.log("This is the path: " + request.url)
+        const space = request.url.split("/").pop()
+        console.log(space)
         reply
           .code(200)
           .header("Access-Control-Allow-Origin", "*")
@@ -108,10 +111,10 @@ export default class Bootstrap {
    */
   private registerProposalRoute() {
     this.server.post<{ Body: ProposalMessage }>(
-      "/proposal",
+      "/proposal/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
-        const HUB_URL = "https://testnet.snapshot.page";
-        const url = `${HUB_URL}/api/message`;
+        const space = request.url.split("/").pop() || ""
+        const apiUrl = 'https://testnet.snapshot.page/api/message';
         const init = {
           method: "POST",
           headers: {
@@ -121,7 +124,7 @@ export default class Bootstrap {
           body: request.body,
         };
 
-        fetch(url, init)
+        fetch(apiUrl, init)
           .then((res: Response) => {
             if (res.ok) {
               return res.json();
@@ -132,7 +135,7 @@ export default class Bootstrap {
           .then(async (data: ProposalResponse) => {
             try {
               const hash = data.ipfsHash;
-              await this.db.addProblemProposal<String>(hash);
+              await this.db.addProblemProposal<String>(space, hash);
             } catch (error) {
               console.error(error);
               reply

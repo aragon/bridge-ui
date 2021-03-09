@@ -59,10 +59,10 @@ export default class Database {
     return this.sql(query);
   }
 
-  public addProblemProposal<T>(proposalHash: string): Promise<T> {
+  public addProblemProposal<T>(space: string, proposalHash: string): Promise<T> {
     return this.sql`
       INSERT INTO reference (spaceName, problemHash, solutionHash)
-      VALUES ('aragon', ${proposalHash}, null);
+      VALUES (${space}, ${proposalHash}, null);
       `;
   }
 }

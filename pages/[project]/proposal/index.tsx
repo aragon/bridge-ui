@@ -61,8 +61,6 @@ const ProposalForm = () => {
   }
 
   async function createProblem() {
-    const version = "0.1.3";
-    const type = "proposal";
     const snapshot = await getBlockNumber(getProvider("5"));
     const payload = {
       name: title,
@@ -78,17 +76,16 @@ const ProposalForm = () => {
     const envelope: any = {
       address: wallet.account,
       msg: JSON.stringify({
-        version: version,
+        version: "0.1.3",
         timestamp: (Date.now() / 1e3).toFixed(),
-        space: aragonSpace.skin,
-        type: type,
+        space: "aragon", //TODO make this dynamic
+        type: "proposal",
         payload,
       }),
     };
     envelope.sig = await signer.signMessage(envelope.msg);
 
-    const url = `${BACKEND_URL}/proposal`;
-
+    const url = `${BACKEND_URL}/proposal/aragon`; //TODO make this dynamic
     const init = {
       method: "POST",
       body: JSON.stringify(envelope),
@@ -154,12 +151,30 @@ const ProposalForm = () => {
         >
           Submit
         </Button>
+        <Button
+          style={{ marginTop: `${3 * GU}px`, marginLeft: `${2 * GU}px` }}
+          mode="positive"
+          onClick={() => simpleGet()}
+        >
+          Submit
+        </Button>
       </div>
     </Fragment>
   );
 };
 
 export default ProposalForm;
+
+async function simpleGet() {
+  const url = `http://127.0.0.1:4040/simple/aragon`;
+  var res = await fetch(url);
+  if (res.ok) {
+    console.log(res)
+  } else {
+    console.log(res)
+  }
+}
+
 
 function SignatureTest({ signer, signature }) {
   return (
