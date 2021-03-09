@@ -6,7 +6,7 @@ import { GU, Button, Field, TextInput, DateRangePicker } from "@aragon/ui";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import networks from "@snapshot-labs/snapshot.js/src/networks.json";
 
-import { HUB_URL } from "../../../lib/constants";
+import { BACKEND_URL } from "../../../lib/constants";
 import Title from "../../../components/Title";
 import "../../../styles/index.less";
 import Breadcrumbs from "../../../components/Breadcrumb";
@@ -85,11 +85,10 @@ const ProposalForm = () => {
         payload,
       }),
     };
-    // envelope.sig = await signer.signMessage(envelope.msg);
-
+    envelope.sig = await signer.signMessage(envelope.msg);
     // console.log(envelope.sig );
 
-    const url = `http://127.0.0.1:4040/proposal`;
+    const url = `${BACKEND_URL}/proposal`;
 
     const init = {
       method: "POST",
@@ -106,36 +105,6 @@ const ProposalForm = () => {
       console.log("ney!")
       console.log(res.body)
       //TODO add toast or something to indicate failure to client
-    }
-  }
-
-  async function simpleGet() {
-    const url = `http://127.0.0.1:4040/simple`;
-    var res = await fetch(url);
-    if (res.ok) {
-      console.log(res)
-    } else {
-      console.log(res)
-    }
-  }
-
-  async function simplePost() {
-    const url = `http://127.0.0.1:4040/simple`;
-    const headers = new Headers();
-    // const mode: RequestMode = "cors";
-
-    const init = {
-      method: "POST",
-      headers,
-      // mode: mode,
-      body: "this is a very good body.",
-    };
-
-    var res = await fetch(url, init);
-    if (res.ok) {
-      res.json().then(data => data.address)
-    } else {
-      console.log(res)
     }
   }
 
