@@ -61,7 +61,7 @@ const ProposalForm = () => {
     return providers[network];
   }
 
-  async function createProblem() {
+  async function postSolution() {
     const snapshot = await getBlockNumber(getProvider("5"));
     const payload = {
       name: title,
@@ -86,7 +86,7 @@ const ProposalForm = () => {
     };
     envelope.sig = await signer.signMessage(envelope.msg);
 
-    const url = `${BACKEND_URL}/proposal/${project}/${problem}`;
+    const url = `${BACKEND_URL}/solutionProposal/${project}/${problem}`;
     const init = {
       method: "POST",
       body: JSON.stringify(envelope),
@@ -105,7 +105,6 @@ const ProposalForm = () => {
   return (
     <Fragment>
       <Breadcrumbs />
-      <SignatureTest signer={signer} signature="" />
       <Title
         title="New Solution"
         subtitle="Please fill out all the required fields of the form to create a new Solution."
@@ -148,15 +147,7 @@ const ProposalForm = () => {
           disabled={areInputsMissing()}
           external={false}
           wide={false}
-          onClick={() => createProblem()}
-        >
-          Submit
-        </Button>
-        {/* TODO remove. */}
-        <Button
-          style={{ marginTop: `${3 * GU}px`, marginLeft: `${2 * GU}px` }}
-          mode="positive"
-          onClick={() => simpleGet()}
+          onClick={() => postSolution()}
         >
           Submit
         </Button>
@@ -166,30 +157,6 @@ const ProposalForm = () => {
 };
 
 export default ProposalForm;
-
-async function simpleGet() {
-  const url = `http://127.0.0.1:4040/simple/aragon`;
-  var res = await fetch(url);
-  if (res.ok) {
-    console.log(res)
-  } else {
-    console.log(res)
-  }
-}
-
-
-function SignatureTest({ signer, signature }) {
-  return (
-    <div>
-      <h2>Signer</h2>
-      <p>
-        The signer is{" "}
-        {signer ? " ready" : " unavailable (Please, install MetaMask)"}
-      </p>
-      {signature ? <p>Signature: {signature}</p> : null}
-    </div>
-  );
-}
 
 const aragonSpace = {
   name: "Aragon",

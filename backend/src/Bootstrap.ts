@@ -16,6 +16,13 @@ export default class Bootstrap {
    */
   private server: FastifyInstance;
 
+    /**
+   * @property {string} apiUrl
+   *
+   * @private
+   */
+  private apiUrl: string = "https://testnet.snapshot.page/api/message";
+
   /**
    * @property {Database} database
    *
@@ -74,9 +81,7 @@ export default class Bootstrap {
     this.server.get(
       "/simple/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
-        console.log("This is the path: " + request.url)
-        const space = request.url.split("/").pop()
-        console.log(space)
+        const space = request.url.split("/").pop();
         reply
           .code(200)
           .header("Access-Control-Allow-Origin", "*")
@@ -111,10 +116,9 @@ export default class Bootstrap {
    */
   private registerProposalRoute() {
     this.server.post<{ Body: ProposalMessage }>(
-      "/proposal/:space",
+      "/problemProposal/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
-        const space = request.url.split("/").pop() || ""
-        const apiUrl = 'https://testnet.snapshot.page/api/message';
+        const space = request.url.split("/").pop() || "";
         const init = {
           method: "POST",
           headers: {
@@ -124,7 +128,7 @@ export default class Bootstrap {
           body: request.body,
         };
 
-        fetch(apiUrl, init)
+        fetch(this.apiUrl, init)
           .then((res: Response) => {
             if (res.ok) {
               return res.json();
@@ -136,6 +140,56 @@ export default class Bootstrap {
             try {
               const hash = data.ipfsHash;
               await this.db.addProblemProposal<String>(space, hash);
+            } catch (error) {
+              console.error(error);
+              reply
+                .code(200)
+                .header("Access-Control-Allow-Origin", "*")
+                .header("Content-Type", "application/json; charset=utf-8")
+                .send(error);
+            }
+
+            reply
+              .code(200)
+              .header("Content-Type", "application/json; charset=utf-8")
+              .header("Access-Control-Allow-Origin", "*");
+          })
+          .catch((error: Error) =>
+            reply
+              .code(500)
+              .header("Content-Type", "application/json; charset=utf-8")
+              .header("Access-Control-Allow-Origin", "*")
+              .send(error)
+          );
+      }
+    );
+    this.server.post<{ Body: ProposalMessage }>(
+      "/solutionProposal/:space/:problem",
+      async (request: FastifyRequest, reply: FastifyReply) => {
+        const urlParameters = request.url.split("/");
+        const problem = urlParameters.pop() || "";
+        const space = urlParameters.pop() || "";
+        const init = {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: request.body,
+        };
+
+        fetch(this.apiUrl, init)
+          .then((res: Response) => {
+            if (res.ok) {
+              return res.json();
+            } else {
+              throw Error(res.statusText);
+            }
+          })
+          .then(async (data: ProposalResponse) => {
+            try {
+              const hash = data.ipfsHash;
+              await this.db.addSolutionProposal<String>(space, problem, hash);
             } catch (error) {
               console.error(error);
               reply

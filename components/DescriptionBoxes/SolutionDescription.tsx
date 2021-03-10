@@ -63,7 +63,7 @@ function SolutionDescription({ project, problem }: SolutionDescriptionInfo) {
     >
       <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
         <h2>
-          Unfortunately, there was an error when retrieving this problem
+          Unfortunately, there was an error when retrieving this solution
           proposal.
         </h2>
       </div>
@@ -103,8 +103,8 @@ function SolutionDescription({ project, problem }: SolutionDescriptionInfo) {
           }}
           passHref
         >
-          <Button external={false} mode="strong">
-            Solutions
+          <Button external={false} mode="inactive" disabled={true}>
+            Application
           </Button>
         </Link>
       </section>
