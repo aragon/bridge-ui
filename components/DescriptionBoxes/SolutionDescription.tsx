@@ -1,18 +1,74 @@
 //TODO merge this component with ProblemDescription component
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
 import { Card, GU, useTheme, Button } from "@aragon/ui";
-import VotingButtons from "../VotingButtons";
+import Link from "next/link";
 
-function SolutionDescription({
-  title,
-  description,
-  reporter,
-  no_upvotes,
-  no_downvotes,
-}) {
+import VotingButtons from "../VotingButtons";
+import { Proposal } from "../../pages/[project]/problems";
+
+function SolutionDescription({ project, problem }: SolutionDescriptionInfo) {
   const theme = useTheme();
-  return (
+
+  // STATE & EFFECT ======================================================================
+
+  const [error, setError] = useState(null);
+  const [votes, setVotes] = useState<Vote[]>([]);
+
+  // get all votes related to a particular problem/Solution of a praticular project from
+  // snapshot
+  useEffect(() => {
+    fetch(
+      `https://testnet.snapshot.page/api/${project}/proposal/${problem.authorIpfsHash}`
+    )
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+      })
+      .then((data) => Object.values(data))
+      .then((votes) => {
+        let mapped_votes = votes.map((vote) => {
+          return new Vote(problem, vote.msg.payload.choice);
+        });
+        setVotes(mapped_votes);
+      })
+      .catch((reason) => {
+        setError(reason);
+      });
+  }, []);
+
+    // HELPERS =============================================================================
+
+    function countVotes(kind: string): number {
+      if (kind === "up") {
+        return votes.filter((v) => v.choice === 1).length;
+      } else if (kind === "down") {
+        return votes.filter((v) => v.choice === 2).length;
+      }
+    }
+  
+  // RENDERER ============================================================================
+
+  return error ? (
+    <Card
+      width="95%"
+      height="auto"
+      style={{
+        marginTop: `${4 * GU}px`,
+        background: "#FFF4F6",
+        borderRadious: `10px`,
+      }}
+    >
+      <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
+        <h2>
+          Unfortunately, there was an error when retrieving this problem
+          proposal.
+        </h2>
+      </div>
+    </Card>
+  ) : (
     <Card
       width="95%"
       height="auto"
@@ -38,11 +94,19 @@ function SolutionDescription({
             color: `${theme.surfaceContentSecondary}`,
           }}
         >
-          Reported by: {reporter}
+          Reported by: {problem.address}
         </p>
-        <Button href="/solutions" external={false} mode="strong">
-          Solutions
-        </Button>
+        <Link
+          href={{
+            pathname: "/[project]/[problem]/solutions",
+            query: { project: project, problem: problem.authorIpfsHash },
+          }}
+          passHref
+        >
+          <Button external={false} mode="strong">
+            Solutions
+          </Button>
+        </Link>
       </section>
       <section
         style={{
@@ -59,7 +123,7 @@ function SolutionDescription({
               marginBottom: `${0.5 * GU}px`,
             }}
           >
-            {title}
+            {problem.msg.payload.name}
           </h1>
           <p
             style={{
@@ -67,19 +131,34 @@ function SolutionDescription({
               color: `${theme.surfaceContentSecondary}`,
             }}
           >
-            {description}
+            {problem.msg.payload.body}
           </p>
         </div>
       </section>
-      <VotingButtons no_upvotes={no_upvotes} no_downvotes={no_downvotes} />
+      <VotingButtons
+        proposal={problem.authorIpfsHash}
+        no_upvotes={countVotes("up")}
+        no_downvotes={countVotes("down")}
+      />
     </Card>
   );
 }
 
-SolutionDescription.propTypes = {
-  illustration: PropTypes.node.isRequired,
-  subtitle: PropTypes.node.isRequired,
-  title: PropTypes.node.isRequired,
+// TYPES =================================================================================
+
+class Vote {
+  proposal: Proposal;
+  choice: number;
+
+  constructor(proposal, choice) {
+    this.proposal = proposal;
+    this.choice = choice;
+  }
+}
+
+type SolutionDescriptionInfo = {
+  project: string | string[];
+  problem: Proposal;
 };
 
 export default SolutionDescription;

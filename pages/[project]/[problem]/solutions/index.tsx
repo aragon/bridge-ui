@@ -1,6 +1,6 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useRouter, withRouter } from "next/router";
-import { GU } from "@aragon/ui";
+import { GU, DropDown, Split } from "@aragon/ui";
 
 import Title from "../../../../components/Title";
 import "../../../../styles/index.less";
@@ -8,69 +8,109 @@ import Header from "../../../../components/Header";
 import Breadcrumbs from "../../../../components/Breadcrumb";
 import SolutionDescription from "../../../../components/DescriptionBoxes/SolutionDescription";
 import ReportSolutionIndicator from "../../../../components/ReportSolutionIndicator";
-
-const SOLUTIONS = [
-  {
-    project: {
-      project: "Aragon",
-      product: "Apollo",
-      title: "Not enough money",
-      description: "Switzerland is expensive af.",
-      reporter: "Me",
-      no_upvotes: 42,
-      no_downvotes: 42,
-    },
-    title: "Better Budget",
-    description:
-      "Getting a special delivery from Sprüngli every day might drive living costs up unnecessarily.",
-    reporter: "Me",
-    no_upvotes: 42,
-    no_downvotes: 42,
-  },
-  {
-    project: {
-      project: "Aragon",
-      product: "Apollo",
-      title: "Not enough money",
-      description: "Switzerland is expensive af.",
-      reporter: "Me",
-      no_upvotes: 42,
-      no_downvotes: 42,
-    },
-    title: "Get a Promotion",
-    description: "Promotion => more $$$",
-    reporter: "Me",
-    no_upvotes: 42,
-    no_downvotes: 42,
-  },
-];
+import { ARAGON_LOGO } from "../../../../lib/constants";
 
 const SolutionsPage = () => {
   const router = useRouter();
   const { project, problem } = router.query;
+  
+  // STATE & EFFECT ======================================================================
+  const [error, setError] = useState(null);
+  const [selected, setSelected] = useState(0);
+  const [
+    proposalCategories,
+    setProposalCategories,
+  ] = useState<ProposalCategories>({
+    active: [],
+    closed: [],
+    pending: [],
+    all: [],
+  });
+
+  // get all problems related to a particular project from snapshot
+  useEffect(() => {
+    fetch(`https://testnet.snapshot.page/api/${project}/proposals`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+      })
+      .then((data) => Object.values(data))
+      .then((data: Proposal[]) => {
+        let curr_date = Math.round(Date.now() / 1e3);
+        let categories: ProposalCategories = {
+          active: data.filter(
+            (p) =>
+              p.msg.payload.start < curr_date && curr_date < p.msg.payload.end
+          ),
+          closed: data.filter((p) => p.msg.payload.end < curr_date),
+          pending: data.filter((p) => p.msg.payload.start > curr_date),
+          all: data,
+        };
+        setProposalCategories(categories);
+      })
+      .catch((reason) => {
+        setError(reason);
+      });
+  }, []);
 
   return (
     <Fragment>
       <Breadcrumbs />
-      <Header title={project} subtitle={`Problem: ${problem}`} />
-      <Title
-        title="Solutions"
-        subtitle="List of solutions reported by the community"
-        topSpacing={7 * GU}
-        bottomSpacing={5 * GU}
+      <Header
+        illustration={ARAGON_LOGO}
+        title={project}
+        subtitle="A universally verifiable, censorship-resistant and anonymous voting & grants execution engine."
       />
       <section
-        style={{
-          display: "flex",
-          width: "100%",
-        }}
+        style={{ display: "flex", width: "100%", marginTop: `${5 * GU}px` }}
       >
-        <div style={{ width: "75%" }}>{SOLUTIONS.map(dataToCards)}</div>
-        <div style={{ width: "25%" }}>
-          <ReportSolutionIndicator
-            projectName={project}
-            problemHash={problem}
+        <div style={{ width: "75%" }}>
+          <Split
+            primary={
+              <Title
+                title="Problems"
+                subtitle="List of problems reported by the community"
+                bottomSpacing={0 * GU}
+              />
+            }
+            secondary={
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-end",
+                  justifyContent: "center",
+                  padding: `${10 * GU}px ${2 * GU}px ${8 * GU}px`,
+                }}
+              >
+                <DropDown
+                  items={["Active", "Closed", "Pending", "All"]}
+                  selected={selected}
+                  onChange={setSelected}
+                />
+              </div>
+            }
           />
+          {error ? (
+            <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
+              <h2>Oops, something seems to have gone wrong!</h2>
+            </div>
+          ) : Object.values(proposalCategories)[selected].length === 0 ? (
+            <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
+              <h2>There are no problems in the selected category.</h2>
+            </div>
+          ) : (
+            Object.values(proposalCategories)[
+              selected
+            ].map((p: Proposal, i) => (
+              <SolutionDescription key={i} project={project} problem={p} />
+            ))
+          )}
+        </div>
+        <div style={{ width: "25%", paddingTop: `${6 * GU}px` }}>
+          <ReportSolutionIndicator projectName={project} problemHash={ problem }/>
         </div>
       </section>
     </Fragment>
@@ -79,18 +119,52 @@ const SolutionsPage = () => {
 
 export default withRouter(SolutionsPage);
 
-function dataToCards(
-  { title, description, reporter, no_upvotes, no_downvotes },
-  index
-) {
-  return (
-    <SolutionDescription
-      key={index}
-      title={title}
-      description={description}
-      reporter={reporter}
-      no_upvotes={no_upvotes}
-      no_downvotes={no_downvotes}
-    />
-  );
+// TYPES =================================================================================
+
+type ProposalCategories = {
+  active: Proposal[];
+  closed: Proposal[];
+  pending: Proposal[];
+  all: Proposal[];
+};
+
+export interface Proposal {
+  address: string;
+  msg: Msg;
+  sig: string;
+  authorIpfsHash: string;
+  relayerIpfsHash: string;
+}
+
+export interface Msg {
+  version: string;
+  timestamp: string;
+  space: string;
+  type: string;
+  payload: Payload;
+}
+
+export interface Payload {
+  end: number;
+  body: string;
+  name: string;
+  start: number;
+  choices: string[];
+  metadata: Metadata;
+  snapshot: number;
+}
+
+export interface Metadata {
+  strategies: Strategy[];
+}
+
+export interface Strategy {
+  name: string;
+  params: Params;
+}
+
+export interface Params {
+  symbol: string;
+  address: string;
+  decimals?: number;
 }

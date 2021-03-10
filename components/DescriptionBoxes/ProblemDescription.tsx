@@ -1,3 +1,4 @@
+//TODO merge this component with SolutionDescription component
 import React, { useEffect, useState } from "react";
 import { Card, GU, useTheme, Button } from "@aragon/ui";
 import Link from "next/link";
