@@ -6,16 +6,16 @@ import { GU, Button, Field, TextInput, DateRangePicker } from "@aragon/ui";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import networks from "@snapshot-labs/snapshot.js/src/networks.json";
 
-import { BACKEND_URL } from "../../../lib/constants";
-import Title from "../../../components/Title";
-import "../../../styles/index.less";
-import Breadcrumbs from "../../../components/Breadcrumb";
+import { BACKEND_URL } from "../../../../lib/constants";
+import Title from "../../../../components/Title";
+import "../../../../styles/index.less";
+import Breadcrumbs from "../../../../components/Breadcrumb";
 
 const ProposalForm = () => {
   const signer = useSigner();
   const wallet = useWallet();
   const router = useRouter();
-  const { project } = router.query;
+  const { project, problem } = router.query;
 
   // STATE & EFFECT ======================================================================
 
@@ -86,7 +86,7 @@ const ProposalForm = () => {
     };
     envelope.sig = await signer.signMessage(envelope.msg);
 
-    const url = `${BACKEND_URL}/proposal/${project}`; 
+    const url = `${BACKEND_URL}/proposal/${project}/${problem}`;
     const init = {
       method: "POST",
       body: JSON.stringify(envelope),
@@ -107,8 +107,8 @@ const ProposalForm = () => {
       <Breadcrumbs />
       <SignatureTest signer={signer} signature="" />
       <Title
-        title="New Problem"
-        subtitle="Please fill out all the required fields of the form to create a new problem."
+        title="New Solution"
+        subtitle="Please fill out all the required fields of the form to create a new Solution."
         topSpacing={7 * GU}
         bottomSpacing={5 * GU}
       />
@@ -152,6 +152,7 @@ const ProposalForm = () => {
         >
           Submit
         </Button>
+        {/* TODO remove. */}
         <Button
           style={{ marginTop: `${3 * GU}px`, marginLeft: `${2 * GU}px` }}
           mode="positive"

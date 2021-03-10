@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Card, GU, useTheme, Button } from "@aragon/ui";
+import Link from "next/link";
+
 import VotingButtons from "../VotingButtons";
 import { Proposal } from "../../pages/[project]/problems/index";
-import Link from "next/link";
 
 function ProblemDescription({ project, problem }: ProblemDescriptionInfo) {
   const theme = useTheme();
@@ -14,28 +15,28 @@ function ProblemDescription({ project, problem }: ProblemDescriptionInfo) {
 
   // get all votes related to a particular problem/Solution of a praticular project from
   // snapshot
-  // useEffect(() => {
-  //   fetch(
-  //     `https://testnet.snapshot.page/api/${project}/proposal/${problem.authorIpfsHash}`
-  //   )
-  //     .then((response) => {
-  //       if (response.ok) {
-  //         return response.json();
-  //       } else {
-  //         throw Error(response.statusText);
-  //       }
-  //     })
-  //     .then((data) => Object.values(data))
-  //     .then((votes) => {
-  //       let mapped_votes = votes.map((vote) => {
-  //         return new Vote(problem, vote.msg.payload.choice);
-  //       });
-  //       setVotes(mapped_votes);
-  //     })
-  //     .catch((reason) => {
-  //       setError(reason);
-  //     });
-  // }, []);
+  useEffect(() => {
+    fetch(
+      `https://testnet.snapshot.page/api/${project}/proposal/${problem.authorIpfsHash}`
+    )
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+      })
+      .then((data) => Object.values(data))
+      .then((votes) => {
+        let mapped_votes = votes.map((vote) => {
+          return new Vote(problem, vote.msg.payload.choice);
+        });
+        setVotes(mapped_votes);
+      })
+      .catch((reason) => {
+        setError(reason);
+      });
+  }, []);
 
   // HELPERS =============================================================================
 

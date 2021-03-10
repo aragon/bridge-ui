@@ -1,13 +1,13 @@
 import React, { Fragment } from "react";
 import { useRouter, withRouter } from "next/router";
-import { GU, Box, Button } from "@aragon/ui";
+import { GU } from "@aragon/ui";
 
 import Title from "../../../../components/Title";
-import { SOLUTION_ICON } from "../../../../lib/constants";
 import "../../../../styles/index.less";
 import Header from "../../../../components/Header";
 import Breadcrumbs from "../../../../components/Breadcrumb";
 import SolutionDescription from "../../../../components/DescriptionBoxes/SolutionDescription";
+import ReportSolutionIndicator from "../../../../components/ReportSolutionIndicator";
 
 const SOLUTIONS = [
   {
@@ -47,13 +47,12 @@ const SOLUTIONS = [
 
 const SolutionsPage = () => {
   const router = useRouter();
+  const { project, problem } = router.query;
+
   return (
     <Fragment>
       <Breadcrumbs />
-      <Header
-        title={SOLUTIONS[0].project.title}
-        subtitle={SOLUTIONS[0].project.description}
-      />
+      <Header title={project} subtitle={`Problem: ${problem}`} />
       <Title
         title="Solutions"
         subtitle="List of solutions reported by the community"
@@ -68,37 +67,10 @@ const SolutionsPage = () => {
       >
         <div style={{ width: "75%" }}>{SOLUTIONS.map(dataToCards)}</div>
         <div style={{ width: "25%" }}>
-          <Box style={{ position: "fixed" }}>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <img style={{ display: "block" }} src={SOLUTION_ICON} alt="" />
-              <h1
-                style={{
-                  fontSize: "25px",
-                  fontWeight: "bold",
-                  marginTop: `${1.5 * GU}px`,
-                  marginBottom: `${0.5 * GU}px`,
-                }}
-              >
-                Report a Solution
-              </h1>
-              <p
-                style={{
-                  fontSize: "16px",
-                  marginBottom: `${2 * GU}px`,
-                }}
-              >
-                ... and get rewarded
-              </p>
-              <Button mode="strong" label="Create new solution" />
-            </div>
-          </Box>
+          <ReportSolutionIndicator
+            projectName={project}
+            problemHash={problem}
+          />
         </div>
       </section>
     </Fragment>
