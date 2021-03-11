@@ -16,7 +16,7 @@ export default class Bootstrap {
    */
   private server: FastifyInstance;
 
-    /**
+  /**
    * @property {string} apiUrl
    *
    * @private
@@ -81,12 +81,12 @@ export default class Bootstrap {
     this.server.get(
       "/simple/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
-        const space = request.url.split("/").pop();
+        const space = request.url.split("/").pop() || "";
+
         reply
           .code(200)
           .header("Access-Control-Allow-Origin", "*")
-          .header("Content-Type", "application/json; charset=utf-8")
-          .send({ hello: "world" });
+          .header("Content-Type", "application/json; charset=utf-8");
       }
     );
     this.server.post(
@@ -213,6 +213,50 @@ export default class Bootstrap {
           );
       }
     );
+    this.server.get(
+      "/problems/:space",
+      async (request: FastifyRequest, reply: FastifyReply) => {
+        const space = request.url.split("/").pop() || "";
+        const init = {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: request.body,
+        };
+        const problemIds = await this.db.getProblemIds(space);
+        console.log("this is the reult: ");
+        const problemSet = new Set();
+        problemIds.forEach((pID) => problemSet.add(pID.problemhash));
+
+        //pull proposals from Snapshot.
+        fetch(`https://testnet.snapshot.page/api/${space}/proposals`)
+          .then((res: Response) => {
+            if (res.ok) {
+              return res.json();
+            } else {
+              throw Error(res.statusText);
+            }
+          })
+          .then((data: any) => Object.values(data))
+          .then((proposals: Proposal[]) => {
+            const filteredProposals = proposals.filter((p) =>
+              problemSet.has(p.authorIpfsHash)
+            );
+            console.log(filteredProposals);
+
+            reply
+            .code(200)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .send(filteredProposals);
+          })
+          .catch((error: Error) => {
+            //TODO catch errors.
+          });
+      }
+    );
   }
 
   /**
@@ -248,14 +292,26 @@ export default class Bootstrap {
 
 // TYPES =================================================================================
 
-export interface ProposalResponse {
-  ipfsHash: string;
-}
-
+// This is a proposal as formatted by the frontend. Snapshot expects a proposal to be
+// posted in this form.
 export interface ProposalMessage {
   sig: string;
   address: string;
   msg: Msg;
+}
+
+// This is Snapshot's response to a successfully posted proposal.
+export interface ProposalResponse {
+  ipfsHash: string;
+}
+
+//This is a proposal as stored on Snapshot.
+export interface Proposal {
+  address: string;
+  msg: Msg;
+  sig: string;
+  authorIpfsHash: string;
+  relayerIpfsHash: string;
 }
 
 export interface Msg {

@@ -79,4 +79,11 @@ export default class Database {
       VALUES (${space}, ${proposalHash}, ${solutionHash});
       `;
   }
+
+  public getProblemIds(space: string): Promise<{ problemhash: string }[]> {
+    return this.sql<{ problemhash: string }[]>`
+      SELECT DISTINCT problemHash FROM reference
+      WHERE solutionHash IS NULL AND spacename=${space};
+      `;
+  }
 }
