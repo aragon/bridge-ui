@@ -78,7 +78,7 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
             }}
           >
             <Button
-              label={isConnected ? "Show dashboard" : "Connect with MetaMask"}
+              label={isConnected ? "Show Problems" : "Connect with MetaMask"}
               icon={<IconEthereum />}
               mode="strong"
               style={{ background: "#59A0FF" }}

@@ -13,7 +13,7 @@ import { ARAGON_LOGO } from "../../../../lib/constants";
 const SolutionsPage = () => {
   const router = useRouter();
   const { project, problem } = router.query;
-  
+
   // STATE & EFFECT ======================================================================
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState(0);
@@ -56,13 +56,15 @@ const SolutionsPage = () => {
       });
   }, []);
 
+  // RENDERER ============================================================================
+
   return (
     <Fragment>
       {/* <Breadcrumbs /> */}
       <Header
         illustration={ARAGON_LOGO}
-        title={project}
-        subtitle="A universally verifiable, censorship-resistant and anonymous voting & grants execution engine."
+        title={capitalize(project.toString())}
+        subtitle="Govern better, together."
       />
       <section
         style={{ display: "flex", width: "100%", marginTop: `${5 * GU}px` }}
@@ -71,8 +73,8 @@ const SolutionsPage = () => {
           <Split
             primary={
               <Title
-                title="Problems"
-                subtitle="List of problems reported by the community"
+                title="Solutions"
+                subtitle="List of solutions proposed by the community"
                 bottomSpacing={0 * GU}
               />
             }
@@ -110,7 +112,10 @@ const SolutionsPage = () => {
           )}
         </div>
         <div style={{ width: "25%", paddingTop: `${6 * GU}px` }}>
-          <ReportSolutionIndicator projectName={project} problemHash={ problem }/>
+          <ReportSolutionIndicator
+            projectName={project}
+            problemHash={problem}
+          />
         </div>
       </section>
     </Fragment>
@@ -118,6 +123,13 @@ const SolutionsPage = () => {
 };
 
 export default withRouter(SolutionsPage);
+
+export function capitalize(name: string): string {
+  const firstLetter = name.charAt(0);
+  const rest = name.slice(1);
+  const firstCapital = firstLetter.toUpperCase();
+  return firstCapital.concat(rest);
+}
 
 // TYPES =================================================================================
 

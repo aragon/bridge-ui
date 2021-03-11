@@ -9,6 +9,7 @@ import Header from "../../../components/Header";
 import ProblemDescription from "../../../components/DescriptionBoxes/ProblemDescription";
 import Breadcrumbs from "../../../components/Breadcrumb";
 import ReportProblemIndicator from "../../../components/ReportProblemIndiactor";
+import { capitalize } from "../[problem]/solutions";
 
 const ProblemsPage = () => {
   const router = useRouter();
@@ -63,8 +64,8 @@ const ProblemsPage = () => {
       {/* <Breadcrumbs /> */}
       <Header
         illustration={ARAGON_LOGO}
-        title={project}
-        subtitle="A universally verifiable, censorship-resistant and anonymous voting & grants execution engine."
+        title={capitalize(project.toString())}
+        subtitle="Govern better, together."
       />
       <section
         style={{ display: "flex", width: "100%", marginTop: `${5 * GU}px` }}
