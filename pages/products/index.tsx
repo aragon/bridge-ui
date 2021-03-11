@@ -44,7 +44,7 @@ const ProjectPage = (props) => {
   const router = useRouter();
   return (
     <Fragment>
-      <Breadcrumbs/>
+      {/* <Breadcrumbs/> */}
       <Header
         illustration={ARAGON_LOGO}
         title="Aragon"

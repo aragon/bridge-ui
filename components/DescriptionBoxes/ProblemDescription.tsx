@@ -1,8 +1,10 @@
+//TODO merge this component with SolutionDescription component
 import React, { useEffect, useState } from "react";
 import { Card, GU, useTheme, Button } from "@aragon/ui";
+import Link from "next/link";
+
 import VotingButtons from "../VotingButtons";
 import { Proposal } from "../../pages/[project]/problems/index";
-import Link from "next/link";
 
 function ProblemDescription({ project, problem }: ProblemDescriptionInfo) {
   const theme = useTheme();

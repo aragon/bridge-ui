@@ -6,7 +6,7 @@ import { GU, Button, Field, TextInput, DateRangePicker } from "@aragon/ui";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import networks from "@snapshot-labs/snapshot.js/src/networks.json";
 
-import { HUB_URL } from "../../../lib/constants";
+import { BACKEND_URL } from "../../../lib/constants";
 import Title from "../../../components/Title";
 import "../../../styles/index.less";
 import Breadcrumbs from "../../../components/Breadcrumb";
@@ -15,6 +15,7 @@ const ProposalForm = () => {
   const signer = useSigner();
   const wallet = useWallet();
   const router = useRouter();
+  const { project } = router.query;
 
   // STATE & EFFECT ======================================================================
 
@@ -60,48 +61,7 @@ const ProposalForm = () => {
     return providers[network];
   }
 
-  const space = {
-    name: "Aragon",
-    network: "1",
-    symbol: "ANT",
-    skin: "aragon",
-    domain: "gov.aragon.org",
-    strategies: [
-      {
-        name: "erc20-balance-of",
-        params: {
-          address: "0xa117000000f279D81A1D3cc75430fAA017FA5A2e",
-          symbol: "ANT",
-          decimals: 18,
-        },
-      },
-      {
-        name: "balancer",
-        params: {
-          address: "0xa117000000f279D81A1D3cc75430fAA017FA5A2e",
-          symbol: "ANT BPT",
-        },
-      },
-    ],
-    members: [
-      "0xf08b64258465A9896691E23caaF9E6C830ec4b9D",
-      "0x4cB3FD420555A09bA98845f0B816e45cFb230983",
-      "0xa1d4c9e0a46068afa3d8424b0618218bf85ccaaa",
-    ],
-    filters: {
-      defaultTab: "core",
-      minScore: 0,
-      onlyMembers: true,
-      invalids: [
-        "QmPNvdddbA1gQ8PCQxnEjhTeGSTvkdCarwkRyzgeoFHSgH",
-        "QmNTgjdR3rNj25Ah6PxYzAzb8cD7cT6HmKoFFmKADrr2gC",
-      ],
-    },
-  };
-
-  async function createProblem() {
-    const version = "0.1.3";
-    const type = "proposal";
+  async function postProblem() {
     const snapshot = await getBlockNumber(getProvider("5"));
     const payload = {
       name: title,
@@ -111,31 +71,24 @@ const ProposalForm = () => {
       end: Math.round(new Date(range.end).getTime() / 1e3),
       snapshot: snapshot,
       metadata: {
-        strategies: space.strategies,
+        strategies: aragonSpace.strategies, //TODO make this dynamic
       },
     };
     const envelope: any = {
       address: wallet.account,
       msg: JSON.stringify({
-        version: version,
+        version: "0.1.3",
         timestamp: (Date.now() / 1e3).toFixed(),
-        space: space.skin,
-        type: type,
+        space: project,
+        type: "proposal",
         payload,
       }),
     };
     envelope.sig = await signer.signMessage(envelope.msg);
 
-    const url = `${HUB_URL}/api/message`;
-
-    const headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    const mode: RequestMode = "cors";
-
+    const url = `${BACKEND_URL}/problemProposal/${project}`;
     const init = {
       method: "POST",
-      headers,
-      mode: mode,
       body: JSON.stringify(envelope),
     };
 
@@ -143,6 +96,7 @@ const ProposalForm = () => {
     if (res.ok) {
       router.back();
     } else {
+      router.back();
       //TODO add toast or something to indicate failure to client
     }
   }
@@ -151,14 +105,20 @@ const ProposalForm = () => {
 
   return (
     <Fragment>
-      <Breadcrumbs />
+      {/* <Breadcrumbs /> */}
       <Title
         title="New Problem"
         subtitle="Please fill out all the required fields of the form to create a new problem."
         topSpacing={7 * GU}
         bottomSpacing={5 * GU}
       />
-      <div style={{ paddingLeft: `${2 * GU}px`, width: "80%", marginBottom: "150px"}}>
+      <div
+        style={{
+          paddingLeft: `${2 * GU}px`,
+          width: "80%",
+          marginBottom: "150px",
+        }}
+      >
         <Field label="Problem title:" required={true}>
           <TextInput
             placeholder="Short summary of the problem"
@@ -188,9 +148,9 @@ const ProposalForm = () => {
           disabled={areInputsMissing()}
           external={false}
           wide={false}
-          onClick={() => createProblem()}
+          onClick={() => postProblem()}
         >
-          Submit Problem
+          Submit
         </Button>
       </div>
     </Fragment>
@@ -198,3 +158,42 @@ const ProposalForm = () => {
 };
 
 export default ProposalForm;
+
+const aragonSpace = {
+  name: "Aragon",
+  network: "1",
+  symbol: "ANT",
+  skin: "aragon",
+  domain: "gov.aragon.org",
+  strategies: [
+    {
+      name: "erc20-balance-of",
+      params: {
+        address: "0xa117000000f279D81A1D3cc75430fAA017FA5A2e",
+        symbol: "ANT",
+        decimals: 18,
+      },
+    },
+    {
+      name: "balancer",
+      params: {
+        address: "0xa117000000f279D81A1D3cc75430fAA017FA5A2e",
+        symbol: "ANT BPT",
+      },
+    },
+  ],
+  members: [
+    "0xf08b64258465A9896691E23caaF9E6C830ec4b9D",
+    "0x4cB3FD420555A09bA98845f0B816e45cFb230983",
+    "0xa1d4c9e0a46068afa3d8424b0618218bf85ccaaa",
+  ],
+  filters: {
+    defaultTab: "core",
+    minScore: 0,
+    onlyMembers: true,
+    invalids: [
+      "QmPNvdddbA1gQ8PCQxnEjhTeGSTvkdCarwkRyzgeoFHSgH",
+      "QmNTgjdR3rNj25Ah6PxYzAzb8cD7cT6HmKoFFmKADrr2gC",
+    ],
+  },
+};

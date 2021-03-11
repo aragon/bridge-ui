@@ -9,6 +9,7 @@ import Header from "../../../components/Header";
 import ProblemDescription from "../../../components/DescriptionBoxes/ProblemDescription";
 import Breadcrumbs from "../../../components/Breadcrumb";
 import ReportProblemIndicator from "../../../components/ReportProblemIndiactor";
+import { capitalize } from "../[problem]/solutions";
 
 const ProblemsPage = () => {
   const router = useRouter();
@@ -28,9 +29,9 @@ const ProblemsPage = () => {
     all: [],
   });
 
-  // get all problems related to a particular project from snapshot
+  // get problems related to a particular project from snapshot
   useEffect(() => {
-    fetch(`https://testnet.snapshot.page/api/${project}/proposals`)
+    fetch(`http://127.0.0.1:4040/problems/${project}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -38,7 +39,6 @@ const ProblemsPage = () => {
           throw Error(response.statusText);
         }
       })
-      .then((data) => Object.values(data))
       .then((data: Proposal[]) => {
         let curr_date = Math.round(Date.now() / 1e3);
         let categories: ProposalCategories = {
@@ -61,11 +61,11 @@ const ProblemsPage = () => {
 
   return (
     <Fragment>
-      <Breadcrumbs />
+      {/* <Breadcrumbs /> */}
       <Header
         illustration={ARAGON_LOGO}
-        title={project}
-        subtitle="A universally verifiable, censorship-resistant and anonymous voting & grants execution engine."
+        title={capitalize(project.toString())}
+        subtitle="Govern better, together."
       />
       <section
         style={{ display: "flex", width: "100%", marginTop: `${5 * GU}px` }}
@@ -113,7 +113,7 @@ const ProblemsPage = () => {
           )}
         </div>
         <div style={{ width: "25%", paddingTop: `${6 * GU}px` }}>
-          <ReportProblemIndicator projectName={ project }/>
+          <ReportProblemIndicator projectName={project} />
         </div>
       </section>
     </Fragment>
