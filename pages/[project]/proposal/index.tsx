@@ -87,7 +87,7 @@ const ProposalForm = () => {
     };
     envelope.sig = await signer.signMessage(envelope.msg);
 
-    const url = `${BACKEND_URL}/problemProposal/${project}`; 
+    const url = `${BACKEND_URL}/problemProposal/${project}`;
     const init = {
       method: "POST",
       body: JSON.stringify(envelope),
@@ -97,6 +97,7 @@ const ProposalForm = () => {
     if (res.ok) {
       router.back();
     } else {
+      router.back();
       //TODO add toast or something to indicate failure to client
     }
   }
@@ -152,31 +153,12 @@ const ProposalForm = () => {
         >
           Submit
         </Button>
-        <Button
-          style={{ marginTop: `${3 * GU}px`, marginLeft: `${2 * GU}px` }}
-          mode="positive"
-          onClick={() => simpleGet()}
-        >
-          TEST
-        </Button>
       </div>
     </Fragment>
   );
 };
 
 export default ProposalForm;
-
-async function simpleGet() {
-  const url = `http://127.0.0.1:4040/problems/aragon`;
-  var res = await fetch(url);
-  if (res.ok) {
-    console.log(res)
-    const props: Proposal[] = await res.json();
-    console.log(props.pop().address);
-  } else {
-    console.log(res)
-  }
-}
 
 const aragonSpace = {
   name: "Aragon",

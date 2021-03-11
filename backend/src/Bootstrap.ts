@@ -225,8 +225,8 @@ export default class Bootstrap {
           },
           body: request.body,
         };
+        //query DB for problems created on apollo.
         const problemIds = await this.db.getProblemIds(space);
-        console.log("this is the reult: ");
         const problemSet = new Set();
         problemIds.forEach((pID) => problemSet.add(pID.problemhash));
 
@@ -241,16 +241,16 @@ export default class Bootstrap {
           })
           .then((data: any) => Object.values(data))
           .then((proposals: Proposal[]) => {
+            //filter out the ones not created on apollo
             const filteredProposals = proposals.filter((p) =>
               problemSet.has(p.authorIpfsHash)
             );
-            console.log(filteredProposals);
 
             reply
-            .code(200)
-            .header("Access-Control-Allow-Origin", "*")
-            .header("Content-Type", "application/json; charset=utf-8")
-            .send(filteredProposals);
+              .code(200)
+              .header("Access-Control-Allow-Origin", "*")
+              .header("Content-Type", "application/json; charset=utf-8")
+              .send(filteredProposals);
           })
           .catch((error: Error) => {
             //TODO catch errors.
