@@ -11,28 +11,24 @@ import Database from "./db/Database";
 export default class Bootstrap {
   /**
    * @property {FastifyInstance} server
-   *
    * @private
    */
   private server: FastifyInstance;
 
   /**
    * @property {string} apiUrl
-   *
    * @private
    */
   private apiUrl: string = "https://testnet.snapshot.page/api/message";
 
   /**
    * @property {Database} database
-   *
    * @private
    */
   private db: Database;
 
   /**
    * @param {Configuration} config
-   *
    * @constructor
    */
   constructor(private config: Configuration) {
@@ -46,9 +42,7 @@ export default class Bootstrap {
    * Starts the entire server
    *
    * @method run
-   *
    * @returns {void}
-   *
    * @public
    */
   public run(): void {
@@ -72,9 +66,7 @@ export default class Bootstrap {
    * These routes are used to test things during development.
    *
    * @method registerTestRoute
-   *
    * @returns {void}
-   *
    * @private
    */
   private registerSimpleRoute() {
@@ -109,9 +101,7 @@ export default class Bootstrap {
    * database with the corresponding space name.
    *
    * @method registerProposalRoute
-   *
    * @returns {void}
-   *
    * @private
    */
   private registerProposalRoute() {
@@ -217,14 +207,7 @@ export default class Bootstrap {
       "/problems/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
         const space = request.url.split("/").pop() || "";
-        const init = {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: request.body,
-        };
+
         //query DB for problems created on apollo.
         const problemIds = await this.db.getProblemIds(space);
         const problemSet = new Set();
@@ -244,6 +227,45 @@ export default class Bootstrap {
             //filter out the ones not created on apollo
             const filteredProposals = proposals.filter((p) =>
               problemSet.has(p.authorIpfsHash)
+            );
+
+            reply
+              .code(200)
+              .header("Access-Control-Allow-Origin", "*")
+              .header("Content-Type", "application/json; charset=utf-8")
+              .send(filteredProposals);
+          })
+          .catch((error: Error) => {
+            //TODO catch errors.
+          });
+      }
+    );
+    this.server.get(
+      "/solutions/:space/:problem",
+      async (request: FastifyRequest, reply: FastifyReply) => {
+        const urlParameters = request.url.split("/");
+        const problem = urlParameters.pop() || "";
+        const space = urlParameters.pop() || "";
+
+        //query DB for problems created on apollo.
+        const solutionIds = await this.db.getSolutionIds(space, problem);
+        const solutionSet = new Set();
+        solutionIds.forEach((pID) => solutionSet.add(pID.solutionhash));
+
+        //pull proposals from Snapshot.
+        fetch(`https://testnet.snapshot.page/api/${space}/proposals`)
+          .then((res: Response) => {
+            if (res.ok) {
+              return res.json();
+            } else {
+              throw Error(res.statusText);
+            }
+          })
+          .then((data: any) => Object.values(data))
+          .then((proposals: Proposal[]) => {
+            //filter out the ones not created on apollo
+            const filteredProposals = proposals.filter((p) =>
+              solutionSet.has(p.authorIpfsHash)
             );
 
             reply

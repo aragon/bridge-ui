@@ -10,7 +10,6 @@ import { BACKEND_URL } from "../../../lib/constants";
 import Title from "../../../components/Title";
 import "../../../styles/index.less";
 import Breadcrumbs from "../../../components/Breadcrumb";
-import { Proposal } from "../problems";
 
 const ProposalForm = () => {
   const signer = useSigner();
@@ -106,7 +105,7 @@ const ProposalForm = () => {
 
   return (
     <Fragment>
-      <Breadcrumbs />
+      {/* <Breadcrumbs /> */}
       <Title
         title="New Problem"
         subtitle="Please fill out all the required fields of the form to create a new problem."

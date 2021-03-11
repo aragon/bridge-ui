@@ -29,7 +29,7 @@ const SolutionsPage = () => {
 
   // get all problems related to a particular project from snapshot
   useEffect(() => {
-    fetch(`https://testnet.snapshot.page/api/${project}/proposals`)
+    fetch(`http://127.0.0.1:4040/solutions/${project}/${problem}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -58,7 +58,7 @@ const SolutionsPage = () => {
 
   return (
     <Fragment>
-      <Breadcrumbs />
+      {/* <Breadcrumbs /> */}
       <Header
         illustration={ARAGON_LOGO}
         title={project}

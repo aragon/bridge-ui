@@ -104,7 +104,7 @@ const ProposalForm = () => {
 
   return (
     <Fragment>
-      <Breadcrumbs />
+      {/* <Breadcrumbs /> */}
       <Title
         title="New Solution"
         subtitle="Please fill out all the required fields of the form to create a new Solution."

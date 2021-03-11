@@ -30,7 +30,7 @@ const ProblemsPage = () => {
 
   // get problems related to a particular project from snapshot
   useEffect(() => {
-    fetch(`http://127.0.0.1:4040/problems/aragon`)
+    fetch(`http://127.0.0.1:4040/problems/${project}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -60,7 +60,7 @@ const ProblemsPage = () => {
 
   return (
     <Fragment>
-      <Breadcrumbs />
+      {/* <Breadcrumbs /> */}
       <Header
         illustration={ARAGON_LOGO}
         title={project}
