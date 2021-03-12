@@ -15,7 +15,6 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
   connectionSetter(isConnected);
   addressSetter(wallet.account);
 
-
   // CALLBACK
   function onWalletConnect() {
     if (wallet.status === "connected") {
@@ -59,8 +58,8 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
       });
   }
 
-    return (
-    <div style={{height:`${100 * GU}px`}}>
+  return (
+    <div style={{ height: `${100 * GU}px` }}>
       <Split
         primary={
           <Title
@@ -89,7 +88,7 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
         }
       />
     </div>
-    );
+  );
 };
 
 export default WelcomePage;

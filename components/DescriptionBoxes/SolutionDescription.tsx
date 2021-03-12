@@ -1,74 +1,13 @@
 //TODO merge this component with ProblemDescription component
-import React, { useEffect, useState } from "react";
-import { Card, GU, useTheme, Button } from "@aragon/ui";
+import React from "react";
+import { Card, GU, Button } from "@aragon/ui";
 import Link from "next/link";
 
 import VotingButtons from "../VotingButtons";
-import { Proposal } from "../../pages/[project]/problems";
+import { ProposalPayload, SnapshotData } from "../../pages/[project]/problems";
 
-function SolutionDescription({ project, problem }: SolutionDescriptionInfo) {
-  const theme = useTheme();
-
-  // STATE & EFFECT ======================================================================
-
-  const [error, setError] = useState(null);
-  const [votes, setVotes] = useState<Vote[]>([]);
-
-  // get all votes related to a particular problem/Solution of a praticular project from
-  // snapshot
-  useEffect(() => {
-    fetch(
-      `https://testnet.snapshot.page/api/${project}/proposal/${problem.authorIpfsHash}`
-    )
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw Error(response.statusText);
-        }
-      })
-      .then((data) => Object.values(data))
-      .then((votes) => {
-        let mapped_votes = votes.map((vote) => {
-          return new Vote(problem, vote.msg.payload.choice);
-        });
-        setVotes(mapped_votes);
-      })
-      .catch((reason) => {
-        setError(reason);
-      });
-  }, []);
-
-    // HELPERS =============================================================================
-
-    function countVotes(kind: string): number {
-      if (kind === "up") {
-        return votes.filter((v) => v.choice === 1).length;
-      } else if (kind === "down") {
-        return votes.filter((v) => v.choice === 2).length;
-      }
-    }
-  
-  // RENDERER ============================================================================
-
-  return error ? (
-    <Card
-      width="95%"
-      height="auto"
-      style={{
-        marginTop: `${4 * GU}px`,
-        background: "#FFF4F6",
-        borderRadious: `10px`,
-      }}
-    >
-      <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
-        <h2>
-          Unfortunately, there was an error when retrieving this solution
-          proposal.
-        </h2>
-      </div>
-    </Card>
-  ) : (
+function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
+  return (
     <Card
       width="95%"
       height="auto"
@@ -88,23 +27,19 @@ function SolutionDescription({ project, problem }: SolutionDescriptionInfo) {
           borderRadius: "10px",
         }}
       >
-        <p
-          style={{
-            fontSize: "14px",
-            color: `${theme.surfaceContentSecondary}`,
-          }}
-        >
-          Reported by: {problem.address}
-        </p>
+        <p style={{ fontSize: "14px" }}>Reported by: {problem.address}</p>
         <Link
           href={{
             pathname: "/[project]/[problem]/solutions",
-            query: { project: project, problem: problem.authorIpfsHash },
+            query: {
+              project: problem.msg.space,
+              problem: problem.authorIpfsHash,
+            },
           }}
           passHref
         >
           <Button external={false} mode="inactive" disabled={true}>
-            Application
+            Apply
           </Button>
         </Link>
       </section>
@@ -123,42 +58,35 @@ function SolutionDescription({ project, problem }: SolutionDescriptionInfo) {
               marginBottom: `${0.5 * GU}px`,
             }}
           >
-            {problem.msg.payload.name}
+            {(problem.msg.payload as ProposalPayload).name}
           </h1>
-          <p
-            style={{
-              fontSize: "16px",
-              color: `${theme.surfaceContentSecondary}`,
-            }}
-          >
-            {problem.msg.payload.body}
+          <p style={{ fontSize: "16px" }}>
+            {(problem.msg.payload as ProposalPayload).body}
           </p>
         </div>
       </section>
-      <VotingButtons
-        proposal={problem.authorIpfsHash}
-        no_upvotes={countVotes("up")}
-        no_downvotes={countVotes("down")}
-      />
+      {downvotes > -1 ? (
+        <VotingButtons
+          proposal={problem.authorIpfsHash}
+          no_upvotes={(100 - downvotes).toFixed().concat(" &")}
+          no_downvotes={downvotes.toFixed().concat(" &")}
+        />
+      ) : (
+        <VotingButtons
+          proposal={problem.authorIpfsHash}
+          no_upvotes={"no votes!"}
+          no_downvotes={"no votes!"}
+        />
+      )}
     </Card>
   );
 }
 
+export default SolutionDescription;
+
 // TYPES =================================================================================
 
-class Vote {
-  proposal: Proposal;
-  choice: number;
-
-  constructor(proposal, choice) {
-    this.proposal = proposal;
-    this.choice = choice;
-  }
-}
-
 type SolutionDescriptionInfo = {
-  project: string | string[];
-  problem: Proposal;
+  problem: SnapshotData;
+  downvotes: number;
 };
-
-export default SolutionDescription;

@@ -1,11 +1,10 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useRouter, withRouter } from "next/router";
-import { GU, DropDown, Split } from "@aragon/ui";
+import { useRouter } from "next/router";
+import { GU, Split, DropDown, LoadingRing } from "@aragon/ui";
 
 import Title from "../../../../components/Title";
 import "../../../../styles/index.less";
 import Header from "../../../../components/Header";
-import Breadcrumbs from "../../../../components/Breadcrumb";
 import SolutionDescription from "../../../../components/DescriptionBoxes/SolutionDescription";
 import ReportSolutionIndicator from "../../../../components/ReportSolutionIndicator";
 import { ARAGON_LOGO } from "../../../../lib/constants";
@@ -15,8 +14,12 @@ const SolutionsPage = () => {
   const { project, problem } = router.query;
 
   // STATE & EFFECT ======================================================================
+
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState(0);
+  const [votes, setVotes] = useState<VoteResult[]>([]);
+  const [loadingProposals, setLoadingProposals] = useState(true);
+  const [done, setDone] = useState(false);
   const [
     proposalCategories,
     setProposalCategories,
@@ -27,7 +30,7 @@ const SolutionsPage = () => {
     all: [],
   });
 
-  // get all problems related to a particular project from snapshot
+  // Pull all the problem belonging to the given project from the backend.
   useEffect(() => {
     fetch(`http://127.0.0.1:4040/solutions/${project}/${problem}`)
       .then((response) => {
@@ -38,23 +41,80 @@ const SolutionsPage = () => {
         }
       })
       .then((data) => Object.values(data))
-      .then((data: Proposal[]) => {
-        let curr_date = Math.round(Date.now() / 1e3);
-        let categories: ProposalCategories = {
-          active: data.filter(
-            (p) =>
-              p.msg.payload.start < curr_date && curr_date < p.msg.payload.end
-          ),
-          closed: data.filter((p) => p.msg.payload.end < curr_date),
-          pending: data.filter((p) => p.msg.payload.start > curr_date),
+      .then((data: SnapshotData[]) => {
+        let categories = {
+          active: [],
+          closed: [],
+          pending: [],
           all: data,
         };
+        let curr_date = Math.round(Date.now() / 1e3);
+        function categorize(p: SnapshotData) {
+          const proposalInfo = p.msg.payload as ProposalPayload;
+          if (proposalInfo.end < curr_date) {
+            categories.closed.push(p);
+          } else if (proposalInfo.start > curr_date) {
+            categories.pending.push(p);
+          } else {
+            categories.active.push(p);
+          }
+        }
+        data.forEach(categorize);
         setProposalCategories(categories);
+        setLoadingProposals(false);
       })
       .catch((reason) => {
         setError(reason);
       });
   }, []);
+
+  // Pull all the votes related to each problem from Snapshot.
+  useEffect(() => {
+    setDone(false);
+    async function fetchVotes() {
+      if (loadingProposals) {
+        console.log("abort fetching votes.");
+        return;
+      }
+
+      console.log("fetching votes");
+      let vote_results: VoteResult[] = [];
+      const currCategory = Object.values(proposalCategories)[selected];
+      for (let proposal of currCategory) {
+        const res = await fetch(
+          `https://testnet.snapshot.page/api/aragon/proposal/${proposal.authorIpfsHash}`
+        );
+        if (!res.ok) {
+          throw Error(res.statusText);
+        }
+        const data = await res.json();
+        const votes: SnapshotData[] = Object.values(data);
+
+        //compute voting results.
+        // TODO compute results w.r.t. to a strategy. Currently, each vote is weighted
+        // equally, idenpendetly of any erc-20 tokens.
+        let percentage_downvotes = -1;
+        if (votes.length) {
+          function reducer(acc: number, curr: SnapshotData) {
+            const vote = curr.msg.payload as VotePayload;
+            return acc + vote.choice - 1;
+          }
+          const no_upvotes = votes.reduce(reducer, 0);
+          percentage_downvotes = (no_upvotes / votes.length) * 100;
+        }
+
+        const result: VoteResult = {
+          problem: proposal,
+          percentage: percentage_downvotes,
+        };
+        vote_results.push(result);
+      }
+      console.log("all votes fetched");
+      setVotes(vote_results);
+      setDone(true);
+    }
+    fetchVotes();
+  }, [loadingProposals, selected]);
 
   // RENDERER ============================================================================
 
@@ -95,20 +155,28 @@ const SolutionsPage = () => {
               </div>
             }
           />
-          {error ? (
-            <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
-              <h2>Oops, something seems to have gone wrong!</h2>
-            </div>
-          ) : Object.values(proposalCategories)[selected].length === 0 ? (
-            <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
-              <h2>There are no problems in the selected category.</h2>
-            </div>
+          {done ? (
+            votes
+              .sort((a, b) => a.percentage - b.percentage)
+              .map((v: VoteResult, i) => (
+                <SolutionDescription
+                  key={i}
+                  problem={v.problem}
+                  downvotes={v.percentage}
+                />
+              ))
           ) : (
-            Object.values(proposalCategories)[
-              selected
-            ].map((p: Proposal, i) => (
-              <SolutionDescription key={i} project={project} problem={p} />
-            ))
+            <div
+              style={{
+                height: "400 px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "50px 0 250px 0",
+              }}
+            >
+              <LoadingRing mode="half-circle" />
+            </div>
           )}
         </div>
         <div style={{ width: "25%", paddingTop: `${6 * GU}px` }}>
@@ -122,7 +190,7 @@ const SolutionsPage = () => {
   );
 };
 
-export default withRouter(SolutionsPage);
+export default SolutionsPage;
 
 export function capitalize(name: string): string {
   const firstLetter = name.charAt(0);
@@ -134,13 +202,13 @@ export function capitalize(name: string): string {
 // TYPES =================================================================================
 
 type ProposalCategories = {
-  active: Proposal[];
-  closed: Proposal[];
-  pending: Proposal[];
-  all: Proposal[];
+  active: SnapshotData[];
+  closed: SnapshotData[];
+  pending: SnapshotData[];
+  all: SnapshotData[];
 };
 
-export interface Proposal {
+export interface SnapshotData {
   address: string;
   msg: Msg;
   sig: string;
@@ -153,10 +221,10 @@ export interface Msg {
   timestamp: string;
   space: string;
   type: string;
-  payload: Payload;
+  payload: ProposalPayload | VotePayload;
 }
 
-export interface Payload {
+export interface ProposalPayload {
   end: number;
   body: string;
   name: string;
@@ -164,6 +232,12 @@ export interface Payload {
   choices: string[];
   metadata: Metadata;
   snapshot: number;
+}
+
+export interface VotePayload {
+  choice: number;
+  metadata: Metadata;
+  proposal: string;
 }
 
 export interface Metadata {
@@ -179,4 +253,9 @@ export interface Params {
   symbol: string;
   address: string;
   decimals?: number;
+}
+
+export interface VoteResult {
+  problem: SnapshotData;
+  percentage: number;
 }

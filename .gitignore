@@ -1,7 +1,8 @@
-build
 .next
-node_modules
 .vscode
+.github/vocdoni_workflow
+build
+node_modules
 components/Sandbox
 pages/vocdoniWelcome
 pages/vocdoniProcess
