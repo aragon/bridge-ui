@@ -1,11 +1,10 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useRouter, withRouter } from "next/router";
+import { useRouter } from "next/router";
 import { GU, Split, DropDown, LoadingRing } from "@aragon/ui";
 
 import Title from "../../../../components/Title";
 import "../../../../styles/index.less";
 import Header from "../../../../components/Header";
-import Breadcrumbs from "../../../../components/Breadcrumb";
 import SolutionDescription from "../../../../components/DescriptionBoxes/SolutionDescription";
 import ReportSolutionIndicator from "../../../../components/ReportSolutionIndicator";
 import { ARAGON_LOGO } from "../../../../lib/constants";
@@ -90,8 +89,11 @@ const SolutionsPage = () => {
         }
         const data = await res.json();
         const votes: SnapshotData[] = Object.values(data);
-        let percentage_downvotes = -1;
 
+        //compute voting results.
+        // TODO compute results w.r.t. to a strategy. Currently, each vote is weighted
+        // equally, idenpendetly of any erc-20 tokens.
+        let percentage_downvotes = -1;
         if (votes.length) {
           function reducer(acc: number, curr: SnapshotData) {
             const vote = curr.msg.payload as VotePayload;

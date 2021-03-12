@@ -1,18 +1,12 @@
 //TODO merge this component with ProblemDescription component
-import React, { useEffect, useState } from "react";
-import { Card, GU, useTheme, Button } from "@aragon/ui";
+import React from "react";
+import { Card, GU, Button } from "@aragon/ui";
 import Link from "next/link";
 
 import VotingButtons from "../VotingButtons";
-import {
-  ProposalPayload,
-  SnapshotData,
-  VoteResult,
-} from "../../pages/[project]/problems";
+import { ProposalPayload, SnapshotData } from "../../pages/[project]/problems";
 
 function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
-  // RENDERER ============================================================================
-
   return (
     <Card
       width="95%"

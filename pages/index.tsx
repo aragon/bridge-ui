@@ -23,7 +23,6 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
       let urlObject = {
         pathname: `/[project]/problems`,
         query: { project: "aragon" },
-        // pathname: `/testproblems`,
       };
       router.push(urlObject);
     }
@@ -37,7 +36,6 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
         let urlObject = {
           pathname: `/[project]/problems`,
           query: { project: "aragon" },
-          // pathname: `/testproblems`,
         };
         router.push(urlObject);
       })
