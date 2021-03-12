@@ -1,4 +1,4 @@
-//TODO merge this component with ProblemDescription component
+//TODO merge this component with SolutionDescription component
 import React, { useEffect, useState } from "react";
 import { Card, GU, useTheme, Button } from "@aragon/ui";
 import Link from "next/link";
@@ -10,7 +10,10 @@ import {
   VoteResult,
 } from "../../pages/[project]/problems";
 
-function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
+function TestProblemDescription({
+  problem,
+  downvotes,
+}: ProblemDescriptionInfo) {
   // RENDERER ============================================================================
 
   return (
@@ -19,7 +22,7 @@ function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
       height="auto"
       style={{
         marginTop: `${4 * GU}px`,
-        background: "#F6FCFF",
+        background: "#FFF4F6",
         borderRadious: `10px`,
       }}
     >
@@ -33,21 +36,25 @@ function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
           borderRadius: "10px",
         }}
       >
-        <p style={{ fontSize: "14px" }}>Reported by: {problem.address}</p>
-        <Link
+        <p
+          style={{
+            fontSize: "14px",
+            color: `${theme.surfaceContentSecondary}`,
+          }}
+        >
+          Reported by: {problem.address}
+        </p>
+        {/* <Link
           href={{
             pathname: "/[project]/[problem]/solutions",
-            query: {
-              project: problem.msg.space,
-              problem: problem.authorIpfsHash,
-            },
+            query: { project: project, problem: problem.authorIpfsHash },
           }}
           passHref
         >
-          <Button external={false} mode="inactive" disabled={true}>
-            Apply
+          <Button external={false} mode="strong">
+            Solutions
           </Button>
-        </Link>
+        </Link> */}
       </section>
       <section
         style={{
@@ -66,7 +73,12 @@ function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
           >
             {(problem.msg.payload as ProposalPayload).name}
           </h1>
-          <p style={{ fontSize: "16px" }}>
+          <p
+            style={{
+              fontSize: "16px",
+              color: `${theme.surfaceContentSecondary}`,
+            }}
+          >
             {(problem.msg.payload as ProposalPayload).body}
           </p>
         </div>
@@ -88,11 +100,11 @@ function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
   );
 }
 
-export default SolutionDescription;
+export default TestProblemDescription;
 
 // TYPES =================================================================================
 
-type SolutionDescriptionInfo = {
+type ProblemDescriptionInfo = {
   problem: SnapshotData;
   downvotes: number;
 };

@@ -2,19 +2,18 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { GU, Split, DropDown, LoadingRing } from "@aragon/ui";
 
-import Title from "../../../components/Title";
-import { ARAGON_LOGO } from "../../../lib/constants";
-import "../../../styles/index.less";
-import Header from "../../../components/Header";
-import ProblemDescription from "../../../components/DescriptionBoxes/ProblemDescription";
-import Breadcrumbs from "../../../components/Breadcrumb";
-import ReportProblemIndicator from "../../../components/ReportProblemIndiactor";
-import { capitalize } from "../[problem]/solutions";
-import TestProblemDescription from "../../../components/DescriptionBoxes/ProblemDescription-copy";
+import Title from "../../components/Title";
+import { ARAGON_LOGO, TEST_HUB_URL } from "../../lib/constants";
+import "../../styles/index.less";
+import Header from "../../components/Header";
+import TestProblemDescription from "../../components/DescriptionBoxes/ProblemDescription-copy";
+import Breadcrumbs from "../../components/Breadcrumb";
+import ReportProblemIndicator from "../../components/ReportProblemIndiactor";
+import { capitalize } from "../[project]/[problem]/solutions";
 
 const ProblemsPage = () => {
   const router = useRouter();
-  const { project } = router.query;
+  const project = "aragon";
 
   // STATE & EFFECT ======================================================================
 
@@ -33,7 +32,7 @@ const ProblemsPage = () => {
     all: [],
   });
 
-  // Pull all the problem belonging to the given project from the backend.
+  // get problems related to a particular project from snapshot
   useEffect(() => {
     fetch(`http://127.0.0.1:4040/problems/${project}`)
       .then((response) => {
@@ -72,7 +71,6 @@ const ProblemsPage = () => {
       });
   }, []);
 
-  // Pull all the votes related to each problem from Snapshot.
   useEffect(() => {
     setDone(false);
     async function fetchVotes() {
@@ -160,7 +158,7 @@ const ProblemsPage = () => {
             votes
               .sort((a, b) => a.percentage - b.percentage)
               .map((v: VoteResult, i) => (
-                <ProblemDescription
+                <TestProblemDescription
                   key={i}
                   problem={v.problem}
                   downvotes={v.percentage}

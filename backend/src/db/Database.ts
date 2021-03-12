@@ -56,7 +56,6 @@ export default class Database {
    * Inserts a problem-proposal for a certian space into the DB.
    *
    * @method addProblemProposal
-   *
    * @param {string} space - Name of space for which proposal is posted
    * @param {string} space - Hash that identifies the proposal on Snapshot
    * @returns {Promise<any>}
@@ -76,7 +75,6 @@ export default class Database {
    * Inserts a solution-proposal for a certian space and problem into the DB.
    *
    * @method addSolutionProposal
-   *
    * @param {string} space - Name of space for which proposal is posted
    * @param {string} proposalHash - Hash of the corresponding problem
    * @param {string} solutionHash - Hash that identifies the proposal on Snapshot

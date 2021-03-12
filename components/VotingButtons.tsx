@@ -1,14 +1,11 @@
 import React, { useEffect } from "react";
-import { useTheme, GU, Link } from "@aragon/ui";
+import { GU, Link } from "@aragon/ui";
 import { useSigner } from "@vocdoni/react-hooks";
-import { useRouter } from "next/router";
 import { useWallet } from "use-wallet";
 
 import { DOWNARROW_ICON, HUB_URL, UPARROW_ICON } from "../lib/constants";
 
 function VotingButtons({ proposal, no_upvotes, no_downvotes }) {
-  const theme = useTheme();
-  const router = useRouter();
   const signer = useSigner();
   const wallet = useWallet();
 
