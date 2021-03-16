@@ -1,6 +1,6 @@
-# Govern TX
+# Snapshot Middleware
 
-The govern-tx package does include the transaction service of the govern project. 
+The snapshot middleware backend extends the functionalities of snapshot. 
 This service can get deployed on any server or cloud infrastructure who has nodejs installed.
 
 ## Commands
@@ -11,10 +11,6 @@ This service can get deployed on any server or cloud infrastructure who has node
 - ``yarn start:containers`` - Starts the docker containers
 - ``yarn stop:containers`` - Stops the docker containers
 - ``yarn test`` - Does execute the unit and e2e tests of this package
-
-## Postgres DB diagramm
-
-<!-- ![DB Diagramm](./assets/db_model.png) -->
 
 ## Directory Structure
 
@@ -34,15 +30,6 @@ Means ``lib`` and ``src`` should (If abstraction is required for all module) hav
 # DB wrapper and entities used in the server actions
 ./src/db
 
-# Provider class used to connect to a Ethereum node
-./src/provider
-
-# All transactions related action commands
-./src/transactions
-
-# The wallet we use to sign the transactions 
-./src/wallet
-
 # All whitelist related CRUD action commands
 ./src/whitelist
 
@@ -54,12 +41,6 @@ Means ``lib`` and ``src`` should (If abstraction is required for all module) hav
 
 # Base abstraction for all actions
 ./lib/AbstractAction.ts
-
-# Base abstraction for all transaction related actions and VO for contract function encoding
-./lib/transactions
-
-# Base abstraction for all whiteliste related CRUD actions
-./lib/whitelist
 
 # Home of all tests (e2e & unit)
 ./test

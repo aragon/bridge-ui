@@ -7,3 +7,4 @@ components/Sandbox
 pages/vocdoniWelcome
 pages/vocdoniProcess
 backend/dev-data/**
+backend/dist

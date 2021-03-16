@@ -3,8 +3,7 @@ import fastify, {
   FastifyReply,
   FastifyRequest,
 } from "fastify";
-const fetch = require("node-fetch");
-
+import fetch from "node-fetch"
 import Configuration from "./config/Configuration";
 import Database from "./db/Database";
 

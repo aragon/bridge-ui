@@ -1,15 +1,6 @@
 /* istanbul ignore file */
 // Ignore added because VOs doesn't have to be tested especially if they do not have any logic
 
-export interface EthereumOptions {
-    url: string
-    blockConfirmations: number
-    publicKey: string
-    contracts: {
-        [name: string]: string
-    }
-}
-
 export interface DatabaseOptions {
     user: string,
     host: string,
@@ -25,21 +16,11 @@ export interface ServerOptions {
 }
 
 export interface Config {
-    ethereum: EthereumOptions,
     database: DatabaseOptions,
     server: ServerOptions
 }
 
 export default class Configuration {
-    /**
-     * The options to connect to a Ethereum node and how TXs should be handled 
-     * 
-     * @property {EthereumOptions} _ethereum
-     * 
-     * @private
-     */
-    private _ethereum: EthereumOptions
-
     /**
      * The options to connect to the Postgres database
      * 
@@ -66,7 +47,6 @@ export default class Configuration {
     constructor(
         config: Config
     ) {
-        this.ethereum = config.ethereum
         this.database = config.database
         this.server = config.server
     }
@@ -95,32 +75,6 @@ export default class Configuration {
      */
     public set database(value: DatabaseOptions) {
         this._database = value;
-    }
-
-    /**
-     * Getter for ethereum node options
-     * 
-     * @property ethereum
-     * 
-     * @returns {EthereumOptions}
-     * 
-     * @public 
-     */
-    public get ethereum(): EthereumOptions {
-        return this._ethereum;
-    }
-
-    /**
-     * Setter for the ethereum node options
-     * 
-     * @property ethereum
-     * 
-     * @returns {EthereumOptions}
-     * 
-     * @public
-     */
-    public set ethereum(value: EthereumOptions) {
-        this._ethereum = value;
     }
 
     /**
@@ -160,7 +114,6 @@ export default class Configuration {
      */
     public toObject(): any {
         return {
-            ethereum: this._ethereum,
             database: this._database,
             server: this._server
         }
