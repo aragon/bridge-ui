@@ -60,39 +60,6 @@ export default class Bootstrap {
   }
 
   /**
-   * Register test routes.
-   *
-   * These routes are used to test things during development.
-   *
-   * @method registerTestRoute
-   * @returns {void}
-   * @private
-   */
-  private registerSimpleRoute() {
-    this.server.get(
-      "/simple/:space",
-      async (request: FastifyRequest, reply: FastifyReply) => {
-        const space = request.url.split("/").pop() || "";
-
-        reply
-          .code(200)
-          .header("Access-Control-Allow-Origin", "*")
-          .header("Content-Type", "application/json; charset=utf-8");
-      }
-    );
-    this.server.post(
-      "/simple",
-      async (request: FastifyRequest, reply: FastifyReply) => {
-        reply
-          .code(200)
-          .header("Content-Type", "application/json; charset=utf-8")
-          .header("Access-Control-Allow-Origin", "*")
-          .send({ requestBOdy: request.body });
-      }
-    );
-  }
-
-  /**
    * Register route for new proposal
    *
    * Upon receiving a request this method forwards the proposal to Snapshot. Snapshot

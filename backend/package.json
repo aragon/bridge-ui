@@ -1,7 +1,7 @@
 {
-  "name": "govern-tx",
+  "name": "snapshot-middleware",
   "version": "1.0.0-beta.12",
-  "description": "Transactions service of Govern",
+  "description": "Snapshot Middleware for Apollo",
   "main": "./src/index.js",
   "scripts": {
     "dev": "yarn start:containers && DEV=true ts-node-dev src/index.ts",
