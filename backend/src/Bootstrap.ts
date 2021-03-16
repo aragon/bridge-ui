@@ -33,8 +33,7 @@ export default class Bootstrap {
   constructor(private config: Configuration) {
     this.setServer();
     this.setDatabase();
-    this.registerSimpleRoute();
-    this.registerProposalRoute();
+    this.registerRoutes();
   }
 
   /**
@@ -60,17 +59,22 @@ export default class Bootstrap {
   }
 
   /**
+   * TODO: Move entire logic out to Action classes extending from AbstractAction.
+   * TODO: In the end only `new XAction(..).execute()` should be called here. This is the minimum OOD I did for govern-tx. 
+   * 
    * Register route for new proposal
    *
    * Upon receiving a request this method forwards the proposal to Snapshot. Snapshot
    * acknowledges the proposal by sending back a hash. his hash is then stored in the
    * database with the corresponding space name.
    *
-   * @method registerProposalRoute
+   * @method registerRoutes
+   * 
    * @returns {void}
+   * 
    * @private
    */
-  private registerProposalRoute() {
+  private registerRoutes() {
     this.server.post<{ Body: ProposalMessage }>(
       "/problemProposal/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
