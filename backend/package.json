@@ -1,10 +1,10 @@
 {
-  "name": "govern-tx",
+  "name": "snapshot-middleware",
   "version": "1.0.0-beta.12",
-  "description": "Transactions service of Govern",
+  "description": "Snapshot Middleware for Apollo",
   "main": "./src/index.js",
   "scripts": {
-    "dev": "yarn start:containers && DEV=true ts-node-dev src/index.ts",
+    "dev": "DEV=true ts-node-dev src/index.ts",
     "start": "node --loader ts-node/esm.mjs src/index.ts",
     "start:containers": "docker-compose up -d",
     "stop:containers": "docker-compose down",
@@ -30,15 +30,17 @@
     "typescript": "^4.0.5"
   },
   "dependencies": {
-    "@ethersproject/address": "^5.0.7",
     "@ethersproject/abi": "^5.0.7",
+    "@ethersproject/address": "^5.0.7",
     "@ethersproject/bytes": "^5.0.6",
     "@ethersproject/hash": "^5.0.9",
     "@ethersproject/providers": "^5.0.15",
     "@ethersproject/strings": "^5.0.7",
     "@ethersproject/wallet": "^5.0.8",
     "@types/http-errors": "^1.8.0",
+    "dotenv": "^8.2.0",
     "fastify": "^3.8.0",
-    "postgres": "^2.0.0-beta.2"
+    "postgres": "^2.0.0-beta.2",
+    "node-fetch": "^2.6.0"
   }
 }
