@@ -4,7 +4,6 @@ import fastify, {
   FastifyRequest,
 } from "fastify";
 const fetch = require("node-fetch");
-
 import Configuration from "./config/Configuration";
 import Database from "./db/Database";
 
@@ -35,8 +34,8 @@ export default class Bootstrap {
     this.setServer();
     this.setDatabase();
     this.registerSimpleRoute();
-    this.registerProposalRoute();
     this.registerTestRoute();
+    this.registerRoutes();
   }
 
   /**
@@ -114,28 +113,35 @@ export default class Bootstrap {
   }
 
   /**
+   * TODO: Move entire logic out to Action classes extending from AbstractAction.
+   * TODO: In the end only `new XAction(..).execute()` should be called here. This is the minimum OOD I did for govern-tx.
+   *
    * Register route for new proposal
    *
    * Upon receiving a request this method forwards the proposal to Snapshot. Snapshot
    * acknowledges the proposal by sending back a hash. his hash is then stored in the
    * database with the corresponding space name.
    *
-   * @method registerProposalRoute
+   * @method registerRoutes
+   *
    * @returns {void}
+   *
    * @private
    */
-  private registerProposalRoute() {
+  private registerRoutes() {
     this.server.post<{ Body: ProposalMessage }>(
       "/problemProposal/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
         const space = request.url.split("/").pop() || "";
-        const init = {
+        const body: BodyInit | null | undefined =
+          (request.body as string) || "";
+        const init: RequestInit = {
           method: "POST",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: request.body,
+          body: body,
         };
 
         fetch(this.apiUrl, init)

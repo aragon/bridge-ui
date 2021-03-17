@@ -2,15 +2,6 @@ import { Config } from "../src/config/Configuration";
 // require("dotenv").config();
 
 export const config: Config = {
-  ethereum: {
-    publicKey: "", // Add default EOA
-    contracts: {
-      GovernQueue: "", // Add deployment address can get calculated if deployed with create2
-      GovernBaseFactory: "",
-    },
-    url: process.env.ETH_URL || "localhost:8545",
-    blockConfirmations: parseInt(process.env.DB_PORT || "42"),
-  },
   database: {
     user: process.env.DB_USER || "postgres",
     host: process.env.DB_HOST || "postgres",
