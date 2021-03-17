@@ -36,6 +36,7 @@ export default class Bootstrap {
     this.setDatabase();
     this.registerSimpleRoute();
     this.registerProposalRoute();
+    this.registerTestRoute();
   }
 
   /**
@@ -58,6 +59,25 @@ export default class Bootstrap {
         console.log(`Server is listening at ${address}`);
       }
     );
+  }
+
+  /**
+   * Register test routes.
+   *
+   * These routes are used to test things during development.
+   *
+   * @method registerTestRoute
+   * @returns {void}
+   * @private
+   */
+  private registerTestRoute() {
+    this.server.get("/t", (_, reply) => {
+      reply
+        .code(200)
+        .header("Access-Control-Allow-Origin", "*")
+        .header("Content-Type", "application/json; charset=utf-8")
+        .send({ greetings: "hey there! You've reached the server." });
+    });
   }
 
   /**
@@ -236,6 +256,7 @@ export default class Bootstrap {
               .send(filteredProposals);
           })
           .catch((error: Error) => {
+            console.error(error);
             //TODO catch errors.
           });
       }
