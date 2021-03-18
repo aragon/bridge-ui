@@ -27,7 +27,8 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Build backend image
-        run: cd apollo/backend && docker build -t apollo:latest .
+        run: echo "$(ls)"
+       # run: cd backend && docker build -t apollo:latest .
 
       # Runs a set of commands using the runners shell
       - name: Push Image
