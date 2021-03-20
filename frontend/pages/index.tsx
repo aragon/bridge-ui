@@ -21,8 +21,7 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
       connectionSetter(true);
       addressSetter(wallet.account);
       let urlObject = {
-        pathname: `/[project]/problems`,
-        query: { project: "aragon" },
+        pathname: `/projects`,
       };
       router.push(urlObject);
     }
@@ -34,8 +33,7 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
         if (!wallet.connectors.injected)
           throw new Error(METAMASK_IS_NOT_AVAILABLE);
         let urlObject = {
-          pathname: `/[project]/problems`,
-          query: { project: "aragon" },
+          pathname: `/projects`,
         };
         router.push(urlObject);
       })
