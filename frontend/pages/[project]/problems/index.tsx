@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { GU, Split, DropDown, LoadingRing } from "@aragon/ui";
 
@@ -9,6 +9,20 @@ import Header from "../../../components/Header";
 import ProblemDescription from "../../../components/DescriptionBoxes/ProblemDescription";
 import ReportProblemIndicator from "../../../components/ReportProblemIndiactor";
 import { capitalize } from "../[problem]/solutions";
+import "../../../lib/types";
+import {
+  ProposalPayload,
+  SnapshotData,
+  VotePayload,
+  VoteResult,
+} from "../../../lib/types";
+
+type ProposalCategories = {
+  active: SnapshotData[];
+  closed: SnapshotData[];
+  pending: SnapshotData[];
+  all: SnapshotData[];
+};
 
 const ProblemsPage = () => {
   const router = useRouter();
@@ -121,7 +135,7 @@ const ProblemsPage = () => {
   // RENDERER ============================================================================
 
   return (
-    <Fragment>
+    <>
       {/* <Breadcrumbs /> */}
       <Header
         illustration={ARAGON_LOGO}
@@ -185,69 +199,8 @@ const ProblemsPage = () => {
           <ReportProblemIndicator projectName={project} />
         </div>
       </section>
-    </Fragment>
+    </>
   );
 };
 
 export default ProblemsPage;
-
-// TYPES =================================================================================
-
-type ProposalCategories = {
-  active: SnapshotData[];
-  closed: SnapshotData[];
-  pending: SnapshotData[];
-  all: SnapshotData[];
-};
-
-export interface SnapshotData {
-  address: string;
-  msg: Msg;
-  sig: string;
-  authorIpfsHash: string;
-  relayerIpfsHash: string;
-}
-
-export interface Msg {
-  version: string;
-  timestamp: string;
-  space: string;
-  type: string;
-  payload: ProposalPayload | VotePayload;
-}
-
-export interface ProposalPayload {
-  end: number;
-  body: string;
-  name: string;
-  start: number;
-  choices: string[];
-  metadata: Metadata;
-  snapshot: number;
-}
-
-export interface VotePayload {
-  choice: number;
-  metadata: Metadata;
-  proposal: string;
-}
-
-export interface Metadata {
-  strategies: Strategy[];
-}
-
-export interface Strategy {
-  name: string;
-  params: Params;
-}
-
-export interface Params {
-  symbol: string;
-  address: string;
-  decimals?: number;
-}
-
-export interface VoteResult {
-  problem: SnapshotData;
-  percentage: number;
-}

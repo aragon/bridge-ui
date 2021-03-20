@@ -6,6 +6,7 @@ import Title from "../../components/Title";
 import ProjectCard from "../../components/Cards/ProjectCard";
 import { ARAGON_LOGO } from "../../lib/constants";
 import "../../styles/index.less";
+import { Project } from "../../lib/types";
 
 const ProjectsPage = ({ connectionSetter }) => {
   const router = useRouter();
@@ -85,30 +86,3 @@ const ProjectsPage = ({ connectionSetter }) => {
 };
 
 export default ProjectsPage;
-
-// TYPES =================================================================================
-
-export interface Project {
-  name: string;
-  network: string;
-  symbol: string;
-  strategies: Strategy[];
-  members: string[];
-  filters: Filters;
-}
-
-export interface Filters {
-  defaultTab: string;
-  minScore: number;
-}
-
-export interface Strategy {
-  name: string;
-  params: Params;
-}
-
-export interface Params {
-  address: string;
-  symbol: string;
-  decimals: number;
-}
