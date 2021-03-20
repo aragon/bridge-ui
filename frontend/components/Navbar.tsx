@@ -2,9 +2,15 @@ import PropTypes from "prop-types";
 import Link from "next/link";
 import { Header, Button, GU, useLayout, Link as AragonLink } from "@aragon/ui";
 import { APOLLO_BRANDING } from "../lib/constants";
+import { useWallet } from "use-wallet";
 
-export default function Navbar({ connected, address }) {
+export default function Navbar() {
   const { layoutWidth } = useLayout();
+  const wallet = useWallet();
+
+  function isWalletConnected() {
+    return wallet.status === "connected";
+  }
 
   return (
     <div style={{ background: "#081937", width: `${layoutWidth} px` }}>
@@ -24,15 +30,14 @@ export default function Navbar({ connected, address }) {
             style={{ background: "#59A0FF" }}
             mode="strong"
             wide
-            label={connected ? "Connected: " + address : "Disconnected"}
+            label={
+              isWalletConnected()
+                ? "Connected: " + wallet.account
+                : "Disconnected"
+            }
           />
         }
       />
     </div>
   );
 }
-
-Navbar.propTypes = {
-  connected: PropTypes.bool.isRequired,
-  address: PropTypes.string,
-};

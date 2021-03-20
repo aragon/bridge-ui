@@ -7,24 +7,21 @@ import "../styles/index.less";
 import { ChainUnsupportedError, useWallet } from "use-wallet";
 import { INVALID_CHAIN_ID, METAMASK_IS_NOT_AVAILABLE } from "../lib/errors";
 
-const WelcomePage = ({ connectionSetter, addressSetter }) => {
+const WelcomePage = () => {
   const router = useRouter();
   const wallet = useWallet();
   // const [connecting, setConnecting] = useState(false) //TODO find out what this did.
   const isConnected = wallet.status === "connected";
-  connectionSetter(isConnected);
-  addressSetter(wallet.account);
 
   // CALLBACK
   function onWalletConnect() {
     if (wallet.status === "connected") {
-      connectionSetter(true);
-      addressSetter(wallet.account);
+      console.log("bsdfj");
       let urlObject = {
-        pathname: `/[project]/problems`,
-        query: { project: "aragon" },
+        pathname: `/projects`,
       };
       router.push(urlObject);
+      return wallet;
     }
 
     // setConnecting(true);
@@ -34,8 +31,7 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
         if (!wallet.connectors.injected)
           throw new Error(METAMASK_IS_NOT_AVAILABLE);
         let urlObject = {
-          pathname: `/[project]/problems`,
-          query: { project: "aragon" },
+          pathname: `/projects`,
         };
         router.push(urlObject);
       })
@@ -59,35 +55,37 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
   }
 
   return (
-    <div style={{ height: `${100 * GU}px` }}>
-      <Split
-        primary={
-          <Title
-            title="Welcome"
-            subtitle="Please connect your wallet in order to proceed."
-          />
-        }
-        secondary={
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-              padding: `${10 * GU}px ${2 * GU}px ${7 * GU}px`,
-            }}
-          >
-            <Button
-              label={isConnected ? "Show Problems" : "Connect with MetaMask"}
-              icon={<IconEthereum />}
-              mode="strong"
-              style={{ background: "#59A0FF" }}
-              wide
-              onClick={() => onWalletConnect()}
+    <>
+      <div style={{ height: `${100 * GU}px` }}>
+        <Split
+          primary={
+            <Title
+              title="Welcome"
+              subtitle="Please connect your wallet in order to proceed."
             />
-          </div>
-        }
-      />
-    </div>
+          }
+          secondary={
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-end",
+                justifyContent: "center",
+                padding: `${10 * GU}px ${2 * GU}px ${7 * GU}px`,
+              }}
+            >
+              <Button
+                label={isConnected ? "Show Problems" : "Connect with MetaMask"}
+                icon={<IconEthereum />}
+                mode="strong"
+                style={{ background: "#59A0FF" }}
+                wide
+                onClick={() => onWalletConnect()}
+              />
+            </div>
+          }
+        />
+      </div>
+    </>
   );
 };
 

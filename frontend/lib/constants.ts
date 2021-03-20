@@ -15,6 +15,7 @@ export const PROBLEM_ICON = "/media/problem-icon.svg";
 export const SOLUTION_ICON = "/media/solution-icon.svg";
 export const UPARROW_ICON = "/media/arrow-up-circle.svg";
 export const DOWNARROW_ICON = "/media/arrow-down-circle.svg";
+export const WELCOME_IMG = "/media/welcome-image";
 
 // NETWORK
 export const HUB_URL = "https://hub.snapshot.page";
