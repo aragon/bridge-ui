@@ -44,7 +44,7 @@ const ProjectsPage = () => {
           {spaces.map((project, index) => (
             <ProjectCard
               key={index}
-              img={ARAGON_LOGO}
+              img={null}
               label={project.name}
               symbol={project.symbol}
               onOpen={() => {

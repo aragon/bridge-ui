@@ -18,7 +18,7 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
   // CALLBACK
   function onWalletConnect() {
     if (wallet.status === "connected") {
-      connectionSetter(true);
+      // connectionSetter(true);
       addressSetter(wallet.account);
       let urlObject = {
         pathname: `/projects`,
@@ -57,35 +57,37 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
   }
 
   return (
-    <div style={{ height: `${100 * GU}px` }}>
-      <Split
-        primary={
-          <Title
-            title="Welcome"
-            subtitle="Please connect your wallet in order to proceed."
-          />
-        }
-        secondary={
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-              padding: `${10 * GU}px ${2 * GU}px ${7 * GU}px`,
-            }}
-          >
-            <Button
-              label={isConnected ? "Show Problems" : "Connect with MetaMask"}
-              icon={<IconEthereum />}
-              mode="strong"
-              style={{ background: "#59A0FF" }}
-              wide
-              onClick={() => onWalletConnect()}
+    <>
+      <div style={{ height: `${100 * GU}px` }}>
+        <Split
+          primary={
+            <Title
+              title="Welcome"
+              subtitle="Please connect your wallet in order to proceed."
             />
-          </div>
-        }
-      />
-    </div>
+          }
+          secondary={
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-end",
+                justifyContent: "center",
+                padding: `${10 * GU}px ${2 * GU}px ${7 * GU}px`,
+              }}
+            >
+              <Button
+                label={isConnected ? "Show Problems" : "Connect with MetaMask"}
+                icon={<IconEthereum />}
+                mode="strong"
+                style={{ background: "#59A0FF" }}
+                wide
+                onClick={() => onWalletConnect()}
+              />
+            </div>
+          }
+        />
+      </div>
+    </>
   );
 };
 
