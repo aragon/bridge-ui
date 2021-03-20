@@ -18,6 +18,24 @@ export function useSpace(spaceName: string): Project {
   return space;
 }
 
+export function useFilteredSpaces(filter: string): Project[] {
+  const [filteredSpaces, setFilteredSpace] = useState<Project[]>(null);
+  const spaces = useSpaces();
+
+  useEffect(() => {
+    if (filter === "") {
+      setFilteredSpace(spaces);
+    } else {
+      const filterResult = spaces.filter(
+        (p) => p.name.toLowerCase() == filter.toLowerCase()
+      );
+      setFilteredSpace(filterResult);
+    }
+  }, [filter, spaces]);
+
+  return filteredSpaces;
+}
+
 export function useSpaces(): Project[] {
   const [spaces, setSpaces] = useState<Project[]>(null);
 
