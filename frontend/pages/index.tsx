@@ -7,23 +7,21 @@ import "../styles/index.less";
 import { ChainUnsupportedError, useWallet } from "use-wallet";
 import { INVALID_CHAIN_ID, METAMASK_IS_NOT_AVAILABLE } from "../lib/errors";
 
-const WelcomePage = ({ connectionSetter, addressSetter }) => {
+const WelcomePage = () => {
   const router = useRouter();
   const wallet = useWallet();
   // const [connecting, setConnecting] = useState(false) //TODO find out what this did.
   const isConnected = wallet.status === "connected";
-  connectionSetter(isConnected);
-  addressSetter(wallet.account);
 
   // CALLBACK
   function onWalletConnect() {
     if (wallet.status === "connected") {
-      // connectionSetter(true);
-      addressSetter(wallet.account);
+      console.log("bsdfj");
       let urlObject = {
         pathname: `/projects`,
       };
       router.push(urlObject);
+      return wallet;
     }
 
     // setConnecting(true);
