@@ -41,8 +41,3 @@ export default function Navbar() {
     </div>
   );
 }
-
-Navbar.propTypes = {
-  connected: PropTypes.bool.isRequired,
-  address: PropTypes.string,
-};
