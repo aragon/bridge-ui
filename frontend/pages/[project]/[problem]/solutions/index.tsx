@@ -7,7 +7,7 @@ import "../../../../styles/index.less";
 import Header from "../../../../components/Header";
 import SolutionDescription from "../../../../components/DescriptionBoxes/SolutionDescription";
 import ReportSolutionIndicator from "../../../../components/ReportSolutionIndicator";
-import { ARAGON_LOGO } from "../../../../lib/constants";
+import { ARAGON_LOGO, BACKEND_URL } from "../../../../lib/constants";
 import {
   ProposalPayload,
   SnapshotData,
@@ -38,7 +38,7 @@ const SolutionsPage = () => {
 
   // Pull all the problem belonging to the given project from the backend.
   useEffect(() => {
-    fetch(`http://127.0.0.1:4040/solutions/${project}/${problem}`)
+    fetch(`http://${BACKEND_URL}/solutions/${project}/${problem}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
