@@ -1,0 +1,9 @@
+image:
+  repository: ghcr.io/aragon/apollo
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+apollo:
+  replicaCount: 1
+  dbhost: 10.52.0.5
+  staticIP: apollo-backend-ip
