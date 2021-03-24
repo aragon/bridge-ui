@@ -16,7 +16,6 @@ const WelcomePage = () => {
   // CALLBACK
   function onWalletConnect() {
     if (wallet.status === "connected") {
-      console.log("bsdfj");
       let urlObject = {
         pathname: `/projects`,
       };
