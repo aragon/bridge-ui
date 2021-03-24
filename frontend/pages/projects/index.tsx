@@ -11,7 +11,6 @@ import {
 
 import Title from "../../components/Title";
 import ProjectCard from "../../components/Cards/ProjectCard";
-import { ARAGON_LOGO } from "../../lib/constants";
 import "../../styles/index.less";
 import { Project } from "../../lib/types";
 import { useFilteredSpaces } from "../../lib/hooks/spaces";

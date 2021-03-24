@@ -1,19 +1,25 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { GU, Split, DropDown, LoadingRing } from "@aragon/ui";
 
 import Title from "../../../../components/Title";
 import "../../../../styles/index.less";
-import Header from "../../../../components/Header";
 import SolutionDescription from "../../../../components/DescriptionBoxes/SolutionDescription";
 import ReportSolutionIndicator from "../../../../components/ReportSolutionIndicator";
-import { ARAGON_LOGO, BACKEND_URL } from "../../../../lib/constants";
+import { BACKEND_URL } from "../../../../lib/constants";
 import {
   ProposalPayload,
   SnapshotData,
   VotePayload,
   VoteResult,
 } from "../../../../lib/types";
+
+type ProposalCategories = {
+  active: SnapshotData[];
+  closed: SnapshotData[];
+  pending: SnapshotData[];
+  all: SnapshotData[];
+};
 
 const SolutionsPage = () => {
   const router = useRouter();
@@ -38,7 +44,7 @@ const SolutionsPage = () => {
 
   // Pull all the problem belonging to the given project from the backend.
   useEffect(() => {
-    fetch(`http://${BACKEND_URL}/solutions/${project}/${problem}`)
+    fetch(`${BACKEND_URL}/solutions/${project}/${problem}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -46,7 +52,9 @@ const SolutionsPage = () => {
           throw Error(response.statusText);
         }
       })
-      .then((data) => Object.values(data))
+      .then((data) => {
+        return Object.values(data);
+      })
       .then((data: SnapshotData[]) => {
         let categories = {
           active: [],
@@ -70,6 +78,7 @@ const SolutionsPage = () => {
         setLoadingProposals(false);
       })
       .catch((reason) => {
+        console.log(reason);
         setError(reason);
       });
   }, []);
@@ -125,13 +134,8 @@ const SolutionsPage = () => {
   // RENDERER ============================================================================
 
   return (
-    <Fragment>
+    <>
       {/* <Breadcrumbs /> */}
-      <Header
-        illustration={ARAGON_LOGO}
-        title={capitalize(project.toString())}
-        subtitle="Govern better, together."
-      />
       <section
         style={{ display: "flex", width: "100%", marginTop: `${5 * GU}px` }}
       >
@@ -162,15 +166,29 @@ const SolutionsPage = () => {
             }
           />
           {done ? (
-            votes
-              .sort((a, b) => a.percentage - b.percentage)
-              .map((v: VoteResult, i) => (
-                <SolutionDescription
-                  key={i}
-                  problem={v.problem}
-                  downvotes={v.percentage}
-                />
-              ))
+            votes.length === 0 ? (
+              <div
+                style={{
+                  height: "400 px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  margin: "50px 0 300px 0",
+                }}
+              >
+                <h2>There are no solutions in this category.</h2>
+              </div>
+            ) : (
+              votes
+                .sort((a, b) => a.percentage - b.percentage)
+                .map((v: VoteResult, i) => (
+                  <SolutionDescription
+                    key={i}
+                    problem={v.problem}
+                    downvotes={v.percentage}
+                  />
+                ))
+            )
           ) : (
             <div
               style={{
@@ -178,7 +196,7 @@ const SolutionsPage = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                margin: "50px 0 250px 0",
+                margin: "50px 0 300px 0",
               }}
             >
               <LoadingRing mode="half-circle" />
@@ -192,7 +210,7 @@ const SolutionsPage = () => {
           />
         </div>
       </section>
-    </Fragment>
+    </>
   );
 };
 
@@ -206,10 +224,3 @@ export function capitalize(name: string): string {
 }
 
 // TYPES =================================================================================
-
-type ProposalCategories = {
-  active: SnapshotData[];
-  closed: SnapshotData[];
-  pending: SnapshotData[];
-  all: SnapshotData[];
-};

@@ -9,7 +9,6 @@ import networks from "@snapshot-labs/snapshot.js/src/networks.json";
 import { BACKEND_URL } from "../../../lib/constants";
 import Title from "../../../components/Title";
 import "../../../styles/index.less";
-import Breadcrumbs from "../../../components/Breadcrumb";
 
 const ProposalForm = () => {
   const signer = useSigner();

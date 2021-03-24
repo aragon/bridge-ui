@@ -3,12 +3,10 @@ import { useRouter } from "next/router";
 import { GU, Split, DropDown, LoadingRing } from "@aragon/ui";
 
 import Title from "../../../components/Title";
-import { ARAGON_LOGO, BACKEND_URL } from "../../../lib/constants";
+import { BACKEND_URL } from "../../../lib/constants";
 import "../../../styles/index.less";
-import Header from "../../../components/Header";
 import ProblemDescription from "../../../components/DescriptionBoxes/ProblemDescription";
 import ReportProblemIndicator from "../../../components/ReportProblemIndiactor";
-import { capitalize } from "../[problem]/solutions";
 import "../../../lib/types";
 import {
   ProposalPayload,
@@ -26,10 +24,10 @@ type ProposalCategories = {
 
 const ProblemsPage = () => {
   const router = useRouter();
-  const { project } = router.query;
 
   // STATE & EFFECT ======================================================================
 
+  const [project, setProject] = useState(router.query.project);
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState(0);
   const [votes, setVotes] = useState<VoteResult[]>([]);
@@ -55,7 +53,10 @@ const ProblemsPage = () => {
           throw Error(response.statusText);
         }
       })
-      .then((data) => Object.values(data))
+      .then((data) => {
+        console.log("DATA: " + data);
+        return Object.values(data);
+      })
       .then((data: SnapshotData[]) => {
         let categories = {
           active: [],
@@ -137,11 +138,6 @@ const ProblemsPage = () => {
   return (
     <>
       {/* <Breadcrumbs /> */}
-      <Header
-        illustration={ARAGON_LOGO}
-        title={capitalize(project.toString())}
-        subtitle="Govern better, together."
-      />
       <section
         style={{ display: "flex", width: "100%", marginTop: `${5 * GU}px` }}
       >
@@ -172,15 +168,29 @@ const ProblemsPage = () => {
             }
           />
           {done ? (
-            votes
-              .sort((a, b) => a.percentage - b.percentage)
-              .map((v: VoteResult, i) => (
-                <ProblemDescription
-                  key={i}
-                  problem={v.problem}
-                  downvotes={v.percentage}
-                />
-              ))
+            votes.length === 0 ? (
+              <div
+                style={{
+                  height: "400 px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  margin: "50px 0 300px 0",
+                }}
+              >
+                <h2>There are no problems in this category.</h2>
+              </div>
+            ) : (
+              votes
+                .sort((a, b) => a.percentage - b.percentage)
+                .map((v: VoteResult, i) => (
+                  <ProblemDescription
+                    key={i}
+                    problem={v.problem}
+                    downvotes={v.percentage}
+                  />
+                ))
+            )
           ) : (
             <div
               style={{
@@ -188,7 +198,7 @@ const ProblemsPage = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                margin: "50px 0 250px 0",
+                margin: "50px 0 300px 0",
               }}
             >
               <LoadingRing mode="half-circle" />

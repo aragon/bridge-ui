@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { TEST_HUB_URL } from "../constants";
 import { Project } from "../types";
 
 // TODO create generic, parametrized return type: T | Error for custom hooks that
@@ -40,7 +41,7 @@ export function useSpaces(): Project[] {
   const [spaces, setSpaces] = useState<Project[]>(null);
 
   useEffect(() => {
-    fetch("https://hub.snapshot.org/api/spaces")
+    fetch(`${TEST_HUB_URL}/api/spaces`)
       .then((res) => res.json())
       .then((data) => {
         const spaces: Project[] = Object.values(data);

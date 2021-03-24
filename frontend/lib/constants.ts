@@ -18,8 +18,9 @@ export const DOWNARROW_ICON = "/media/arrow-down-circle.svg";
 export const WELCOME_IMG = "/media/welcome-image";
 
 // NETWORK
-export const HUB_URL = "https://hub.snapshot.page";
-export const TEST_HUB_URL = "https://testnet.snapshot.page";
-export const BACKEND_URL = "https://10.172.0.13:4040";
+export const HUB_URL = "https://hub.snapshot.org";
+export const TEST_HUB_URL = "https://testnet.snapshot.org";
+// export const BACKEND_URL = "http://10.172.0.13:4040";
+export const BACKEND_URL = "http://127.0.0.1:4040";
 export const IPFS_GATEWAY = "gateway.ipfs.io";
 export const DEFAULT_NETWORK = 1;
