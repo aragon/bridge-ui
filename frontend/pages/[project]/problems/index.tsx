@@ -43,7 +43,7 @@ const ProblemsPage = () => {
     all: [],
   });
 
-  // Pull all the problem belonging to the given project from the backend.
+  // Pull all the problems belonging to the given project from the backend.
   useEffect(() => {
     fetch(`${BACKEND_URL}/problems/${project}`)
       .then((response) => {

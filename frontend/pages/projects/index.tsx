@@ -18,7 +18,7 @@ import { useFilteredSpaces } from "../../lib/hooks/spaces";
 const ProjectsPage = () => {
   const router = useRouter();
   const [value, setValue] = useState("");
-  const spaces: Project[] = useFilteredSpaces(value);
+  const spaces: [string, Project][] = useFilteredSpaces(value);
 
   // RENDERER ============================================================================
 
@@ -40,7 +40,7 @@ const ProjectsPage = () => {
         <LoadingRing />
       ) : (
         <CardLayout rowHeight={33 * GU} columnWidthMin={31 * GU}>
-          {spaces.map((project, index) => (
+          {spaces.map(([id, project], index) => (
             <ProjectCard
               key={index}
               img={null}
@@ -49,7 +49,7 @@ const ProjectsPage = () => {
               onOpen={() => {
                 let urlObject = {
                   pathname: `/[project]/problems`,
-                  query: { project: project.name.toLowerCase() },
+                  query: { project: id },
                 };
                 router.push(urlObject);
               }}
