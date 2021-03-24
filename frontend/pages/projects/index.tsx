@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Split, CardLayout, GU } from "@aragon/ui";
 import { useRouter } from "next/router";
 
@@ -6,6 +6,7 @@ import Title from "../../components/Title";
 import ProjectCard from "../../components/Cards/ProjectCard";
 import { ARAGON_LOGO } from "../../lib/constants";
 import "../../styles/index.less";
+import { Project } from "../../lib/types";
 
 const ProjectsPage = ({ connectionSetter }) => {
   const router = useRouter();
@@ -34,7 +35,7 @@ const ProjectsPage = ({ connectionSetter }) => {
   // RENDERER ============================================================================
 
   return (
-    <Fragment>
+    <>
       <Split
         primary={<Title title="Projects" subtitle="Choose a project" />}
         secondary={
@@ -80,35 +81,8 @@ const ProjectsPage = ({ connectionSetter }) => {
           ))}
         </CardLayout>
       )}
-    </Fragment>
+    </>
   );
 };
 
 export default ProjectsPage;
-
-// TYPES =================================================================================
-
-export interface Project {
-  name: string;
-  network: string;
-  symbol: string;
-  strategies: Strategy[];
-  members: string[];
-  filters: Filters;
-}
-
-export interface Filters {
-  defaultTab: string;
-  minScore: number;
-}
-
-export interface Strategy {
-  name: string;
-  params: Params;
-}
-
-export interface Params {
-  address: string;
-  symbol: string;
-  decimals: number;
-}

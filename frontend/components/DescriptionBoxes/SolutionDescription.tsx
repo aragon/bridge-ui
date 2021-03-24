@@ -4,7 +4,7 @@ import { Card, GU, Button } from "@aragon/ui";
 import Link from "next/link";
 
 import VotingButtons from "../VotingButtons";
-import { ProposalPayload, SnapshotData } from "../../pages/[project]/problems";
+import { ProposalPayload, SnapshotData } from "../../lib/types";
 
 function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
   return (

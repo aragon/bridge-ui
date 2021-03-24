@@ -16,7 +16,7 @@ If no postgres image is available, this will first pull an image from Docker Hub
 subsequently run it. Next, from within the backend folder:
 
 ```
-apollo/backend && docker build -t apollo:latest .
+docker build -t apollo:latest .
 ```
 
 This will build an image from the `Dockerfile` in the backend folder. After the image is

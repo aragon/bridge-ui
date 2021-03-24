@@ -20,11 +20,12 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
     if (wallet.status === "connected") {
       connectionSetter(true);
       addressSetter(wallet.account);
-      let urlObject = {
-        pathname: `/[project]/problems`,
-        query: { project: "aragon" },
-      };
-      router.push(urlObject);
+      // let urlObject = {
+      //   pathname: `/[project]/problems`,
+      //   query: { project: "aragon" },
+      // };
+      // router.push(urlObject);
+      router.push("/voteEvaluation");
     }
 
     // setConnecting(true);
@@ -33,11 +34,12 @@ const WelcomePage = ({ connectionSetter, addressSetter }) => {
       .then(() => {
         if (!wallet.connectors.injected)
           throw new Error(METAMASK_IS_NOT_AVAILABLE);
-        let urlObject = {
-          pathname: `/[project]/problems`,
-          query: { project: "aragon" },
-        };
-        router.push(urlObject);
+        // let urlObject = {
+        //   pathname: `/[project]/problems`,
+        //   query: { project: "aragon" },
+        // };
+        // router.push(urlObject);
+        router.push("/voteEvaluation");
       })
       .catch((err) => {
         // setConnecting(false);

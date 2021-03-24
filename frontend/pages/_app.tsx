@@ -17,16 +17,13 @@ type NextAppProps = AppInitialProps & {
 };
 
 const BridgeApp: FC<NextAppProps> = ({ Component, pageProps }) => {
-  const [ connected, setConnectionState] = useState(false);
-  const [ address, setAddress] = useState("");
+  const [connected, setConnectionState] = useState(false);
+  const [address, setAddress] = useState("");
 
   return (
-    <UseWalletProvider chainId={5} connectors={{injected:true}}>
+    <UseWalletProvider chainId={5} connectors={{ injected: true }}>
       <NextHead>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href={FAVICON}></link>
         <title>Apollo</title>
       </NextHead>

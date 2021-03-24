@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useWallet } from "use-wallet";
@@ -16,8 +16,6 @@ const ProposalForm = () => {
   const wallet = useWallet();
   const router = useRouter();
   const { project } = router.query;
-
-  // STATE & EFFECT ======================================================================
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -62,6 +60,7 @@ const ProposalForm = () => {
   }
 
   async function postProblem() {
+    //TODO change network on launch
     const snapshot = await getBlockNumber(getProvider("5"));
     const payload = {
       name: title,
@@ -104,7 +103,7 @@ const ProposalForm = () => {
   // RENDERER ============================================================================
 
   return (
-    <Fragment>
+    <>
       {/* <Breadcrumbs /> */}
       <Title
         title="New Problem"
@@ -153,7 +152,7 @@ const ProposalForm = () => {
           Submit
         </Button>
       </div>
-    </Fragment>
+    </>
   );
 };
 

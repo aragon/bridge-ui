@@ -8,6 +8,12 @@ import Header from "../../../../components/Header";
 import SolutionDescription from "../../../../components/DescriptionBoxes/SolutionDescription";
 import ReportSolutionIndicator from "../../../../components/ReportSolutionIndicator";
 import { ARAGON_LOGO } from "../../../../lib/constants";
+import {
+  ProposalPayload,
+  SnapshotData,
+  VotePayload,
+  VoteResult,
+} from "../../../../lib/types";
 
 const SolutionsPage = () => {
   const router = useRouter();
@@ -207,55 +213,3 @@ type ProposalCategories = {
   pending: SnapshotData[];
   all: SnapshotData[];
 };
-
-export interface SnapshotData {
-  address: string;
-  msg: Msg;
-  sig: string;
-  authorIpfsHash: string;
-  relayerIpfsHash: string;
-}
-
-export interface Msg {
-  version: string;
-  timestamp: string;
-  space: string;
-  type: string;
-  payload: ProposalPayload | VotePayload;
-}
-
-export interface ProposalPayload {
-  end: number;
-  body: string;
-  name: string;
-  start: number;
-  choices: string[];
-  metadata: Metadata;
-  snapshot: number;
-}
-
-export interface VotePayload {
-  choice: number;
-  metadata: Metadata;
-  proposal: string;
-}
-
-export interface Metadata {
-  strategies: Strategy[];
-}
-
-export interface Strategy {
-  name: string;
-  params: Params;
-}
-
-export interface Params {
-  symbol: string;
-  address: string;
-  decimals?: number;
-}
-
-export interface VoteResult {
-  problem: SnapshotData;
-  percentage: number;
-}
