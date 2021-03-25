@@ -5,6 +5,8 @@ metadata:
 spec:
   selector:
     app: {{ .Chart.Name }}-backend
+  type: NodePort
   ports:
   - name: backend
     port: 4040
+    targetPort: 4040

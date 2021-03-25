@@ -3,9 +3,13 @@ kind: Ingress
 metadata:
   name: {{ .Chart.Name }}-backend-ingress
   annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
     kubernetes.io/ingress.global-static-ip-name: {{ .Values.apollo.staticIP }}
-    ingress.kubernetes.io/enable-cors: "true"
 spec:
-  backend:
-    serviceName: {{ .Chart.Name }}-backend-service
-    servicePort: 4040
+  rules:
+  - http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: {{ .Chart.Name }}-backend-service
+          servicePort: 4040
