@@ -11,7 +11,7 @@ export function useScores(
 ): Record<string, number> {
   const [scores, setScores] = useState(null);
   useEffect(() => {
-    if (spaceInfo[0] && proposal && votes) {
+    if (spaceInfo && proposal && votes) {
       const provider = snapshotPckg.utils.getProvider(spaceInfo[1].network);
       const voters = votes.map((v) => v.address);
       const snapshot: string = (proposal.msg

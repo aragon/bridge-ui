@@ -44,8 +44,9 @@ const EvalPage = () => {
     const res = proposalPayload.choices.map((_, i) =>
       Object.values(scoredVotes)
         .filter((vote) => {
-          // const votePayload = vote.msg.payload.choice;
-          return vote.msg.payload.choice === i + 1;
+          //TODO correctly type this
+          const votePayload = vote.msg.payload as VotePayload;
+          return votePayload.choice === i + 1;
         })
         // .reduce(reducer, 0)
         .reduce((a, b: any) => a + b.balance, 0)
@@ -53,8 +54,23 @@ const EvalPage = () => {
     return res;
   }
 
-  function proposalBalance() {
-    return Object.values(scoredVotes).reduce((a, b: any) => a + b.balance, 0);
+  function balancePerStrategyPerChoice() {
+    const proposalPayload = testProposal.msg.payload as ProposalPayload;
+    const res = proposalPayload.choices.map((_, i) =>
+      aragonSpace[1].strategies.map((_, j) =>
+        Object.values(votes)
+          .filter((vote: any) => vote.msg.payload.choice === i + 1)
+          .reduce((a, b: any) => a + b.scores[j], 0)
+      )
+    );
+    return res;
+  }
+
+  function proposalBalance(): number {
+    return Object.values(scoredVotes).reduce(
+      (a, b: any) => a + b.balance,
+      0
+    ) as number;
   }
 
   // RENDERER ============================================================================
@@ -67,8 +83,14 @@ const EvalPage = () => {
       <textarea
         name=""
         id=""
+        readOnly
         rows={15}
-        value={JSON.stringify(scores, null, 2)}
+        value={JSON.stringify(
+          balancePerChoice().map((b: number) => (b * 100) / proposalBalance()),
+          // balancePerChoice(),
+          null,
+          2
+        )}
       ></textarea>
     </>
   );

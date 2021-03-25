@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TEST_HUB_URL } from "../constants";
+import { HUB_URL, TEST_HUB_URL } from "../constants";
 import { Project } from "../types";
 
 // TODO create generic, parametrized return type: T | Error for custom hooks that
@@ -11,7 +11,10 @@ export function useSpace(spaceId: string): [string, Project] {
 
   useEffect(() => {
     if (spaces) {
-      const space = Object.entries(spaces).find((p) => p[0] == spaceId);
+      const space: [string, Project] = Object.entries(spaces).find(
+        (p) => p[0] == spaceId
+      );
+      console.log("Space: " + space);
       setSpace(space);
     }
   }, [spaceId, spaces]);
@@ -43,7 +46,8 @@ export function useSpaces(): Record<string, Project> {
   const [spaces, setSpaces] = useState<Record<string, Project>>(null);
 
   useEffect(() => {
-    fetch(`${TEST_HUB_URL}/api/spaces`)
+    // fetch(`${TEST_HUB_URL}/api/spaces`)
+    fetch(`${HUB_URL}/api/spaces`)
       .then((res) => res.json())
       .then((data) => {
         const spacesRecord: Record<string, Project> = data;

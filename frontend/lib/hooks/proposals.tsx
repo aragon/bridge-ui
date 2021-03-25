@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
+import { BACKEND_URL } from "../constants";
 
-import { IpfsProposal, Msg, Proposal, SnapshotData } from "../types";
+import {
+  IpfsProposal,
+  Msg,
+  Proposal,
+  ProposalCategories,
+  ProposalPayload,
+  SnapshotData,
+} from "../types";
 
 // TODO create generic, parametrized return type: T | Error for custom hooks that
 // returns the value, or an error. (or maybe T | bool | Error)
@@ -24,17 +32,59 @@ export function useProposal(ifpsHash: string): Proposal {
   return proposal;
 }
 
-export function useProblems(spaceName: String): SnapshotData[] {
-  const [problems, setProblems] = useState<SnapshotData[]>(null);
+export function useCategorizedProblems(spaceId: String): ProposalCategories {
+  const [
+    categorizedProblems,
+    setCategorizedProblems,
+  ] = useState<ProposalCategories>({
+    active: [],
+    closed: [],
+    pending: [],
+    all: [],
+  });
 
   useEffect(() => {
-    //TODO fetch problems for given space via backend
-  }, [spaceName]);
+    fetch(`${BACKEND_URL}/problems/${spaceId}`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+      })
+      .then((data) => {
+        return Object.values(data);
+      })
+      .then((data: SnapshotData[]) => {
+        let categories = {
+          active: [],
+          closed: [],
+          pending: [],
+          all: data,
+        };
+        let curr_date = Math.round(Date.now() / 1e3);
+        function categorize(p: SnapshotData) {
+          const proposalInfo = p.msg.payload as ProposalPayload;
+          if (proposalInfo.end < curr_date) {
+            categories.closed.push(p);
+          } else if (proposalInfo.start > curr_date) {
+            categories.pending.push(p);
+          } else {
+            categories.active.push(p);
+          }
+        }
+        data.forEach(categorize);
+        setCategorizedProblems(categories);
+      });
+  }, [spaceId]);
 
-  return problems;
+  return categorizedProblems;
 }
 
-export function useSolutions(spaceName: String, problemHash): SnapshotData[] {
+export function useCategorizedSolutions(
+  spaceName: String,
+  problemHash
+): SnapshotData[] {
   const [solutions, setSolutions] = useState<SnapshotData[]>(null);
 
   useEffect(() => {

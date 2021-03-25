@@ -15,11 +15,11 @@ const WelcomePage = () => {
   // CALLBACK
   function onWalletConnect() {
     if (wallet.status === "connected") {
-      // let urlObject = {
-      //   pathname: `/projects`,
-      // };
-      // router.push(urlObject);
-      router.push("/voteEvaluation");
+      let urlObject = {
+        pathname: `/projects`,
+      };
+      router.push(urlObject);
+      // router.push("/voteEvaluation");
       return wallet;
     }
 
@@ -28,11 +28,11 @@ const WelcomePage = () => {
       .then(() => {
         if (!wallet.connectors.injected)
           throw new Error(METAMASK_IS_NOT_AVAILABLE);
-        // let urlObject = {
-        //   pathname: `/projects`,
-        // };
-        // router.push(urlObject);
-        router.push("/voteEvaluation");
+        let urlObject = {
+          pathname: `/projects`,
+        };
+        router.push(urlObject);
+        // router.push("/voteEvaluation");
       })
       .catch((err) => {
         if (

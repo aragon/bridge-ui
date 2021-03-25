@@ -18,9 +18,17 @@ export type ProcessInfo = {
   tokenAddress: string;
 };
 
+export type ProposalCategories = {
+  active: SnapshotData[];
+  closed: SnapshotData[];
+  pending: SnapshotData[];
+  all: SnapshotData[];
+};
+
 export interface VoteResult {
   problem: SnapshotData;
   percentage: number;
+  balance: number;
 }
 
 export interface IpfsProposal {
