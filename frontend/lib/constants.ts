@@ -20,7 +20,6 @@ export const WELCOME_IMG = "/media/welcome-image";
 // NETWORK
 export const HUB_URL = "https://hub.snapshot.org";
 export const TEST_HUB_URL = "https://testnet.snapshot.org";
-// export const BACKEND_URL = "http://10.172.0.13:4040";
-export const BACKEND_URL = "http://127.0.0.1:4040";
+export const BACKEND_URL = `${process.env.NEXT_PUBLIC_BACKEND_HOST}:${process.env.NEXT_PUBLIC_BACKEND_PORT}`;
 export const IPFS_GATEWAY = "gateway.ipfs.io";
 export const DEFAULT_NETWORK = 1;
