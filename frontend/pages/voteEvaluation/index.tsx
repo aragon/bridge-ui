@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { LoadingRing } from "@aragon/ui";
 
 import "../../styles/index.less";
@@ -14,7 +14,7 @@ const EvalPage = () => {
     "QmWXJvo5zXA2uSgMMCLSyFgwxnpHKP2D7NM4RqDriNjEwo",
     "QmVfnDY4MNJGBHeH5NmgfH5xCZcqsFa6gs2a6scfCGJapK",
   ];
-  const spaceName = "Aragon";
+  const spaceName = "aragon";
   const aragonSpace = useSpace(spaceName);
   const testProposal = useProposal(proposalHashes[0]);
   const votes = useVotes(proposalHashes[0]);

@@ -21,7 +21,7 @@ export function useVotes(proposalHash: string): SnapshotData[] {
 }
 
 export function useScoredVotes(
-  space: Project,
+  spaceInfo: [string, Project],
   proposal: Proposal,
   votes: SnapshotData[],
   scores: Record<string, number>
@@ -29,11 +29,11 @@ export function useScoredVotes(
   const [modifiedVotes, setModVotes] = useState(null);
 
   useEffect(() => {
-    if (space && proposal && votes && scores) {
+    if (spaceInfo && proposal && votes && scores) {
       const ammendedVotes = Object.fromEntries(
         Object.entries(votes)
           .map((vote: any) => {
-            vote[1].scores = space.strategies.map(
+            vote[1].scores = spaceInfo[1].strategies.map(
               (_, i) => scores[i][vote[1].address] || 0
             );
             vote[1].balance = vote[1].scores.reduce((a, b: any) => a + b, 0);
@@ -44,7 +44,7 @@ export function useScoredVotes(
       );
       setModVotes(ammendedVotes);
     }
-  }, [space, proposal, votes, scores]);
+  }, [spaceInfo, proposal, votes, scores]);
 
   return modifiedVotes;
 }

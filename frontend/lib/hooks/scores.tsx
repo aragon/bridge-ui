@@ -5,14 +5,14 @@ import { Project, Proposal, ProposalPayload, SnapshotData } from "../types";
 
 //TODO exchange Proposal for SnapshotData eventually.
 export function useScores(
-  space: Project,
+  spaceInfo: [string, Project],
   proposal: Proposal,
   votes: SnapshotData[]
 ): Record<string, number> {
   const [scores, setScores] = useState(null);
   useEffect(() => {
-    if (space && proposal && votes) {
-      const provider = snapshotPckg.utils.getProvider(space.network);
+    if (spaceInfo[0] && proposal && votes) {
+      const provider = snapshotPckg.utils.getProvider(spaceInfo[1].network);
       const voters = votes.map((v) => v.address);
       const snapshot: string = (proposal.msg
         .payload as ProposalPayload).snapshot.toString();
@@ -21,9 +21,9 @@ export function useScores(
 
       snapshotPckg.utils
         .getScores(
-          space.name.toLowerCase(),
-          space.strategies,
-          space.network,
+          spaceInfo[0],
+          spaceInfo[1].strategies,
+          spaceInfo[1].network,
           provider,
           voters,
           t
@@ -34,6 +34,6 @@ export function useScores(
           setScores(scores);
         });
     }
-  }, [space, proposal, votes]);
+  }, [spaceInfo, proposal, votes]);
   return scores;
 }
