@@ -1,79 +1,55 @@
-import React, { useState, useEffect } from "react";
-import { Button, Split, CardLayout, GU } from "@aragon/ui";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
+import {
+  LoadingRing,
+  SearchInput,
+  Split,
+  CardLayout,
+  GU,
+  Bar,
+} from "@aragon/ui";
 
 import Title from "../../components/Title";
 import ProjectCard from "../../components/Cards/ProjectCard";
-import { ARAGON_LOGO } from "../../lib/constants";
 import "../../styles/index.less";
 import { Project } from "../../lib/types";
+import { useFilteredSpaces } from "../../lib/hooks/spaces";
 
-const ProjectsPage = ({ connectionSetter }) => {
+const ProjectsPage = () => {
   const router = useRouter();
-
-  // STATE & EFFECT ======================================================================
-
-  const [error, setError] = useState(null);
-  const [projects, setProjects] = useState<Project[]>([]);
-
-  useEffect(() => {
-    fetch(`https://testnet.snapshot.page/api/spaces`)
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw Error(response.statusText);
-        }
-      })
-      .then((data) => Object.values(data).slice(13, 20))
-      .then((data: Project[]) => setProjects(data)) //cast data to Project interface.
-      .catch((reason) => {
-        setError(reason);
-      });
-  }, []);
+  const [value, setValue] = useState("");
+  const spaces: [string, Project][] = useFilteredSpaces(value);
 
   // RENDERER ============================================================================
 
   return (
     <>
       <Split
-        primary={<Title title="Projects" subtitle="Choose a project" />}
-        secondary={
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-              padding: `${10 * GU}px ${2 * GU}px ${7 * GU}px`,
-            }}
-          >
-            <Button
-              style={{ background: "#59A0FF" }}
-              mode="strong"
-              label="Add Project"
-            />
-          </div>
+        primary={
+          <Title
+            title="Projects"
+            subtitle="Choose a project"
+            bottomSpacing={0 * GU}
+          />
         }
       />
-      {error ? (
-        <div style={{ marginTop: `${5 * GU}px`, textAlign: "center" }}>
-          <h2>
-            Unfortunately, there was an error when retrieving this problem
-            proposal.
-          </h2>
-        </div>
+      <Bar style={{ border: "none", marginBottom: `${4 * GU}px` }}>
+        <SearchInput wide={true} value={value} onChange={setValue} />
+      </Bar>
+      {!spaces ? (
+        <LoadingRing />
       ) : (
         <CardLayout rowHeight={33 * GU} columnWidthMin={31 * GU}>
-          {projects.map((project, index) => (
+          {spaces.map(([id, project], index) => (
             <ProjectCard
               key={index}
-              img={ARAGON_LOGO}
+              img={null}
               label={project.name}
               symbol={project.symbol}
               onOpen={() => {
                 let urlObject = {
                   pathname: `/[project]/problems`,
-                  query: { project: project.name },
+                  query: { project: id },
                 };
                 router.push(urlObject);
               }}

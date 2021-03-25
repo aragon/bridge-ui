@@ -5,7 +5,7 @@ const env = require("./env-config.js");
 module.exports = withLess({
   env,
   trailingSlash: true,
-  exportPathMap: () => generatePathMap(),
+  // exportPathMap: () => generatePathMap(),
 });
 
 ///////////////////////////////////////////////////////////////////////////////
