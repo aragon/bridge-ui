@@ -11,18 +11,21 @@ export function useSpace(spaceId: string): [string, Project] {
 
   useEffect(() => {
     if (spaces) {
-      const space: [string, Project] = Object.entries(spaces).find(
-        (p) => p[0] == spaceId
-      );
-      setSpace(space);
+      console.log("SPACE ID " + spaceId);
+      const singleSpace = spaces.find((p) => p[0] === spaceId);
+      if (singleSpace === undefined) {
+        setSpace(null);
+      } else {
+        setSpace(singleSpace);
+      }
     }
   }, [spaceId, spaces]);
 
   return space;
 }
 
-export function useFilteredSpaces(filter: string): Record<string, Project> {
-  const [filteredSpaces, setFilteredSpace] = useState<Record<string, Project>>(
+export function useFilteredSpaces(filter: string): [string, Project][] {
+  const [filteredSpaces, setFilteredSpace] = useState<[string, Project][]>(
     null
   );
   const spaces = useSpaces();
@@ -31,8 +34,8 @@ export function useFilteredSpaces(filter: string): Record<string, Project> {
     if (filter === "") {
       setFilteredSpace(spaces);
     } else {
-      const filterResult = Object.entries(spaces).filter(
-        (p) => p[1].name.toLowerCase() == filter.toLowerCase()
+      const filterResult = spaces.filter(
+        (p) => p[1].name.toLowerCase() === filter.toLowerCase()
       );
       setFilteredSpace(filterResult);
     }
@@ -41,15 +44,14 @@ export function useFilteredSpaces(filter: string): Record<string, Project> {
   return filteredSpaces;
 }
 
-export function useSpaces(): Record<string, Project> {
-  const [spaces, setSpaces] = useState<Record<string, Project>>(null);
+export function useSpaces(): [string, Project][] {
+  const [spaces, setSpaces] = useState<[string, Project][]>(null);
 
   useEffect(() => {
     fetch(`${TEST_HUB_URL}/api/spaces`)
       .then((res) => res.json())
       .then((data) => {
-        const spacesRecord: Record<string, Project> = data;
-        setSpaces(spacesRecord);
+        setSpaces(Object.entries(data));
       });
   }, []);
 

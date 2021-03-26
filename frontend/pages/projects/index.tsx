@@ -18,7 +18,7 @@ import { useFilteredSpaces } from "../../lib/hooks/spaces";
 const ProjectsPage = () => {
   const router = useRouter();
   const [value, setValue] = useState("");
-  const spaces: Record<string, Project> = useFilteredSpaces(value);
+  const spaces = useFilteredSpaces(value);
 
   // RENDERER ============================================================================
 
@@ -50,7 +50,7 @@ const ProjectsPage = () => {
         </div>
       ) : (
         <CardLayout rowHeight={33 * GU} columnWidthMin={31 * GU}>
-          {Object.entries(spaces).map(([id, project], index) => (
+          {spaces.map(([id, project], index) => (
             <ProjectCard
               key={index}
               img={null}

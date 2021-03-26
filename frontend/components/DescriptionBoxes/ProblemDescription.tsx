@@ -6,6 +6,11 @@ import Link from "next/link";
 import VotingButtons from "../VotingButtons";
 import { ProposalPayload, SnapshotData } from "../../lib/types";
 
+type ProblemDescriptionInfo = {
+  problem: SnapshotData;
+  downvotes: number;
+};
+
 function ProblemDescription({ problem, downvotes }: ProblemDescriptionInfo) {
   return (
     <Card
@@ -67,12 +72,14 @@ function ProblemDescription({ problem, downvotes }: ProblemDescriptionInfo) {
       </section>
       {downvotes > -1 ? (
         <VotingButtons
+          spaceId={problem.msg.space}
           proposal={problem.authorIpfsHash}
-          no_upvotes={(100 - downvotes).toFixed().concat(" &")}
-          no_downvotes={downvotes.toFixed().concat(" &")}
+          no_upvotes={(100 - downvotes).toFixed().concat(" %")}
+          no_downvotes={downvotes.toFixed().concat(" %")}
         />
       ) : (
         <VotingButtons
+          spaceId={problem.msg.space}
           proposal={problem.authorIpfsHash}
           no_upvotes={"no votes!"}
           no_downvotes={"no votes!"}
@@ -83,10 +90,3 @@ function ProblemDescription({ problem, downvotes }: ProblemDescriptionInfo) {
 }
 
 export default ProblemDescription;
-
-// TYPES =================================================================================
-
-type ProblemDescriptionInfo = {
-  problem: SnapshotData;
-  downvotes: number;
-};

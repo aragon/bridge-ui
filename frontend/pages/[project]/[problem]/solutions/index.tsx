@@ -36,7 +36,8 @@ const SolutionsPage = () => {
       const votes_promises: Promise<SnapshotData[]>[] = currCategory.map(
         (s) => {
           const promise = fetch(
-            `${TEST_HUB_URL}/api/aragon/proposal/${s.authorIpfsHash}`
+            //get votes from Snapshot
+            `${TEST_HUB_URL}/api/${space[0]}/proposal/${s.authorIpfsHash}`
           )
             .then((res) => res.json())
             .then((data: Record<string, SnapshotData>) => {
@@ -52,7 +53,7 @@ const SolutionsPage = () => {
       const provider = snapshotPckg.utils.getProvider(space[1].network);
       const scores_promises = votesPerSolution.map(
         (votes: SnapshotData[], i) => {
-          if (votes.length === 0) return {}; //return empty if no votes have been cast yet.
+          if (votes.length === 0) return []; //return empty if no votes have been cast yet.
           const problem = currCategory[i];
           const voters = votes.map((v) => v.address);
           const snapshot: string = (problem.msg
@@ -100,17 +101,15 @@ const SolutionsPage = () => {
       //compute vote results for each solution
       let voteResults: VoteResult[] = amendedVotesPerSolution.map(
         (amendedVotes, i) => {
-          const proposalPayload = currCategory[i].msg
-            .payload as ProposalPayload;
-          const res = proposalPayload.choices.map((_, i) =>
-            Object.values(amendedVotes)
-              .filter((vote) => {
-                //TODO correctly type this
-                const votePayload = vote.msg.payload as VotePayload;
-                return votePayload.choice === i + 1;
-              })
-              .reduce((a, b: any) => a + b.balance, 0)
-          );
+          //if this problem has no votes, return a percentage of -1.
+          if (amendedVotes.length === 0) {
+            return {
+              problem: currCategory[i],
+              percentage: -1,
+              balance: 0,
+            };
+          }
+
           function proposalBalance(): number {
             return Object.values(amendedVotes).reduce(
               (a, b: any) => a + b.balance,
@@ -118,6 +117,28 @@ const SolutionsPage = () => {
             ) as number;
           }
           const total = proposalBalance();
+
+          //if this problem has no votes with balances, return a percentage of -1.
+          if (total === 0) {
+            return {
+              problem: currCategory[i],
+              percentage: -1,
+              balance: 0,
+            };
+          }
+
+          //return empty if no votes have been cast yet.
+          const proposalPayload = currCategory[i].msg
+            .payload as ProposalPayload;
+          const res = proposalPayload.choices.map((_, i) =>
+            Object.values(amendedVotes)
+              .filter((vote) => {
+                const votePayload = vote.msg.payload as VotePayload;
+                return votePayload.choice === i + 1;
+              })
+              .reduce((a, b: any) => a + b.balance, 0)
+          );
+
           const percentages = res.map((b: number) => (b * 100) / total);
           return {
             problem: currCategory[i],
@@ -180,11 +201,11 @@ const SolutionsPage = () => {
             ) : (
               voteResults
                 .sort((a, b) => b.balance - a.balance)
-                .map((v: VoteResult, i) => (
+                .map((vr: VoteResult, i) => (
                   <SolutionDescription
                     key={i}
-                    problem={v.problem}
-                    downvotes={v.percentage}
+                    problem={vr.problem}
+                    downvotes={vr.percentage}
                   />
                 ))
             )
@@ -204,7 +225,7 @@ const SolutionsPage = () => {
         </div>
         <div style={{ width: "25%", paddingTop: `${6 * GU}px` }}>
           <ReportSolutionIndicator
-            projectName={projectId}
+            projectId={projectId}
             problemHash={problem}
           />
         </div>

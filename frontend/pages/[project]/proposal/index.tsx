@@ -2,20 +2,28 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useWallet } from "use-wallet";
-import { GU, Button, Field, TextInput, DateRangePicker } from "@aragon/ui";
-import { JsonRpcProvider } from "@ethersproject/providers";
-import networks from "@snapshot-labs/snapshot.js/src/networks.json";
+import {
+  GU,
+  Button,
+  Field,
+  TextInput,
+  DateRangePicker,
+  LoadingRing,
+} from "@aragon/ui";
+import snapshotPckg from "@snapshot-labs/snapshot.js/";
 
 import { BACKEND_URL } from "../../../lib/constants";
 import Title from "../../../components/Title";
 import "../../../styles/index.less";
+import { useSpace } from "../../../lib/hooks/spaces";
 
 const ProposalForm = () => {
   const signer = useSigner();
   const wallet = useWallet();
   const router = useRouter();
-  const { project } = router.query;
+  const { projectId } = router.query;
 
+  const space = useSpace(projectId);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [range, setRange] = useState({
@@ -40,36 +48,18 @@ const ProposalForm = () => {
     );
   }
 
-  const providers = {};
-
-  async function getBlockNumber(provider) {
-    try {
-      const blockNumber: any = await provider.getBlockNumber();
-      return parseInt(blockNumber);
-    } catch (e) {
-      return Promise.reject();
-    }
-  }
-
-  //TODO make this work using the snapshot.js library
-  function getProvider(network: string) {
-    const url: string = networks[network].rpc[0];
-    if (!providers[network]) providers[network] = new JsonRpcProvider(url);
-    return providers[network];
-  }
-
   async function postProblem() {
-    //TODO change network on launch
-    const snapshot = await getBlockNumber(getProvider("5"));
+    const provider = snapshotPckg.utils.getProvider(space[1].network);
+    const blockNumber = await snapshotPckg.utils.getBlockNumber(provider);
     const payload = {
       name: title,
       body: description,
       choices: ["upvote", "downvote"],
       start: Math.round(new Date(range.start).getTime() / 1e3),
       end: Math.round(new Date(range.end).getTime() / 1e3),
-      snapshot: snapshot,
+      snapshot: blockNumber,
       metadata: {
-        strategies: aragonSpace.strategies, //TODO make this dynamic
+        strategies: space[1].strategies,
       },
     };
     const envelope: any = {
@@ -77,33 +67,40 @@ const ProposalForm = () => {
       msg: JSON.stringify({
         version: "0.1.3",
         timestamp: (Date.now() / 1e3).toFixed(),
-        space: project,
+        space: projectId,
         type: "proposal",
         payload,
       }),
     };
     envelope.sig = await signer.signMessage(envelope.msg);
 
-    const url = `${BACKEND_URL}/problemProposal/${project}`;
+    const url = `${BACKEND_URL}/problemProposal/${projectId}`;
     const init = {
       method: "POST",
       body: JSON.stringify(envelope),
     };
 
+    //TODO add toast or something to indicate success/failure to client
     var res = await fetch(url, init);
     if (res.ok) {
       router.back();
     } else {
       router.back();
-      //TODO add toast or something to indicate failure to client
     }
   }
 
   // RENDERER ============================================================================
 
+  if (!space) {
+    return (
+      <div>
+        <LoadingRing />
+      </div>
+    );
+  }
+
   return (
     <>
-      {/* <Breadcrumbs /> */}
       <Title
         title="New Problem"
         subtitle="Please fill out all the required fields of the form to create a new problem."
@@ -117,13 +114,13 @@ const ProposalForm = () => {
           marginBottom: "150px",
         }}
       >
-        <Field label="Problem title:" required={true}>
+        <Field label="Problem Title:" required={true}>
           <TextInput
             placeholder="Short summary of the problem"
             onChange={(event) => setTitle(event.target.value)}
           />
         </Field>
-        <Field label="Problem description:" required={true}>
+        <Field label="Problem Description:" required={true}>
           <TextInput
             placeholder="Comprehensive problem description"
             wide={true}
@@ -131,7 +128,7 @@ const ProposalForm = () => {
             onChange={(event) => setDescription(event.target.value)}
           />
         </Field>
-        <Field label="Voting window" onChange={setRange} required={true}>
+        <Field label="Voting Window" onChange={setRange} required={true}>
           <div style={{ marginTop: `${2 * GU}px` }}>
             <DateRangePicker
               startDate={range.start}
@@ -156,42 +153,3 @@ const ProposalForm = () => {
 };
 
 export default ProposalForm;
-
-const aragonSpace = {
-  name: "Aragon",
-  network: "1",
-  symbol: "ANT",
-  skin: "aragon",
-  domain: "gov.aragon.org",
-  strategies: [
-    {
-      name: "erc20-balance-of",
-      params: {
-        address: "0xa117000000f279D81A1D3cc75430fAA017FA5A2e",
-        symbol: "ANT",
-        decimals: 18,
-      },
-    },
-    {
-      name: "balancer",
-      params: {
-        address: "0xa117000000f279D81A1D3cc75430fAA017FA5A2e",
-        symbol: "ANT BPT",
-      },
-    },
-  ],
-  members: [
-    "0xf08b64258465A9896691E23caaF9E6C830ec4b9D",
-    "0x4cB3FD420555A09bA98845f0B816e45cFb230983",
-    "0xa1d4c9e0a46068afa3d8424b0618218bf85ccaaa",
-  ],
-  filters: {
-    defaultTab: "core",
-    minScore: 0,
-    onlyMembers: true,
-    invalids: [
-      "QmPNvdddbA1gQ8PCQxnEjhTeGSTvkdCarwkRyzgeoFHSgH",
-      "QmNTgjdR3rNj25Ah6PxYzAzb8cD7cT6HmKoFFmKADrr2gC",
-    ],
-  },
-};
