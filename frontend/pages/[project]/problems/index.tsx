@@ -19,7 +19,7 @@ import { useCategorizedProblems } from "../../../lib/hooks/proposals";
 
 const ProblemsPage = () => {
   const router = useRouter();
-  const projectId = router.query.project;
+  const projectId = router.query.project as string;
 
   // STATE & EFFECT ======================================================================
 

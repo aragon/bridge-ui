@@ -27,51 +27,51 @@ const EvalPage = () => {
     return aragonSpace && votes && testProposal && scores && scoredVotes;
   }
 
-  function votesPerChoice() {
-    const proposalPayload = testProposal.msg.payload as ProposalPayload;
-    const res = proposalPayload.choices.map(
-      (_, i) =>
-        votes.filter((vote: SnapshotData) => {
-          const votePayload = vote.msg.payload as VotePayload;
-          return votePayload.choice === i + 1;
-        }).length
-    );
-    return res;
-  }
+  // function votesPerChoice() {
+  //   const proposalPayload = testProposal.msg.payload as ProposalPayload;
+  //   const res = proposalPayload.choices.map(
+  //     (_, i) =>
+  //       votes.filter((vote: SnapshotData) => {
+  //         const votePayload = vote.msg.payload as VotePayload;
+  //         return votePayload.choice === i + 1;
+  //       }).length
+  //   );
+  //   return res;
+  // }
 
-  function balancePerChoice() {
-    const proposalPayload = testProposal.msg.payload as ProposalPayload;
-    const res = proposalPayload.choices.map((_, i) =>
-      Object.values(scoredVotes)
-        .filter((vote) => {
-          //TODO correctly type this
-          const votePayload = vote.msg.payload as VotePayload;
-          return votePayload.choice === i + 1;
-        })
-        // .reduce(reducer, 0)
-        .reduce((a, b: any) => a + b.balance, 0)
-    );
-    return res;
-  }
+  // function balancePerChoice() {
+  //   const proposalPayload = testProposal.msg.payload as ProposalPayload;
+  //   const res = proposalPayload.choices.map((_, i) =>
+  //     Object.values(scoredVotes)
+  //       .filter((vote) => {
+  //         //TODO correctly type this
+  //         const votePayload = vote.msg.payload as VotePayload;
+  //         return votePayload.choice === i + 1;
+  //       })
+  //       // .reduce(reducer, 0)
+  //       .reduce((a, b: any) => a + b.balance, 0)
+  //   );
+  //   return res;
+  // }
 
-  function balancePerStrategyPerChoice() {
-    const proposalPayload = testProposal.msg.payload as ProposalPayload;
-    const res = proposalPayload.choices.map((_, i) =>
-      aragonSpace[1].strategies.map((_, j) =>
-        Object.values(votes)
-          .filter((vote: any) => vote.msg.payload.choice === i + 1)
-          .reduce((a, b: any) => a + b.scores[j], 0)
-      )
-    );
-    return res;
-  }
+  // function balancePerStrategyPerChoice() {
+  //   const proposalPayload = testProposal.msg.payload as ProposalPayload;
+  //   const res = proposalPayload.choices.map((_, i) =>
+  //     aragonSpace[1].strategies.map((_, j) =>
+  //       Object.values(votes)
+  //         .filter((vote: any) => vote.msg.payload.choice === i + 1)
+  //         .reduce((a, b: any) => a + b.scores[j], 0)
+  //     )
+  //   );
+  //   return res;
+  // }
 
-  function proposalBalance(): number {
-    return Object.values(scoredVotes).reduce(
-      (a, b: any) => a + b.balance,
-      0
-    ) as number;
-  }
+  // function proposalBalance(): number {
+  //   return Object.values(scoredVotes).reduce(
+  //     (a, b: any) => a + b.balance,
+  //     0
+  //   ) as number;
+  // }
 
   // RENDERER ============================================================================
   if (!isDataReady()) {
@@ -80,7 +80,7 @@ const EvalPage = () => {
 
   return (
     <>
-      <textarea
+      {/* <textarea
         name=""
         id=""
         readOnly
@@ -91,7 +91,7 @@ const EvalPage = () => {
           null,
           2
         )}
-      ></textarea>
+      ></textarea> */}
     </>
   );
 };

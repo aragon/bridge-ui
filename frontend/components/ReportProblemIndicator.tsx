@@ -3,7 +3,11 @@ import Link from "next/link";
 import { Box, GU, Button } from "@aragon/ui";
 import { PROBLEM_ICON } from "../lib/constants";
 
-function ReportProblemIndicator({ projectId }) {
+type IndicatorInfo = {
+  projectId: string;
+};
+
+function ReportProblemIndicator({ projectId }: IndicatorInfo) {
   // RENDERER ============================================================================
 
   return (

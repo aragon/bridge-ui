@@ -21,7 +21,8 @@ const ProposalForm = () => {
   const signer = useSigner();
   const wallet = useWallet();
   const router = useRouter();
-  const { projectId, problem } = router.query;
+  const projectId = router.query.projectId as string;
+  const problem = router.query.problem as string;
 
   const space = useSpace(projectId);
   const [title, setTitle] = useState("");
