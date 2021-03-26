@@ -5,6 +5,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     kubernetes.io/ingress.global-static-ip-name: {{ .Values.apollo.staticIP }}
+    networking.gke.io/managed-certificates: apollo-backend-certificate
 spec:
   rules:
   - http:
