@@ -31,7 +31,7 @@ const BridgeApp: FC<NextAppProps> = ({ Component, pageProps }) => {
             <Component />
           </div>
         </Layout>
-        <Footer />
+        {/* <Footer /> */}
       </Main>
     </UseWalletProvider>
   );

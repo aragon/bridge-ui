@@ -5,7 +5,7 @@ import { useWallet } from "use-wallet";
 
 import { DOWNARROW_ICON, TEST_HUB_URL, UPARROW_ICON } from "../lib/constants";
 
-function VotingButtons({ proposal, no_upvotes, no_downvotes }) {
+function VotingButtons({ spaceId, proposal, no_upvotes, no_downvotes }) {
   const signer = useSigner();
   const wallet = useWallet();
 
@@ -33,7 +33,7 @@ function VotingButtons({ proposal, no_upvotes, no_downvotes }) {
       msg: JSON.stringify({
         version: version,
         timestamp: (Date.now() / 1e3).toFixed(),
-        space: "aragon",
+        space: spaceId,
         type: type,
         payload,
       }),

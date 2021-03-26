@@ -3,7 +3,12 @@ import Link from "next/link";
 import { Box, GU, Button } from "@aragon/ui";
 import { SOLUTION_ICON } from "../lib/constants";
 
-function ReportSolutionIndicator({ projectName, problemHash }) {
+type IndicatorInfo = {
+  projectId: string;
+  problemHash: string;
+};
+
+function ReportSolutionIndicator({ projectId, problemHash }: IndicatorInfo) {
   // RENDERER ============================================================================
 
   return (
@@ -33,16 +38,12 @@ function ReportSolutionIndicator({ projectName, problemHash }) {
         </p>
         <Link
           href={{
-            pathname: "/[project]/[problem]/proposal",
-            query: { project: projectName, problem: problemHash },
+            pathname: "/[projectId]/[problem]/proposal",
+            query: { projectId: projectId, problem: problemHash },
           }}
           passHref
         >
-          <Button
-            mode="strong"
-            external={false}
-            label="Create new problem"
-          />
+          <Button mode="strong" external={false} label="Create new solution" />
         </Link>
       </div>
     </Box>

@@ -19,6 +19,7 @@ const WelcomePage = () => {
         pathname: `/projects`,
       };
       router.push(urlObject);
+      // router.push("/voteEvaluation");
       return wallet;
     }
 
@@ -31,6 +32,7 @@ const WelcomePage = () => {
           pathname: `/projects`,
         };
         router.push(urlObject);
+        // router.push("/voteEvaluation");
       })
       .catch((err) => {
         if (
@@ -52,7 +54,7 @@ const WelcomePage = () => {
 
   return (
     <>
-      <div style={{ height: `${100 * GU}px` }}>
+      <div style={{ marginTop: `${20 * GU}px`, height: `${70 * GU}px` }}>
         <Split
           primary={
             <Title

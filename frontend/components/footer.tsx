@@ -7,7 +7,10 @@ export default function Footer() {
       <div className="left">
         <img src={APOLLO_BRANDING_GREY} alt="" />
       </div>
-      <div className="right" style={{paddingTop:"auto", paddingBottom:"auto"}}>
+      <div
+        className="right"
+        style={{ paddingTop: "auto", paddingBottom: "auto" }}
+      >
         <a href="https://discord.gg/7VvnTy4U" target="_blank">
           Discord
         </a>{" "}
@@ -16,10 +19,13 @@ export default function Footer() {
           Twitter
         </a>{" "}
         ·{" "}
-        <a href="https://www.youtube.com/channel/UCODiU_-FWhr4SVOoBlm-qaQ" target="_blank">
+        <a
+          href="https://www.youtube.com/channel/UCODiU_-FWhr4SVOoBlm-qaQ"
+          target="_blank"
+        >
           Youtube
-        </a>
-          {" "} - Aragon {new Date().getFullYear()}
+        </a>{" "}
+        - Aragon {new Date().getFullYear()}
       </div>
     </div>
   );

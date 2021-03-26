@@ -6,6 +6,11 @@ import Link from "next/link";
 import VotingButtons from "../VotingButtons";
 import { ProposalPayload, SnapshotData } from "../../lib/types";
 
+type SolutionDescriptionInfo = {
+  problem: SnapshotData;
+  downvotes: number;
+};
+
 function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
   return (
     <Card
@@ -30,10 +35,11 @@ function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
         <p style={{ fontSize: "14px" }}>Reported by: {problem.address}</p>
         <Link
           href={{
-            pathname: "/[project]/[problem]/solutions",
+            pathname: "/[projectId]/[problem]/[applications]",
             query: {
-              project: problem.msg.space,
+              projectId: problem.msg.space,
               problem: problem.authorIpfsHash,
+              solutions: problem.authorIpfsHash, //TODO change this, when applications will be enabled
             },
           }}
           passHref
@@ -67,12 +73,14 @@ function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
       </section>
       {downvotes > -1 ? (
         <VotingButtons
+          spaceId={problem.msg.space}
           proposal={problem.authorIpfsHash}
-          no_upvotes={(100 - downvotes).toFixed().concat(" &")}
-          no_downvotes={downvotes.toFixed().concat(" &")}
+          no_upvotes={(100 - downvotes).toFixed().concat(" %")}
+          no_downvotes={downvotes.toFixed().concat(" %")}
         />
       ) : (
         <VotingButtons
+          spaceId={problem.msg.space}
           proposal={problem.authorIpfsHash}
           no_upvotes={"no votes!"}
           no_downvotes={"no votes!"}
@@ -83,10 +91,3 @@ function SolutionDescription({ problem, downvotes }: SolutionDescriptionInfo) {
 }
 
 export default SolutionDescription;
-
-// TYPES =================================================================================
-
-type SolutionDescriptionInfo = {
-  problem: SnapshotData;
-  downvotes: number;
-};
