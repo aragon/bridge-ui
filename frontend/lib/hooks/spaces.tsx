@@ -11,7 +11,6 @@ export function useSpace(spaceId: string): [string, Project] {
 
   useEffect(() => {
     if (spaces) {
-      console.log("SPACE ID " + spaceId);
       const singleSpace = spaces.find((p) => p[0] === spaceId);
       if (singleSpace === undefined) {
         setSpace(null);
