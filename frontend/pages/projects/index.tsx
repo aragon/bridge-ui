@@ -37,7 +37,17 @@ const ProjectsPage = () => {
         <SearchInput wide={true} value={value} onChange={setValue} />
       </Bar>
       {!spaces ? (
-        <LoadingRing mode="half-circle" />
+        <div
+          style={{
+            height: "400 px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            margin: "50px 0 300px 0",
+          }}
+        >
+          <LoadingRing mode="half-circle" />
+        </div>
       ) : (
         <CardLayout rowHeight={33 * GU} columnWidthMin={31 * GU}>
           {Object.entries(spaces).map(([id, project], index) => (

@@ -30,9 +30,9 @@ function ProblemDescription({ problem, downvotes }: ProblemDescriptionInfo) {
         <p style={{ fontSize: "14px" }}>Reported by: {problem.address}</p>
         <Link
           href={{
-            pathname: "/[project]/[problem]/solutions",
+            pathname: "/[projectId]/[problem]/solutions",
             query: {
-              project: problem.msg.space,
+              projectId: problem.msg.space,
               problem: problem.authorIpfsHash,
             },
           }}

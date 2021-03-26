@@ -25,7 +25,6 @@ export function useProposal(ifpsHash: string): Proposal {
         const prop: Proposal = JSON.parse(data);
         prop.msg = m;
         setProposal(prop);
-        console.log("Got proposal: \n" + proposal);
       });
   }, [ifpsHash]);
 
@@ -36,12 +35,7 @@ export function useCategorizedProblems(spaceId: String): ProposalCategories {
   const [
     categorizedProblems,
     setCategorizedProblems,
-  ] = useState<ProposalCategories>({
-    active: [],
-    closed: [],
-    pending: [],
-    all: [],
-  });
+  ] = useState<ProposalCategories>(null);
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/problems/${spaceId}`)
@@ -82,14 +76,48 @@ export function useCategorizedProblems(spaceId: String): ProposalCategories {
 }
 
 export function useCategorizedSolutions(
-  spaceName: String,
-  problemHash
-): SnapshotData[] {
-  const [solutions, setSolutions] = useState<SnapshotData[]>(null);
+  spaceId: string,
+  problemHash: string
+): ProposalCategories {
+  const [
+    categorizedSolutions,
+    setCategorizedSolutions,
+  ] = useState<ProposalCategories>(null);
 
   useEffect(() => {
-    //TODO fetch solutions for given space via backend
-  }, [spaceName]);
+    fetch(`${BACKEND_URL}/solutions/${spaceId}/${problemHash}`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+      })
+      .then((data) => {
+        return Object.values(data);
+      })
+      .then((data: SnapshotData[]) => {
+        let categories = {
+          active: [],
+          closed: [],
+          pending: [],
+          all: data,
+        };
+        let curr_date = Math.round(Date.now() / 1e3);
+        function categorize(p: SnapshotData) {
+          const proposalInfo = p.msg.payload as ProposalPayload;
+          if (proposalInfo.end < curr_date) {
+            categories.closed.push(p);
+          } else if (proposalInfo.start > curr_date) {
+            categories.pending.push(p);
+          } else {
+            categories.active.push(p);
+          }
+        }
+        data.forEach(categorize);
+        setCategorizedSolutions(categories);
+      });
+  }, [spaceId]);
 
-  return solutions;
+  return categorizedSolutions;
 }

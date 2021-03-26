@@ -17,7 +17,6 @@ export function useScores(
       const snapshot: string = (proposal.msg
         .payload as ProposalPayload).snapshot.toString();
       const t: number = parseInt(snapshot);
-      console.log(typeof t);
 
       snapshotPckg.utils
         .getScores(
@@ -29,8 +28,6 @@ export function useScores(
           t
         )
         .then((scores) => {
-          console.log("These are the scores:");
-          console.log(scores);
           setScores(scores);
         });
     }

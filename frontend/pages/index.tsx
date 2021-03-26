@@ -54,7 +54,7 @@ const WelcomePage = () => {
 
   return (
     <>
-      <div style={{ height: `${100 * GU}px` }}>
+      <div style={{ marginTop: `${20 * GU}px`, height: `${70 * GU}px` }}>
         <Split
           primary={
             <Title
