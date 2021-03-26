@@ -3,7 +3,7 @@ import { APOLLO_BRANDING_GREY } from "../lib/constants";
 
 export default function Footer() {
   return (
-    <div position="absolute" widht="max" left="0 px" right="0 px" bottom="0 px">
+    <div id="footer">
       <div className="left">
         <img src={APOLLO_BRANDING_GREY} alt="" />
       </div>
