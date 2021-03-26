@@ -3,11 +3,14 @@ import { APOLLO_BRANDING_GREY } from "../lib/constants";
 
 export default function Footer() {
   return (
-    <div id="footer">
+    <div position="absolute" widht="max" left="0 px" right="0 px" bottom="0 px">
       <div className="left">
         <img src={APOLLO_BRANDING_GREY} alt="" />
       </div>
-      <div className="right" style={{paddingTop:"auto", paddingBottom:"auto"}}>
+      <div
+        className="right"
+        style={{ paddingTop: "auto", paddingBottom: "auto" }}
+      >
         <a href="https://discord.gg/7VvnTy4U" target="_blank">
           Discord
         </a>{" "}
@@ -16,10 +19,13 @@ export default function Footer() {
           Twitter
         </a>{" "}
         ·{" "}
-        <a href="https://www.youtube.com/channel/UCODiU_-FWhr4SVOoBlm-qaQ" target="_blank">
+        <a
+          href="https://www.youtube.com/channel/UCODiU_-FWhr4SVOoBlm-qaQ"
+          target="_blank"
+        >
           Youtube
-        </a>
-          {" "} - Aragon {new Date().getFullYear()}
+        </a>{" "}
+        - Aragon {new Date().getFullYear()}
       </div>
     </div>
   );
