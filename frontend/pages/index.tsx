@@ -10,13 +10,11 @@ import { INVALID_CHAIN_ID, METAMASK_IS_NOT_AVAILABLE } from "../lib/errors";
 const WelcomePage = () => {
   const router = useRouter();
   const wallet = useWallet();
-  // const [connecting, setConnecting] = useState(false) //TODO find out what this did.
   const isConnected = wallet.status === "connected";
 
   // CALLBACK
   function onWalletConnect() {
     if (wallet.status === "connected") {
-      console.log("bsdfj");
       let urlObject = {
         pathname: `/projects`,
       };
@@ -24,7 +22,6 @@ const WelcomePage = () => {
       return wallet;
     }
 
-    // setConnecting(true);
     return wallet
       .connect("injected")
       .then(() => {
@@ -36,7 +33,6 @@ const WelcomePage = () => {
         router.push(urlObject);
       })
       .catch((err) => {
-        // setConnecting(false);
         if (
           (err && err.message == INVALID_CHAIN_ID) ||
           err instanceof ChainUnsupportedError

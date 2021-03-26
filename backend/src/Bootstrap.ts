@@ -14,11 +14,14 @@ export default class Bootstrap {
    */
   private server: FastifyInstance;
 
+  // private SNAPSHOT_URL = "https://hub.snapshot.page/api"
+  private SNAPSHOT_URL = "https://testnet.snapshot.page/api";
+
   /**
    * @property {string} apiUrl
    * @private
    */
-  private apiUrl: string = "https://testnet.snapshot.page/api/message";
+  private POST_URL: string = `${this.SNAPSHOT_URL}/message`;
 
   /**
    * @property {Database} database
@@ -144,7 +147,7 @@ export default class Bootstrap {
           body: body,
         };
 
-        fetch(this.apiUrl, init)
+        fetch(this.POST_URL, init)
           .then((res: Response) => {
             if (res.ok) {
               return res.json();
@@ -194,7 +197,7 @@ export default class Bootstrap {
           body: request.body,
         };
 
-        fetch(this.apiUrl, init)
+        fetch(this.POST_URL, init)
           .then((res: Response) => {
             if (res.ok) {
               return res.json();
@@ -240,7 +243,7 @@ export default class Bootstrap {
         problemIds.forEach((pID) => problemSet.add(pID.problemhash));
 
         //pull proposals from Snapshot.
-        fetch(`https://testnet.snapshot.page/api/${space}/proposals`)
+        fetch(`${this.SNAPSHOT_URL}/${space}/proposals`)
           .then((res: Response) => {
             if (res.ok) {
               return res.json();
@@ -264,6 +267,10 @@ export default class Bootstrap {
           .catch((error: Error) => {
             console.error(error);
             //TODO catch errors.
+            reply
+              .code(500)
+              .header("Access-Control-Allow-Origin", "*")
+              .header("Content-Type", "application/json; charset=utf-8");
           });
       }
     );
@@ -280,7 +287,7 @@ export default class Bootstrap {
         solutionIds.forEach((pID) => solutionSet.add(pID.solutionhash));
 
         //pull proposals from Snapshot.
-        fetch(`https://testnet.snapshot.page/api/${space}/proposals`)
+        fetch(`${this.SNAPSHOT_URL}/${space}/proposals`)
           .then((res: Response) => {
             if (res.ok) {
               return res.json();

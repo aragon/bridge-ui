@@ -12,6 +12,7 @@ function ProjectCard({ onOpen, label, img, symbol }) {
         <p
           style={{
             fontSize: "25px",
+            fontWeight: 500,
             marginTop: `${2 * GU}px`,
             color: "#1C6EA4",
           }}

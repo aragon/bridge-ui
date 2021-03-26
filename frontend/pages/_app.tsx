@@ -18,7 +18,7 @@ type NextAppProps = AppInitialProps & {
 
 const BridgeApp: FC<NextAppProps> = ({ Component, pageProps }) => {
   return (
-    <UseWalletProvider chainId={5} connectors={{ injected: true }}>
+    <UseWalletProvider chainId={1} connectors={{ injected: true }}>
       <NextHead>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href={FAVICON}></link>

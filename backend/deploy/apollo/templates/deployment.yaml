@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Chart.Name }}-backend"
+spec:
+  replicas: {{ .Values.apollo.replicaCount }}
+  selector:
+    matchLabels:
+      app: "{{ .Chart.Name }}-backend"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Chart.Name }}-backend"
+    spec:
+      imagePullSecrets: [
+        {
+           name: 'github-packages',
+        }
+      ]
+      containers:
+      - name: "{{ .Chart.Name }}-backend"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: 'backend'
+          containerPort: 4040
+        env:
+        - name: DB_DB
+          value: "apollo"
+        - name: DB_HOST
+          value: {{ .Values.apollo.dbhost }}
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: apollo-db
+              key: db_user
+        - name: DB_PW
+          valueFrom:
+            secretKeyRef:
+              name: apollo-db
+              key: db_pw
+      volumes:
+      - name: apollo-db
+        secret:
+          secretName: apollo-db
