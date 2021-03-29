@@ -6,7 +6,6 @@ import { GU, Split, DropDown, LoadingRing } from "@aragon/ui";
 import Title from "../../../components/Title";
 import { TEST_HUB_URL } from "../../../lib/constants";
 import "../../../styles/index.less";
-import ProblemDescription from "../../../components/DescriptionBoxes/ProblemDescription";
 import ReportProblemIndicator from "../../../components/ReportProblemIndicator";
 import {
   ProposalPayload,
@@ -16,6 +15,7 @@ import {
 } from "../../../lib/types";
 import { useSpace } from "../../../lib/hooks/spaces";
 import { useCategorizedProblems } from "../../../lib/hooks/proposals";
+import ProposalDescription from "../../../components/DescriptionBoxes/ProposalDescription";
 
 const ProblemsPage = () => {
   const router = useRouter();
@@ -203,9 +203,11 @@ const ProblemsPage = () => {
               voteResults
                 .sort((a, b) => b.balance - a.balance)
                 .map((vr: VoteResult, i) => (
-                  <ProblemDescription
+                  <ProposalDescription
                     key={i}
-                    problem={vr.problem}
+                    type={"problem"}
+                    projectId={projectId}
+                    proposal={vr.problem}
                     downvotes={vr.percentage}
                   />
                 ))

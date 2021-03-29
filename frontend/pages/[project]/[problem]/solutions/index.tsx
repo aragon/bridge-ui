@@ -6,7 +6,6 @@ import { GU, Split, DropDown, LoadingRing } from "@aragon/ui";
 import Title from "../../../../components/Title";
 import { TEST_HUB_URL } from "../../../../lib/constants";
 import "../../../../styles/index.less";
-import SolutionDescription from "../../../../components/DescriptionBoxes/SolutionDescription";
 import ReportSolutionIndicator from "../../../../components/ReportSolutionIndicator";
 import {
   ProposalPayload,
@@ -16,18 +15,19 @@ import {
 } from "../../../../lib/types";
 import { useSpace } from "../../../../lib/hooks/spaces";
 import { useCategorizedSolutions } from "../../../../lib/hooks/proposals";
+import ProposalDescription from "../../../../components/DescriptionBoxes/ProposalDescription";
 
 const SolutionsPage = () => {
   const router = useRouter();
   const projectId = router.query.projectId as string;
-  const problem = router.query.problem as string;
+  const problemId = router.query.problem as string;
 
   // STATE & EFFECT ======================================================================
 
   const space = useSpace(projectId);
   const [selected, setSelected] = useState(0);
   const [voteResults, setVoteResults] = useState<VoteResult[]>(null);
-  const categorizedSolutions = useCategorizedSolutions(projectId, problem);
+  const categorizedSolutions = useCategorizedSolutions(projectId, problemId);
 
   useEffect(() => {
     async function fetchVotes() {
@@ -203,9 +203,12 @@ const SolutionsPage = () => {
               voteResults
                 .sort((a, b) => b.balance - a.balance)
                 .map((vr: VoteResult, i) => (
-                  <SolutionDescription
+                  <ProposalDescription
                     key={i}
-                    problem={vr.problem}
+                    type={"solution"}
+                    projectId={vr.problem.msg.space}
+                    problemId={problemId}
+                    proposal={vr.problem}
                     downvotes={vr.percentage}
                   />
                 ))
@@ -227,7 +230,7 @@ const SolutionsPage = () => {
         <div style={{ width: "25%", paddingTop: `${6 * GU}px` }}>
           <ReportSolutionIndicator
             projectId={projectId}
-            problemHash={problem}
+            problemHash={problemId}
           />
         </div>
       </section>
