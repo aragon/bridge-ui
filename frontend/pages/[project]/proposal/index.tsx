@@ -17,13 +17,17 @@ import Title from "../../../components/Title";
 import "../../../styles/index.less";
 import { useSpace } from "../../../lib/hooks/spaces";
 
-const ProposalForm = () => {
+function ProposalForm() {
   const signer = useSigner();
   const wallet = useWallet();
   const router = useRouter();
-  const projectId = router.query.pojectId as string;
 
-  const space = useSpace(projectId);
+  //Typehack
+  const { projectId } = router.query;
+  let pId: string = "";
+  if (typeof projectId === "string") pId = projectId;
+
+  const space = useSpace(pId);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [range, setRange] = useState({
@@ -67,14 +71,14 @@ const ProposalForm = () => {
       msg: JSON.stringify({
         version: "0.1.3",
         timestamp: (Date.now() / 1e3).toFixed(),
-        space: projectId,
+        space: pId,
         type: "proposal",
         payload,
       }),
     };
     envelope.sig = await signer.signMessage(envelope.msg);
 
-    const url = `${BACKEND_URL}/problemProposal/${projectId}`;
+    const url = `${BACKEND_URL}/problemProposal/${pId}`;
     const init = {
       method: "POST",
       body: JSON.stringify(envelope),
@@ -150,6 +154,6 @@ const ProposalForm = () => {
       </div>
     </>
   );
-};
+}
 
 export default ProposalForm;

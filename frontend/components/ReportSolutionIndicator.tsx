@@ -38,8 +38,8 @@ function ReportSolutionIndicator({ projectId, problemHash }: IndicatorInfo) {
         </p>
         <Link
           href={{
-            pathname: "/[projectId]/[problem]/proposal",
-            query: { projectId: projectId, problem: problemHash },
+            pathname: "/[projectId]/[problemId]/proposal",
+            query: { projectId: projectId, problemId: problemHash },
           }}
           passHref
         >
