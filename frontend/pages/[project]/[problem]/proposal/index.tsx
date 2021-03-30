@@ -29,7 +29,6 @@ function ProposalForm() {
   let probId: string = "";
   if (typeof problemId === "string") probId = problemId;
 
-  console.log("PROB ID " + probId);
   const space = useSpace(projId);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
