@@ -14,8 +14,8 @@ export default class Bootstrap {
    */
   private server: FastifyInstance;
 
-  // private SNAPSHOT_URL = "https://hub.snapshot.page/api"
-  private SNAPSHOT_URL = "https://testnet.snapshot.page/api";
+  // private SNAPSHOT_URL = "https://hub.snapshot.org/api"
+  private SNAPSHOT_URL = "https://testnet.snapshot.org/api";
 
   /**
    * @property {string} apiUrl
@@ -135,7 +135,8 @@ export default class Bootstrap {
     this.server.post<{ Body: ProposalMessage }>(
       "/problemProposal/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
-        const space = request.url.split("/").pop() || "";
+        const { space } = request.params as { space: string };
+
         const body: BodyInit | null | undefined =
           (request.body as string) || "";
         const init: RequestInit = {
@@ -147,6 +148,7 @@ export default class Bootstrap {
           body: body,
         };
 
+        //TODO make this code asyn/await
         fetch(this.POST_URL, init)
           .then((res: Response) => {
             if (res.ok) {

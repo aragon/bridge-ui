@@ -17,14 +17,20 @@ import Title from "../../../../components/Title";
 import "../../../../styles/index.less";
 import { useSpace } from "../../../../lib/hooks/spaces";
 
-const ProposalForm = () => {
+function ProposalForm() {
   const signer = useSigner();
   const wallet = useWallet();
   const router = useRouter();
-  const projectId = router.query.projectId as string;
-  const problem = router.query.problem as string;
 
-  const space = useSpace(projectId);
+  //Typehack.
+  const { projectId, problemId } = router.query;
+  let projId: string = "";
+  if (typeof projectId === "string") projId = projectId;
+  let probId: string = "";
+  if (typeof problemId === "string") probId = problemId;
+
+  console.log("PROB ID " + probId);
+  const space = useSpace(projId);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [range, setRange] = useState({
@@ -68,14 +74,14 @@ const ProposalForm = () => {
       msg: JSON.stringify({
         version: "0.1.3",
         timestamp: (Date.now() / 1e3).toFixed(),
-        space: projectId,
+        space: projId,
         type: "proposal",
         payload,
       }),
     };
     envelope.sig = await signer.signMessage(envelope.msg);
 
-    const url = `${BACKEND_URL}/solutionProposal/${projectId}/${problem}`;
+    const url = `${BACKEND_URL}/solutionProposal/${projId}/${probId}`;
     const init = {
       method: "POST",
       body: JSON.stringify(envelope),
@@ -151,6 +157,6 @@ const ProposalForm = () => {
       </div>
     </>
   );
-};
+}
 
 export default ProposalForm;
