@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useWallet } from "use-wallet";
 import {
   GU,
+  Box,
   Button,
+  Checkbox,
   Field,
   TextInput,
   DateRangePicker,
@@ -16,6 +18,12 @@ import { BACKEND_URL } from "../../../lib/constants";
 import Title from "../../../components/Title";
 import "../../../styles/index.less";
 import { useSpace } from "../../../lib/hooks/spaces";
+import CheckboxWrap from "../../../components/CheckboxWrap";
+
+type TagInfo = {
+  tag: string;
+  checked: boolean;
+};
 
 function ProposalForm() {
   const signer = useSigner();
@@ -27,7 +35,18 @@ function ProposalForm() {
   let pId: string = "";
   if (typeof projectId === "string") pId = projectId;
 
+  const [areChecked, setAreChecked] = useState<TagInfo[]>(
+    fixedTags.map((t) => {
+      return {
+        tag: t,
+        checked: false,
+      };
+    })
+  );
+
+  const checkdRef = useRef(fixedTags.map((_) => false));
   const space = useSpace(pId);
+  const [test, setTest] = useState(1);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [range, setRange] = useState({
@@ -35,6 +54,7 @@ function ProposalForm() {
     end: null,
   });
 
+  console.log(pId);
   useEffect(() => {
     if (wallet?.account && wallet?.connectors?.injected) return;
 
@@ -107,7 +127,7 @@ function ProposalForm() {
     <>
       <Title
         title="New Problem"
-        subtitle="Please fill out all the required fields of the form to create a new problem."
+        subtitle="Please fill out all the required fields of the form to propose a new problem."
         topSpacing={7 * GU}
         bottomSpacing={5 * GU}
       />
@@ -123,6 +143,30 @@ function ProposalForm() {
             placeholder="Short summary of the problem"
             onChange={(event) => setTitle(event.target.value)}
           />
+        </Field>
+        <Field label="Tags:" required={true}>
+          <Box
+            style={{
+              marginTop: `${2 * GU}px`,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-start",
+                flexWrap: "wrap",
+                alignContent: "space-between",
+              }}
+            >
+              {fixedTags.map((t, i) => (
+                <CheckboxWrap
+                  label={t}
+                  cRef={checkdRef}
+                  index={i}
+                ></CheckboxWrap>
+              ))}
+            </div>
+          </Box>
         </Field>
         <Field label="Problem Description:" required={true}>
           <TextInput
@@ -151,9 +195,30 @@ function ProposalForm() {
         >
           Submit
         </Button>
+        <Button
+          mode="negative"
+          onClick={() => {
+            console.log(checkdRef);
+          }}
+        >
+          Test
+        </Button>
       </div>
     </>
   );
 }
 
 export default ProposalForm;
+
+const fixedTags = [
+  "Development",
+  "Design",
+  "Finances",
+  "Admin",
+  "Customer Support",
+  "Tokenomics",
+  "Legal",
+  "Sales",
+  "Marketing",
+  "Communication",
+];
