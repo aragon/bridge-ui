@@ -57,6 +57,7 @@ function ProposalForm() {
   }
 
   async function postProblem() {
+    // construct payload to post proposal to snapshot
     const provider = snapshotPckg.utils.getProvider(space[1].network);
     const blockNumber = await snapshotPckg.utils.getBlockNumber(provider);
     const payload = {
@@ -70,6 +71,8 @@ function ProposalForm() {
         strategies: space[1].strategies,
       },
     };
+    // wrap payload in envelope
+    // NOTE: Snapshot expects envelope and payload to have the above structure.
     const envelope: any = {
       address: wallet.account,
       msg: JSON.stringify({
@@ -82,10 +85,23 @@ function ProposalForm() {
     };
     envelope.sig = await signer.signMessage(envelope.msg);
 
+    // filter tags selected by user
+    const tags = [];
+    checkedBoxesRef.current.forEach((c, i) => {
+      if (c) tags.push(fixedTags[i]);
+    });
+
+    console.log(tags);
+    // Wrap tags and envelope into parcel
+    const parcel = {
+      snapshot: envelope,
+      tags: tags,
+    };
+
     const url = `${BACKEND_URL}/problemProposal/${pId}`;
     const init = {
       method: "POST",
-      body: JSON.stringify(envelope),
+      body: JSON.stringify(parcel),
     };
 
     //TODO add toast or something to indicate success/failure to client

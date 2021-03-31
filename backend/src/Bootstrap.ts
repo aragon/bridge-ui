@@ -5,7 +5,7 @@ import fastify, {
 } from "fastify";
 const fetch = require("node-fetch");
 import Configuration from "./config/Configuration";
-import Database from "./db/Database";
+import Database, { Output } from "./db/Database";
 
 export default class Bootstrap {
   /**
@@ -137,8 +137,14 @@ export default class Bootstrap {
       async (request: FastifyRequest, reply: FastifyReply) => {
         const { space } = request.params as { space: string };
 
-        const body: BodyInit | null | undefined =
-          (request.body as string) || "";
+        // Separate snapshot payload from tags
+        const entireBodyString = (request.body as string) || "";
+        const entireBody = JSON.parse(entireBodyString);
+        const tags: string[] = entireBody.tags;
+        const body: BodyInit | null | undefined = JSON.stringify(
+          entireBody.snapshot
+        );
+
         const init: RequestInit = {
           method: "POST",
           headers: {
@@ -160,11 +166,11 @@ export default class Bootstrap {
           .then(async (data: ProposalResponse) => {
             try {
               const hash = data.ipfsHash;
-              await this.db.addProblemProposal<String>(space, hash);
+              await this.db.addProblemProposal<String>(space, hash, tags);
             } catch (error) {
               console.error(error);
               reply
-                .code(200)
+                .code(500)
                 .header("Access-Control-Allow-Origin", "*")
                 .header("Content-Type", "application/json; charset=utf-8")
                 .send(error);
@@ -237,13 +243,14 @@ export default class Bootstrap {
     this.server.get(
       "/problems/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
-        const space = request.url.split("/").pop() || "";
-
+        const { space } = request.params as { space: string };
         //query DB for problems created on apollo.
+        const res: Output[] = await this.db.getProblemIds(space);
         const problemIds = await this.db.getProblemIds(space);
         const problemSet = new Set();
         problemIds.forEach((pID) => problemSet.add(pID.problemhash));
 
+        //TODO pull proposals from IPFS directly.
         //pull proposals from Snapshot.
         fetch(`${this.SNAPSHOT_URL}/${space}/proposals`)
           .then((res: Response) => {
