@@ -6,7 +6,6 @@ import {
   GU,
   Box,
   Button,
-  Checkbox,
   Field,
   TextInput,
   DateRangePicker,
@@ -20,11 +19,6 @@ import "../../../styles/index.less";
 import { useSpace } from "../../../lib/hooks/spaces";
 import CheckboxWrap from "../../../components/CheckboxWrap";
 
-type TagInfo = {
-  tag: string;
-  checked: boolean;
-};
-
 function ProposalForm() {
   const signer = useSigner();
   const wallet = useWallet();
@@ -35,18 +29,9 @@ function ProposalForm() {
   let pId: string = "";
   if (typeof projectId === "string") pId = projectId;
 
-  const [areChecked, setAreChecked] = useState<TagInfo[]>(
-    fixedTags.map((t) => {
-      return {
-        tag: t,
-        checked: false,
-      };
-    })
-  );
-
+  //reference for the state of the checkboxes. See CheckBoxWrap for more information.
   const checkdRef = useRef(fixedTags.map((_) => false));
   const space = useSpace(pId);
-  const [test, setTest] = useState(1);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [range, setRange] = useState({
@@ -54,7 +39,6 @@ function ProposalForm() {
     end: null,
   });
 
-  console.log(pId);
   useEffect(() => {
     if (wallet?.account && wallet?.connectors?.injected) return;
 
@@ -194,14 +178,6 @@ function ProposalForm() {
           onClick={() => postProblem()}
         >
           Submit
-        </Button>
-        <Button
-          mode="negative"
-          onClick={() => {
-            console.log(checkdRef);
-          }}
-        >
-          Test
         </Button>
       </div>
     </>
