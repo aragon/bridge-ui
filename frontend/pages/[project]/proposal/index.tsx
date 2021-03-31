@@ -30,7 +30,7 @@ function ProposalForm() {
   if (typeof projectId === "string") pId = projectId;
 
   //reference for the state of the checkboxes. See CheckBoxWrap for more information.
-  const checkdRef = useRef(fixedTags.map((_) => false));
+  const checkedBoxesRef = useRef(fixedTags.map((_) => false));
   const space = useSpace(pId);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -128,7 +128,7 @@ function ProposalForm() {
             onChange={(event) => setTitle(event.target.value)}
           />
         </Field>
-        <Field label="Tags:" required={true}>
+        <Field label="Tags:" required={false}>
           <Box
             style={{
               marginTop: `${2 * GU}px`,
@@ -145,7 +145,7 @@ function ProposalForm() {
               {fixedTags.map((t, i) => (
                 <CheckboxWrap
                   label={t}
-                  cRef={checkdRef}
+                  cRef={checkedBoxesRef}
                   index={i}
                 ></CheckboxWrap>
               ))}
@@ -169,16 +169,35 @@ function ProposalForm() {
             />
           </div>
         </Field>
-        <Button
-          style={{ marginTop: `${3 * GU}px` }}
-          mode="strong"
-          disabled={areInputsMissing()}
-          external={false}
-          wide={false}
-          onClick={() => postProblem()}
+        <div
+          style={{
+            marginTop: `${5 * GU}px`,
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-evenly",
+            alignItems: "center",
+          }}
         >
-          Submit
-        </Button>
+          <Button
+            style={{ width: `33%` }}
+            mode="strong"
+            disabled={areInputsMissing()}
+            external={false}
+            wide={false}
+            onClick={() => postProblem()}
+          >
+            Submit
+          </Button>
+          <Button
+            style={{ width: `33%` }}
+            mode="negative"
+            external={false}
+            wide={false}
+            onClick={() => router.back()}
+          >
+            Cancel
+          </Button>
+        </div>
       </div>
     </>
   );
