@@ -220,7 +220,7 @@ export default class Bootstrap {
             } catch (error) {
               console.error(error);
               reply
-                .code(200)
+                .code(500)
                 .header("Access-Control-Allow-Origin", "*")
                 .header("Content-Type", "application/json; charset=utf-8")
                 .send(error);
@@ -274,12 +274,11 @@ export default class Bootstrap {
               .send(filteredProposals);
           })
           .catch((error: Error) => {
-            console.error(error);
-            //TODO catch errors.
             reply
               .code(500)
               .header("Access-Control-Allow-Origin", "*")
-              .header("Content-Type", "application/json; charset=utf-8");
+              .header("Content-Type", "application/json; charset=utf-8")
+              .send(error);
           });
       }
     );
@@ -318,7 +317,11 @@ export default class Bootstrap {
               .send(filteredProposals);
           })
           .catch((error: Error) => {
-            //TODO catch errors.
+            reply
+              .code(500)
+              .header("Access-Control-Allow-Origin", "*")
+              .header("Content-Type", "application/json; charset=utf-8")
+              .send(error);
           });
       }
     );
