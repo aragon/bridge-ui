@@ -7,7 +7,7 @@ import {
   Proposal,
   ProposalCategories,
   ProposalPayload,
-  SnapshotData,
+  TaggedProposal,
 } from "../types";
 
 // TODO create generic, parametrized return type: T | Error for custom hooks that
@@ -31,7 +31,7 @@ export function useProposal(ifpsHash: string): Proposal {
   return proposal;
 }
 
-export function useCategorizedProblems(spaceId: String): ProposalCategories {
+export function useCategorizedProblems(spaceId: string): ProposalCategories {
   const [
     categorizedProblems,
     setCategorizedProblems,
@@ -46,10 +46,7 @@ export function useCategorizedProblems(spaceId: String): ProposalCategories {
           throw Error(response.statusText);
         }
       })
-      .then((data) => {
-        return Object.values(data);
-      })
-      .then((data: SnapshotData[]) => {
+      .then((data: TaggedProposal[]) => {
         let categories = {
           active: [],
           closed: [],
@@ -57,7 +54,7 @@ export function useCategorizedProblems(spaceId: String): ProposalCategories {
           all: data,
         };
         let curr_date = Math.round(Date.now() / 1e3);
-        function categorize(p: SnapshotData) {
+        function categorize(p: TaggedProposal) {
           const proposalInfo = p.msg.payload as ProposalPayload;
           if (proposalInfo.end < curr_date) {
             categories.closed.push(p);
@@ -96,7 +93,7 @@ export function useCategorizedSolutions(
       .then((data) => {
         return Object.values(data);
       })
-      .then((data: SnapshotData[]) => {
+      .then((data: TaggedProposal[]) => {
         let categories = {
           active: [],
           closed: [],
@@ -104,7 +101,7 @@ export function useCategorizedSolutions(
           all: data,
         };
         let curr_date = Math.round(Date.now() / 1e3);
-        function categorize(p: SnapshotData) {
+        function categorize(p: TaggedProposal) {
           const proposalInfo = p.msg.payload as ProposalPayload;
           if (proposalInfo.end < curr_date) {
             categories.closed.push(p);

@@ -37,7 +37,7 @@ const ProblemsPage = () => {
         (p) => {
           const promise = fetch(
             //get votes from Snapshot
-            `${TEST_HUB_URL}/api/${space[0]}/proposal/${p.authorIpfsHash}`
+            `${TEST_HUB_URL}/api/${space[0]}/proposal/${p.hash}`
           )
             .then((res) => res.json())
             .then((data: Record<string, SnapshotData>) => {

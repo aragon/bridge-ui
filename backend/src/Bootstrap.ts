@@ -3,6 +3,7 @@ import fastify, {
   FastifyReply,
   FastifyRequest,
 } from "fastify";
+import { IpfsProposal, TaggedProposal } from "../lib/Types";
 const fetch = require("node-fetch");
 import Configuration from "./config/Configuration";
 import Database, { Output } from "./db/Database";
@@ -16,6 +17,8 @@ export default class Bootstrap {
 
   // private SNAPSHOT_URL = "https://hub.snapshot.org/api"
   private SNAPSHOT_URL = "https://testnet.snapshot.org/api";
+
+  private IPFS_URL = "https://ipfs.fleek.co/ipfs";
 
   /**
    * @property {string} apiUrl
@@ -243,43 +246,47 @@ export default class Bootstrap {
     this.server.get(
       "/problems/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
-        const { space } = request.params as { space: string };
-        //query DB for problems created on apollo.
-        const res: Output[] = await this.db.getProblemIds(space);
-        const problemIds = await this.db.getProblemIds(space);
-        const problemSet = new Set();
-        problemIds.forEach((pID) => problemSet.add(pID.problemhash));
+        try {
+          const { space } = request.params as { space: string };
 
-        //TODO pull proposals from IPFS directly.
-        //pull proposals from Snapshot.
-        fetch(`${this.SNAPSHOT_URL}/${space}/proposals`)
-          .then((res: Response) => {
-            if (res.ok) {
-              return res.json();
-            } else {
-              throw Error(res.statusText);
-            }
-          })
-          .then((data: any) => Object.values(data))
-          .then((proposals: Proposal[]) => {
-            //filter out the ones not created on apollo
-            const filteredProposals = proposals.filter((p) =>
-              problemSet.has(p.authorIpfsHash)
-            );
+          //query DB for problems created on apollo.
+          const res: Output[] = await this.db.getProblemIds(space);
 
-            reply
-              .code(200)
-              .header("Access-Control-Allow-Origin", "*")
-              .header("Content-Type", "application/json; charset=utf-8")
-              .send(filteredProposals);
-          })
-          .catch((error: Error) => {
-            reply
-              .code(500)
-              .header("Access-Control-Allow-Origin", "*")
-              .header("Content-Type", "application/json; charset=utf-8")
-              .send(error);
+          //pull problems from ipfs.
+          const problem_promises: Promise<IpfsProposal>[] = res.map((o) => {
+            return fetch(`${this.IPFS_URL}/${o.problemhash}`)
+              .then((res: any) => res.json())
+              .then((data: IpfsProposal) => {
+                return data;
+              });
           });
+          const problems: IpfsProposal[] = await Promise.all(problem_promises);
+
+          // properly type problems, adding the tags and ipfs hash.
+          const taggedProblems: TaggedProposal[] = problems.map((p, i) => {
+            const q: TaggedProposal = {
+              address: p.address,
+              msg: JSON.parse(p.msg),
+              sig: p.sig,
+              version: p.version,
+              tags: res[i].tags,
+              hash: res[i].problemhash,
+            };
+            return q;
+          });
+
+          reply
+            .code(200)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .send(taggedProblems);
+        } catch (error) {
+          reply
+            .code(500)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .send(error);
+        }
       }
     );
     this.server.get(

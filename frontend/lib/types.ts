@@ -19,14 +19,14 @@ export type ProcessInfo = {
 };
 
 export type ProposalCategories = {
-  active: SnapshotData[];
-  closed: SnapshotData[];
-  pending: SnapshotData[];
-  all: SnapshotData[];
+  active: TaggedProposal[];
+  closed: TaggedProposal[];
+  pending: TaggedProposal[];
+  all: TaggedProposal[];
 };
 
 export interface VoteResult {
-  problem: SnapshotData;
+  problem: TaggedProposal;
   percentage: number;
   balance: number;
 }
@@ -36,6 +36,15 @@ export interface IpfsProposal {
   msg: string;
   sig: string;
   verison: number;
+}
+
+export interface TaggedProposal {
+  address: string;
+  msg: Msg;
+  sig: string;
+  version: number;
+  tags: string[];
+  hash: string;
 }
 
 export interface Proposal {

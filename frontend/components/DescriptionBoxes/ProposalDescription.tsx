@@ -3,13 +3,13 @@ import { Card, GU, Button } from "@aragon/ui";
 import Link from "next/link";
 
 import VotingButtons from "../VotingButtons";
-import { ProposalPayload, SnapshotData } from "../../lib/types";
+import { ProposalPayload, TaggedProposal } from "../../lib/types";
 
 type ProposalDescriptionInfo = {
   type: string;
   projectId: string;
   problemId?: string;
-  proposal: SnapshotData;
+  proposal: TaggedProposal;
   downvotes: number;
 };
 
@@ -65,7 +65,9 @@ function ProposalDescription({
   downvotes,
 }: ProposalDescriptionInfo) {
   const backgroudColor = type === "problem" ? "#FFF4F6" : "#F6FCFF";
-
+  if (!proposal.tags) {
+    proposal.tags = [];
+  }
   return (
     <Card
       width="95%"
@@ -84,18 +86,24 @@ function ProposalDescription({
           width: "100%",
           padding: `${2 * GU}px ${2 * GU}px ${2 * GU}px  ${3 * GU}px`,
           borderRadius: "10px",
+          border: "solid",
+          alignItems: "center",
         }}
       >
-        <p style={{ fontSize: "14px" }}>Reported by: {proposal.address}</p>
+        <p
+          style={{ alignContent: "center", border: "solid", fontSize: "14px" }}
+        >
+          Reported by: {proposal.address}
+        </p>
         {type === "problem" ? (
           <SolutionsButton
             projectId={proposal.msg.space}
-            problemId={proposal.authorIpfsHash}
+            problemId={proposal.hash}
           />
         ) : (
           <ApplicationsButton
             projectId={proposal.msg.space}
-            problemId={proposal.authorIpfsHash}
+            problemId={proposal.hash}
           />
         )}
       </section>
@@ -119,19 +127,22 @@ function ProposalDescription({
           <p style={{ fontSize: "16px" }}>
             {(proposal.msg.payload as ProposalPayload).body}
           </p>
+          {proposal.tags.map((t) => (
+            <Button>{t}</Button>
+          ))}
         </div>
       </section>
       {downvotes > -1 ? (
         <VotingButtons
           spaceId={proposal.msg.space}
-          proposal={proposal.authorIpfsHash}
+          proposal={proposal.hash}
           no_upvotes={(100 - downvotes).toFixed().concat(" %")}
           no_downvotes={downvotes.toFixed().concat(" %")}
         />
       ) : (
         <VotingButtons
           spaceId={proposal.msg.space}
-          proposal={proposal.authorIpfsHash}
+          proposal={proposal.hash}
           no_upvotes={"no votes!"}
           no_downvotes={"no votes!"}
         />

@@ -91,7 +91,6 @@ function ProposalForm() {
       if (c) tags.push(fixedTags[i]);
     });
 
-    console.log(tags);
     // Wrap tags and envelope into parcel
     const parcel = {
       snapshot: envelope,
