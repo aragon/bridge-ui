@@ -4,10 +4,10 @@ import Link from "next/link";
 
 import VotingButtons from "../VotingButtons";
 import { ProposalPayload, TaggedProposal } from "../../lib/types";
+import "../../styles/index.less";
 
 type ProposalDescriptionInfo = {
   type: string;
-  projectId: string;
   problemId?: string;
   proposal: TaggedProposal;
   downvotes: number;
@@ -60,24 +60,15 @@ function ApplicationsButton(linkInfo: LinkInfo) {
 
 function ProposalDescription({
   type,
-  projectId,
   proposal,
   downvotes,
 }: ProposalDescriptionInfo) {
-  const backgroudColor = type === "problem" ? "#FFF4F6" : "#F6FCFF";
+  const styleClass = type === "problem" ? "problemCard" : "solutionCard";
   if (!proposal.tags) {
     proposal.tags = [];
   }
   return (
-    <Card
-      width="95%"
-      height="auto"
-      style={{
-        marginTop: `${4 * GU}px`,
-        background: backgroudColor,
-        borderRadious: `10px`,
-      }}
-    >
+    <Card width="95%" height="auto" id={styleClass}>
       <section
         style={{
           display: "flex",
@@ -86,12 +77,11 @@ function ProposalDescription({
           width: "100%",
           padding: `${2 * GU}px ${2 * GU}px ${2 * GU}px  ${3 * GU}px`,
           borderRadius: "10px",
-          border: "solid",
           alignItems: "center",
         }}
       >
         <p
-          style={{ alignContent: "center", border: "solid", fontSize: "14px" }}
+          style={{ alignContent: "center", fontSize: "14px", color: "#666666" }}
         >
           Reported by: {proposal.address}
         </p>
@@ -127,10 +117,26 @@ function ProposalDescription({
           <p style={{ fontSize: "16px" }}>
             {(proposal.msg.payload as ProposalPayload).body}
           </p>
-          {proposal.tags.map((t) => (
-            <Button>{t}</Button>
-          ))}
         </div>
+        <section
+          style={{
+            marginTop: `${2 * GU}px`,
+          }}
+        >
+          {proposal.tags.map((t) => (
+            <Button
+              style={{
+                marginRight: `${1 * GU}px`,
+                background: "#EEF3FF",
+                borderRadius: "8px",
+                boxShadow: "inset 0px 4px 4px rgba(122, 133, 159, 0.1)",
+              }}
+              disabled={true}
+            >
+              {t}
+            </Button>
+          ))}
+        </section>
       </section>
       {downvotes > -1 ? (
         <VotingButtons

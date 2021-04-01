@@ -206,7 +206,6 @@ const ProblemsPage = () => {
                   <ProposalDescription
                     key={i}
                     type={"problem"}
-                    projectId={projectId}
                     proposal={vr.problem}
                     downvotes={vr.percentage}
                   />

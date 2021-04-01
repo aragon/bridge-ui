@@ -38,7 +38,7 @@ const SolutionsPage = () => {
         (s) => {
           const promise = fetch(
             //get votes from Snapshot
-            `${TEST_HUB_URL}/api/${space[0]}/proposal/${s.authorIpfsHash}`
+            `${TEST_HUB_URL}/api/${space[0]}/proposal/${s.hash}`
           )
             .then((res) => res.json())
             .then((data: Record<string, SnapshotData>) => {
@@ -206,7 +206,6 @@ const SolutionsPage = () => {
                   <ProposalDescription
                     key={i}
                     type={"solution"}
-                    projectId={vr.problem.msg.space}
                     problemId={problemId}
                     proposal={vr.problem}
                     downvotes={vr.percentage}
