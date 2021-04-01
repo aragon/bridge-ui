@@ -102,8 +102,8 @@ export default class Database {
     solutionHash: string
   ): Promise<T> {
     return this.sql`
-      INSERT INTO reference (spaceName, problemHash, solutionHash)
-      VALUES (${space}, ${proposalHash}, ${solutionHash});
+      INSERT INTO reference (spaceName, problemHash, solutionHash, tags)
+      VALUES (${space}, ${proposalHash}, ${solutionHash}, null);
       `;
   }
 
