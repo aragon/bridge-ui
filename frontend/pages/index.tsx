@@ -19,7 +19,6 @@ const WelcomePage = () => {
         pathname: `/projects`,
       };
       router.push(urlObject);
-      // router.push("/voteEvaluation");
       return wallet;
     }
 
@@ -32,7 +31,6 @@ const WelcomePage = () => {
           pathname: `/projects`,
         };
         router.push(urlObject);
-        // router.push("/voteEvaluation");
       })
       .catch((err) => {
         if (
@@ -72,7 +70,7 @@ const WelcomePage = () => {
               }}
             >
               <Button
-                label={isConnected ? "Show Problems" : "Connect with MetaMask"}
+                label={isConnected ? "Show Projects" : "Connect with MetaMask"}
                 icon={<IconEthereum />}
                 mode="strong"
                 style={{ background: "#59A0FF" }}

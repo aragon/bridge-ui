@@ -4,8 +4,8 @@ name: CI
 
 # Controls when the action will run.
 on:
-  # Triggers the workflow on push events, but only for the main branch
-  push:
+  # Triggers the workflow on PR events, but only for the main branch
+  pull_request:
     branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -22,20 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Docker Login
-        uses: docker/login-action@v1.8.0
-        with:
-          # Server address of Docker registry. If not set then will default to Docker Hub
-          registry: ghcr.io
-          # Username used to log against the Docker registry
-          username: ${{ secrets.GHCR_USER }}
-          # Password or personal access token used to log against the Docker registry
-          password: ${{ secrets.GHCR_TOKEN }}
-
       # Builds a docker image for the backend.
       - name: Build backend image
         run: cd backend && docker build -t ghcr.io/aragon/apollo:latest .
-
-      # Pushes the image to the GitHub package registry
-      - name: Push Image
-        run: docker image push ghcr.io/aragon/apollo:latest

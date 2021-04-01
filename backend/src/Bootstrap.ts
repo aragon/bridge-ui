@@ -3,9 +3,10 @@ import fastify, {
   FastifyReply,
   FastifyRequest,
 } from "fastify";
+import { IpfsProposal, TaggedProposal } from "../lib/Types";
 const fetch = require("node-fetch");
 import Configuration from "./config/Configuration";
-import Database from "./db/Database";
+import Database, { Output } from "./db/Database";
 
 export default class Bootstrap {
   /**
@@ -16,6 +17,8 @@ export default class Bootstrap {
 
   // private SNAPSHOT_URL = "https://hub.snapshot.org/api"
   private SNAPSHOT_URL = "https://testnet.snapshot.org/api";
+
+  private IPFS_URL = "https://ipfs.fleek.co/ipfs";
 
   /**
    * @property {string} apiUrl
@@ -78,7 +81,7 @@ export default class Bootstrap {
         .code(200)
         .header("Access-Control-Allow-Origin", "*")
         .header("Content-Type", "application/json; charset=utf-8")
-        .send({ greetings: "hey there! You've reached the server." });
+        .send({ greetings: "Hey there! You've reached the server." });
     });
   }
 
@@ -137,8 +140,14 @@ export default class Bootstrap {
       async (request: FastifyRequest, reply: FastifyReply) => {
         const { space } = request.params as { space: string };
 
-        const body: BodyInit | null | undefined =
-          (request.body as string) || "";
+        // Separate snapshot payload from tags
+        const entireBodyString = (request.body as string) || "";
+        const entireBody = JSON.parse(entireBodyString);
+        const tags: string[] = entireBody.tags;
+        const body: BodyInit | null | undefined = JSON.stringify(
+          entireBody.snapshot
+        );
+
         const init: RequestInit = {
           method: "POST",
           headers: {
@@ -160,11 +169,11 @@ export default class Bootstrap {
           .then(async (data: ProposalResponse) => {
             try {
               const hash = data.ipfsHash;
-              await this.db.addProblemProposal<String>(space, hash);
+              await this.db.addProblemProposal<String>(space, hash, tags);
             } catch (error) {
               console.error(error);
               reply
-                .code(200)
+                .code(500)
                 .header("Access-Control-Allow-Origin", "*")
                 .header("Content-Type", "application/json; charset=utf-8")
                 .send(error);
@@ -214,7 +223,7 @@ export default class Bootstrap {
             } catch (error) {
               console.error(error);
               reply
-                .code(200)
+                .code(500)
                 .header("Access-Control-Allow-Origin", "*")
                 .header("Content-Type", "application/json; charset=utf-8")
                 .send(error);
@@ -237,43 +246,47 @@ export default class Bootstrap {
     this.server.get(
       "/problems/:space",
       async (request: FastifyRequest, reply: FastifyReply) => {
-        const space = request.url.split("/").pop() || "";
+        try {
+          const { space } = request.params as { space: string };
 
-        //query DB for problems created on apollo.
-        const problemIds = await this.db.getProblemIds(space);
-        const problemSet = new Set();
-        problemIds.forEach((pID) => problemSet.add(pID.problemhash));
+          //query DB for problems created on apollo.
+          const res: Output[] = await this.db.getProblemIds(space);
 
-        //pull proposals from Snapshot.
-        fetch(`${this.SNAPSHOT_URL}/${space}/proposals`)
-          .then((res: Response) => {
-            if (res.ok) {
-              return res.json();
-            } else {
-              throw Error(res.statusText);
-            }
-          })
-          .then((data: any) => Object.values(data))
-          .then((proposals: Proposal[]) => {
-            //filter out the ones not created on apollo
-            const filteredProposals = proposals.filter((p) =>
-              problemSet.has(p.authorIpfsHash)
-            );
-
-            reply
-              .code(200)
-              .header("Access-Control-Allow-Origin", "*")
-              .header("Content-Type", "application/json; charset=utf-8")
-              .send(filteredProposals);
-          })
-          .catch((error: Error) => {
-            console.error(error);
-            //TODO catch errors.
-            reply
-              .code(500)
-              .header("Access-Control-Allow-Origin", "*")
-              .header("Content-Type", "application/json; charset=utf-8");
+          //pull problems from ipfs.
+          const problem_promises: Promise<IpfsProposal>[] = res.map((o) => {
+            return fetch(`${this.IPFS_URL}/${o.problemhash}`)
+              .then((res: any) => res.json())
+              .then((data: IpfsProposal) => {
+                return data;
+              });
           });
+          const problems: IpfsProposal[] = await Promise.all(problem_promises);
+
+          // properly type problems, adding the tags and ipfs hash.
+          const taggedProblems: TaggedProposal[] = problems.map((p, i) => {
+            const q: TaggedProposal = {
+              address: p.address,
+              msg: JSON.parse(p.msg),
+              sig: p.sig,
+              version: p.version,
+              tags: res[i].tags,
+              hash: res[i].problemhash,
+            };
+            return q;
+          });
+
+          reply
+            .code(200)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .send(taggedProblems);
+        } catch (error) {
+          reply
+            .code(500)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .send(error);
+        }
       }
     );
     this.server.get(
@@ -311,7 +324,11 @@ export default class Bootstrap {
               .send(filteredProposals);
           })
           .catch((error: Error) => {
-            //TODO catch errors.
+            reply
+              .code(500)
+              .header("Access-Control-Allow-Origin", "*")
+              .header("Content-Type", "application/json; charset=utf-8")
+              .send(error);
           });
       }
     );
