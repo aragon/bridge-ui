@@ -6,10 +6,16 @@ postgres database.
 
 ## Setup
 
-In order to setup the containers, start by running:
+Before setting up the containers, run:
 
 ```
-docker run -d --name postgres -h postgres -e POSTGRES_PASSWORD=abcd123 \ --network apollo -v $PWD/postgres:/docker-entrypoint-initdb.d/ -p 5432:5432 postgres
+docker network create apollo
+```
+
+Then, set-up the database:
+
+```
+docker run -d --name postgres -h postgres -e POSTGRES_PASSWORD=abcd123 --network apollo -v $PWD/postgres:/docker-entrypoint-initdb.d/ -p 5432:5432 postgres
 ```
 
 If no postgres image is available, this will first pull an image from Docker Hub and
@@ -26,14 +32,18 @@ built, the container can be run with the following command:
 docker run -d --name apollo -h apollo -p 4040:4040 --network apollo apollo
 ```
 
-This will run the server code and expose it on `port 4040`. Note that bot run commands
+This will run the server code and expose it on `port 4040`. Note that both `run` commands
 specify a network. This is necessary to allow the two containers to communicate.
 
 ## Development Setup
 
 The above scenario is not suited for development, as changing and re-running the code
 requires rebuilding the entire apollo image. A better approach for development is the
-following. As before, run the database:
+following. As before, set up the network and run the database:
+
+```
+docker network create apollo
+```
 
 ```
 docker run -d --name postgres -h postgres -e POSTGRES_PASSWORD=abcd123 \ --network apollo -v $PWD/postgres:/docker-entrypoint-initdb.d/ -p 5432:5432 postgres
