@@ -81,7 +81,7 @@ export default class Bootstrap {
         .code(200)
         .header("Access-Control-Allow-Origin", "*")
         .header("Content-Type", "application/json; charset=utf-8")
-        .send({ greetings: "hey there! You've reached the server." });
+        .send({ greetings: "Hey there! You've reached the server." });
     });
   }
 
