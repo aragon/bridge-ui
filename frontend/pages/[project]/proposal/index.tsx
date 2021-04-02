@@ -10,6 +10,8 @@ import {
   TextInput,
   DateRangePicker,
   LoadingRing,
+  ToastHub, 
+  Toast,
 } from "@aragon/ui";
 import snapshotPckg from "@snapshot-labs/snapshot.js/";
 
@@ -38,6 +40,7 @@ function ProposalForm() {
     start: null,
     end: null,
   });
+  const [toastMsg, setToastMsg] = useState(undefined);
 
   useEffect(() => {
     if (wallet?.account && wallet?.connectors?.injected) return;
@@ -56,7 +59,7 @@ function ProposalForm() {
     );
   }
 
-  async function postProblem() {
+  async function postProblem(toastFunction: any) {
     // construct payload to post proposal to snapshot
     const provider = snapshotPckg.utils.getProvider(space[1].network);
     const blockNumber = await snapshotPckg.utils.getBlockNumber(provider);
@@ -103,12 +106,17 @@ function ProposalForm() {
       body: JSON.stringify(parcel),
     };
 
-    //TODO add toast or something to indicate success/failure to client
-    var res = await fetch(url, init);
+    //TODO toast time out may cause issue if user hit back
+    const res = await fetch(url, init);
     if (res.ok) {
-      router.back();
+      toastFunction('Success!')
+      setTimeout(() => 
+      {
+        router.back();
+      },
+      4000);
     } else {
-      router.back();
+      toastFunction('Failed!')
     }
   }
 
@@ -184,35 +192,45 @@ function ProposalForm() {
             />
           </div>
         </Field>
-        <div
-          style={{
-            marginTop: `${5 * GU}px`,
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-evenly",
-            alignItems: "center",
-          }}
+        <ToastHub 
+        timeout={2000}
+        showIndicator={true}
+        position={'center'}
         >
-          <Button
-            style={{ width: `33%` }}
-            mode="strong"
-            disabled={areInputsMissing()}
-            external={false}
-            wide={false}
-            onClick={() => postProblem()}
-          >
-            Submit
-          </Button>
-          <Button
-            style={{ width: `33%` }}
-            mode="negative"
-            external={false}
-            wide={false}
-            onClick={() => router.back()}
-          >
-            Cancel
-          </Button>
-        </div>
+          <Toast>
+            {toast => (
+              <div
+              style={{
+                marginTop: `${5 * GU}px`,
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                style={{ width: `33%` }}
+                mode="strong"
+                disabled={areInputsMissing()}
+                external={false}
+                wide={false}
+                onClick={() => postProblem(toast)}
+              >
+                Submit
+              </Button>
+              <Button
+                style={{ width: `33%` }}
+                mode="negative"
+                external={false}
+                wide={false}
+                onClick={() => router.back()}
+              >
+                Cancel
+              </Button>
+            </div>
+            )}
+          </Toast>
+        </ToastHub>
       </div>
     </>
   );
