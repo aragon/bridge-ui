@@ -6,7 +6,7 @@ import { GU, Split, DropDown, LoadingRing } from "@aragon/ui";
 import Title from "../../../components/Title";
 import { TEST_HUB_URL } from "../../../lib/constants";
 import "../../../styles/index.less";
-import ReportProblemIndicator from "../../../components/ReportProblemIndicator";
+import ReportProblemIndicator from "../../../components/ReportIndicator";
 import {
   ProposalPayload,
   SnapshotData,
@@ -226,7 +226,7 @@ const ProblemsPage = () => {
           )}
         </div>
         <div style={{ width: "25%", paddingTop: `${6 * GU}px` }}>
-          <ReportProblemIndicator projectId={projectId} />
+          <ReportProblemIndicator projectId={projectId} problemHash={null} />
         </div>
       </section>
     </>
