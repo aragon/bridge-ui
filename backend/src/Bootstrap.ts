@@ -157,7 +157,7 @@ export default class Bootstrap {
           body: body,
         };
 
-        // make as asyn/await
+        // make it asyn/await
         const _request = async () => {
           try {
             const response = await fetch(this.POST_URL, init);
@@ -237,18 +237,20 @@ export default class Bootstrap {
           body: request.body,
         };
 
-        fetch(this.POST_URL, init)
-          .then((res: Response) => {
-            if (res.ok) {
-              return res.json();
-            } else {
-              throw Error(res.statusText);
-            }
-          })
-          .then(async (data: ProposalResponse) => {
+        // make it asyn/await
+        const _request = async () => {
+          try {
+            const response = await fetch(this.POST_URL, init);
+            const data: ProposalResponse = await response.json();
+            
             try {
               const hash = data.ipfsHash;
               await this.db.addSolutionProposal<String>(space, problem, hash);
+              reply
+              .code(200)
+              .header("Content-Type", "application/json; charset=utf-8")
+              .header("Access-Control-Allow-Origin", "*")
+              .send()
             } catch (error) {
               console.error(error);
               reply
@@ -258,18 +260,46 @@ export default class Bootstrap {
                 .send(error);
             }
 
-            reply
-              .code(200)
-              .header("Content-Type", "application/json; charset=utf-8")
-              .header("Access-Control-Allow-Origin", "*");
-          })
-          .catch((error: Error) =>
-            reply
-              .code(500)
-              .header("Content-Type", "application/json; charset=utf-8")
-              .header("Access-Control-Allow-Origin", "*")
-              .send(error)
-          );
+          } catch (error) {
+            throw Error('_request failed: ' +  error);
+          }
+        }
+        
+        _request();
+        // fetch(this.POST_URL, init)
+        //   .then((res: Response) => {
+        //     if (res.ok) {
+        //       return res.json();
+        //     } else {
+        //       throw Error(res.statusText);
+        //     }
+        //   })
+        //   .then(async (data: ProposalResponse) => {
+        //     try {
+        //       const hash = data.ipfsHash;
+        //       await this.db.addSolutionProposal<String>(space, problem, hash);
+        //     } catch (error) {
+        //       console.error(error);
+        //       reply
+        //         .code(500)
+        //         .header("Access-Control-Allow-Origin", "*")
+        //         .header("Content-Type", "application/json; charset=utf-8")
+        //         .send(error);
+        //     }
+
+        //     reply
+        //       .code(200)
+        //       .header("Content-Type", "application/json; charset=utf-8")
+        //       .header("Access-Control-Allow-Origin", "*")
+        //       .send()
+        //   })
+        //   .catch((error: Error) =>
+        //     reply
+        //       .code(500)
+        //       .header("Content-Type", "application/json; charset=utf-8")
+        //       .header("Access-Control-Allow-Origin", "*")
+        //       .send(error)
+        //   );
       }
     );
     this.server.get(
