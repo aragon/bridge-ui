@@ -110,7 +110,6 @@ function ProposalForm() {
         checkedBoxesRef={null}
         submitForm={postSolution}
         afterSubmissionAction={router.back}
-        waitBeforeAfterAction={4000}
       />
     </>
   );

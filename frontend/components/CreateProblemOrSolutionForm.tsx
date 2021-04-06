@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   GU,
   Box,
@@ -6,13 +6,12 @@ import {
   Field,
   TextInput,
   DateRangePicker,
-  ToastHub, 
-  Toast,
   LoadingRing 
 } from "@aragon/ui";
 import Title from "./Title";
 import CheckboxWrap from "./CheckboxWrap";
 import { FIXED_TAGS } from "../lib/constants";
+import { useNotificationContext } from "../lib/hooks/notification";
 
 type FormParams = {
   isCreateProblem: boolean;
@@ -26,8 +25,6 @@ type FormParams = {
   checkedBoxesRef: any;
   submitForm(): Promise<{result: boolean, message: string}>;
   afterSubmissionAction(): void;
-  waitBeforeAfterAction: number;
-  
 };
 
 function CreateProblemOrSolutionForm({ 
@@ -41,10 +38,10 @@ function CreateProblemOrSolutionForm({
   setRange, 
   checkedBoxesRef, 
   submitForm, 
-  afterSubmissionAction, 
-  waitBeforeAfterAction }: FormParams) {
+  afterSubmissionAction }: FormParams) {
   
   // STATES ==============================================================================
+  const { launchToast }  = useContext(useNotificationContext);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const formName = isCreateProblem ? 'Problem' : 'Solution';
 
@@ -58,19 +55,16 @@ function CreateProblemOrSolutionForm({
     );
   }
 
-  async function submitingForm(toastLauncher: (message: string) => void) {
+  async function submitingForm() {
     setIsSubmitLoading(true);
     const submitingResponse = await submitForm();
     if (shouldToast) {
       if (submitingResponse.result === true) {
-        toastLauncher(submitingResponse.message);
-        setTimeout(() => 
-        {
-          afterSubmissionAction();
-        },
-        waitBeforeAfterAction);
+        afterSubmissionAction();
+        launchToast(submitingResponse.message);
       } else {
-        toastLauncher(submitingResponse.message);
+        // after submission does not need to be called if result is failed.
+        launchToast(submitingResponse.message);
       }
     }
     setIsSubmitLoading(false);
@@ -140,45 +134,35 @@ function CreateProblemOrSolutionForm({
             />
           </div>
         </Field>
-        <ToastHub 
-        timeout={2000}
-        showIndicator={true}
-        position={'center'}
+          <div
+          style={{
+            marginTop: `${5 * GU}px`,
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-evenly",
+            alignItems: "center",
+          }}
         >
-          <Toast>
-            {toast => (
-              <div
-              style={{
-                marginTop: `${5 * GU}px`,
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "space-evenly",
-                alignItems: "center",
-              }}
-            >
-              <Button
-                style={{ width: `33%` }}
-                mode="strong"
-                disabled={areInputsMissing() || isSubmitLoading}
-                external={false}
-                wide={false}
-                onClick={() => submitingForm(toast)}
-              >
-                {isSubmitLoading ? <LoadingRing /> : 'Submit' }
-              </Button>
-              <Button
-                style={{ width: `33%` }}
-                mode="negative"
-                external={false}
-                wide={false}
-                onClick={() => afterSubmissionAction()}
-              >
-                Cancel
-              </Button>
-            </div>
-            )}
-          </Toast>
-        </ToastHub>
+          <Button
+            style={{ width: `33%` }}
+            mode="strong"
+            disabled={areInputsMissing() || isSubmitLoading}
+            external={false}
+            wide={false}
+            onClick={() => submitingForm()}
+          >
+            {isSubmitLoading ? <LoadingRing /> : 'Submit' }
+          </Button>
+          <Button
+            style={{ width: `33%` }}
+            mode="negative"
+            external={false}
+            wide={false}
+            onClick={() => afterSubmissionAction()}
+          >
+            Cancel
+          </Button>
+        </div>
       </div>
     </>
   );
