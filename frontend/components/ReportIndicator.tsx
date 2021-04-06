@@ -30,21 +30,25 @@ function ReportIndicator({ projectId, problemHash = null }: IndicatorInfo) {
   // RENDERER ============================================================================
 
   return (
-    <EmptyStateCard
-      illustration={<img src={cardImage} alt="" />}
-      text={cardText}
-      action={
-        <Link
-          href={{
-            pathname: pathName,
-            query: query,
-          }}
-          passHref
-        >
-          <Button mode="negative" external={false} label={cardActionText} />
-        </Link>
-      }
-    />
+    <div
+      className="sticky"
+    >
+      <EmptyStateCard
+        illustration={<img src={cardImage} alt="" />}
+        text={cardText}
+        action={
+          <Link
+            href={{
+              pathname: pathName,
+              query: query,
+            }}
+            passHref
+          >
+            <Button mode="negative" external={false} label={cardActionText} />
+          </Link>
+        }
+      />
+    </div>
   );
 }
 
