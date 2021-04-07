@@ -20,6 +20,7 @@ import Title from "../../../components/Title";
 import "../../../styles/index.less";
 import { useSpace } from "../../../lib/hooks/spaces";
 import CheckboxWrap from "../../../components/CheckboxWrap";
+import CreateProblemOrSolutionForm from "../../../components/CreateProblemOrSolutionForm";
 
 function ProposalForm() {
   const signer = useSigner();
@@ -40,7 +41,6 @@ function ProposalForm() {
     start: null,
     end: null,
   });
-  const [toastMsg, setToastMsg] = useState(undefined);
 
   useEffect(() => {
     if (wallet?.account && wallet?.connectors?.injected) return;
@@ -50,16 +50,7 @@ function ProposalForm() {
 
   // HELPERS =============================================================================
 
-  function areInputsMissing() {
-    return (
-      title.length === 0 ||
-      description.length === 0 ||
-      range.start === null ||
-      range.end === null
-    );
-  }
-
-  async function postProblem(toastFunction: any) {
+  async function postProblem(): Promise<{result: boolean, message: string}> {
     // construct payload to post proposal to snapshot
     const provider = snapshotPckg.utils.getProvider(space[1].network);
     const blockNumber = await snapshotPckg.utils.getBlockNumber(provider);
@@ -106,17 +97,11 @@ function ProposalForm() {
       body: JSON.stringify(parcel),
     };
 
-    //TODO toast time out may cause issue if user hit back
     const res = await fetch(url, init);
     if (res.ok) {
-      toastFunction('Success!')
-      setTimeout(() => 
-      {
-        router.back();
-      },
-      4000);
+      return {result: true, message: 'Problem posted successfully'};
     } else {
-      toastFunction('Failed!')
+      return {result: false, message: 'Failed to post problem'};
     }
   }
 
@@ -132,106 +117,20 @@ function ProposalForm() {
 
   return (
     <>
-      <Title
-        title="New Problem"
-        subtitle="Please fill out all the required fields of the form to propose a new problem."
-        topSpacing={7 * GU}
-        bottomSpacing={5 * GU}
+      <CreateProblemOrSolutionForm 
+        isCreateProblem={true}
+        shouldToast={true}
+        title={title}
+        setTitle={setTitle}
+        description={description}
+        setDescription={setDescription}
+        range={range}
+        setRange={setRange}
+        checkedBoxesRef={checkedBoxesRef}
+        submitForm={postProblem}
+        afterSubmissionAction={router.back}
+        waitBeforeAfterAction={4000}
       />
-      <div
-        style={{
-          paddingLeft: `${2 * GU}px`,
-          width: "80%",
-          marginBottom: "150px",
-        }}
-      >
-        <Field label="Problem Title:" required={true}>
-          <TextInput
-            placeholder="Short summary of the problem"
-            onChange={(event) => setTitle(event.target.value)}
-          />
-        </Field>
-        <Field label="Tags:" required={false}>
-          <Box
-            style={{
-              marginTop: `${2 * GU}px`,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-start",
-                flexWrap: "wrap",
-                alignContent: "space-between",
-              }}
-            >
-              {fixedTags.map((t, i) => (
-                <CheckboxWrap
-                  label={t}
-                  cRef={checkedBoxesRef}
-                  index={i}
-                ></CheckboxWrap>
-              ))}
-            </div>
-          </Box>
-        </Field>
-        <Field label="Problem Description:" required={true}>
-          <TextInput
-            placeholder="Comprehensive problem description"
-            wide={true}
-            multiline={true}
-            onChange={(event) => setDescription(event.target.value)}
-          />
-        </Field>
-        <Field label="Voting Window" onChange={setRange} required={true}>
-          <div style={{ marginTop: `${2 * GU}px` }}>
-            <DateRangePicker
-              startDate={range.start}
-              endDate={range.end}
-              onChange={setRange}
-            />
-          </div>
-        </Field>
-        <ToastHub 
-        timeout={2000}
-        showIndicator={true}
-        position={'center'}
-        >
-          <Toast>
-            {toast => (
-              <div
-              style={{
-                marginTop: `${5 * GU}px`,
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "space-evenly",
-                alignItems: "center",
-              }}
-            >
-              <Button
-                style={{ width: `33%` }}
-                mode="strong"
-                disabled={areInputsMissing()}
-                external={false}
-                wide={false}
-                onClick={() => postProblem(toast)}
-              >
-                Submit
-              </Button>
-              <Button
-                style={{ width: `33%` }}
-                mode="negative"
-                external={false}
-                wide={false}
-                onClick={() => router.back()}
-              >
-                Cancel
-              </Button>
-            </div>
-            )}
-          </Toast>
-        </ToastHub>
-      </div>
     </>
   );
 }

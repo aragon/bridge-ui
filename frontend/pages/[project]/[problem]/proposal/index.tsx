@@ -16,6 +16,7 @@ import { BACKEND_URL } from "../../../../lib/constants";
 import Title from "../../../../components/Title";
 import "../../../../styles/index.less";
 import { useSpace } from "../../../../lib/hooks/spaces";
+import CreateProblemOrSolutionForm from "../../../../components/CreateProblemOrSolutionForm";
 
 function ProposalForm() {
   const signer = useSigner();
@@ -45,16 +46,7 @@ function ProposalForm() {
 
   // HELPERS =============================================================================
 
-  function areInputsMissing() {
-    return (
-      title.length === 0 ||
-      description.length === 0 ||
-      range.start === null ||
-      range.end === null
-    );
-  }
-
-  async function postSolution() {
+  async function postSolution(): Promise<{result: boolean, message: string}> {
     const provider = snapshotPckg.utils.getProvider(space[1].network);
     const blockNumber = await snapshotPckg.utils.getBlockNumber(provider);
     const payload = {
@@ -86,12 +78,11 @@ function ProposalForm() {
       body: JSON.stringify(envelope),
     };
 
-    //TODO add toast or something to indicate success/failure to client
     var res = await fetch(url, init);
     if (res.ok) {
-      router.back();
+      return {result: true, message: 'Solution posted successfully'};
     } else {
-      router.back();
+      return {result: false, message: 'Failed to post solution'};
     }
   }
 
@@ -107,53 +98,20 @@ function ProposalForm() {
 
   return (
     <>
-      <Title
-        title="New Solution"
-        subtitle="Please fill out all the required fields of the form to create a new solution."
-        topSpacing={7 * GU}
-        bottomSpacing={5 * GU}
+      <CreateProblemOrSolutionForm 
+        isCreateProblem={false}
+        shouldToast={true}
+        title={title}
+        setTitle={setTitle}
+        description={description}
+        setDescription={setDescription}
+        range={range}
+        setRange={setRange}
+        checkedBoxesRef={null}
+        submitForm={postSolution}
+        afterSubmissionAction={router.back}
+        waitBeforeAfterAction={4000}
       />
-      <div
-        style={{
-          paddingLeft: `${2 * GU}px`,
-          width: "80%",
-          marginBottom: "150px",
-        }}
-      >
-        <Field label="Solution Title:" required={true}>
-          <TextInput
-            placeholder="Short summary of the solution"
-            onChange={(event) => setTitle(event.target.value)}
-          />
-        </Field>
-        <Field label="Solution Description:" required={true}>
-          <TextInput
-            placeholder="Comprehensive solution description"
-            wide={true}
-            multiline={true}
-            onChange={(event) => setDescription(event.target.value)}
-          />
-        </Field>
-        <Field label="Voting Window" onChange={setRange} required={true}>
-          <div style={{ marginTop: `${2 * GU}px` }}>
-            <DateRangePicker
-              startDate={range.start}
-              endDate={range.end}
-              onChange={setRange}
-            />
-          </div>
-        </Field>
-        <Button
-          style={{ marginTop: `${3 * GU}px` }}
-          mode="strong"
-          disabled={areInputsMissing()}
-          external={false}
-          wide={false}
-          onClick={() => postSolution()}
-        >
-          Submit
-        </Button>
-      </div>
     </>
   );
 }

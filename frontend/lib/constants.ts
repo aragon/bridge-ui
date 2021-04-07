@@ -23,3 +23,17 @@ export const TEST_HUB_URL = "https://testnet.snapshot.org";
 export const BACKEND_URL = `${process.env.NEXT_PUBLIC_BACKEND_HOST}`;
 export const IPFS_GATEWAY = "gateway.ipfs.io";
 export const DEFAULT_NETWORK = 1;
+
+// SHARED
+export const FIXED_TAGS = [
+    "Development",
+    "Design",
+    "Finances",
+    "Admin",
+    "Customer Support",
+    "Tokenomics",
+    "Legal",
+    "Sales",
+    "Marketing",
+    "Communication",
+];
