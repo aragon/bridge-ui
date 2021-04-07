@@ -162,15 +162,15 @@ export default class Bootstrap {
           try {
             const response = await fetch(this.POST_URL, init);
             const data: ProposalResponse = await response.json();
-            
+
             try {
               const hash = data.ipfsHash;
               await this.db.addProblemProposal<String>(space, hash, tags);
               reply
-              .code(200)
-              .header("Content-Type", "application/json; charset=utf-8")
-              .header("Access-Control-Allow-Origin", "*")
-              .send()
+                .code(200)
+                .header("Content-Type", "application/json; charset=utf-8")
+                .header("Access-Control-Allow-Origin", "*")
+                .send();
             } catch (error) {
               console.error(error);
               reply
@@ -179,12 +179,11 @@ export default class Bootstrap {
                 .header("Content-Type", "application/json; charset=utf-8")
                 .send(error);
             }
-
           } catch (error) {
-            throw Error('_request failed: ' +  error);
+            throw Error("_request failed: " + error);
           }
-        }
-        
+        };
+
         _request();
       }
     );
@@ -208,15 +207,15 @@ export default class Bootstrap {
           try {
             const response = await fetch(this.POST_URL, init);
             const data: ProposalResponse = await response.json();
-            
+
             try {
               const hash = data.ipfsHash;
               await this.db.addSolutionProposal<String>(space, problem, hash);
               reply
-              .code(200)
-              .header("Content-Type", "application/json; charset=utf-8")
-              .header("Access-Control-Allow-Origin", "*")
-              .send()
+                .code(200)
+                .header("Content-Type", "application/json; charset=utf-8")
+                .header("Access-Control-Allow-Origin", "*")
+                .send();
             } catch (error) {
               console.error(error);
               reply
@@ -225,12 +224,11 @@ export default class Bootstrap {
                 .header("Content-Type", "application/json; charset=utf-8")
                 .send(error);
             }
-
           } catch (error) {
-            throw Error('_request failed: ' +  error);
+            throw Error("_request failed: " + error);
           }
-        }
-        
+        };
+
         _request();
       }
     );
@@ -321,6 +319,30 @@ export default class Bootstrap {
               .header("Content-Type", "application/json; charset=utf-8")
               .send(error);
           });
+      }
+    );
+    this.server.get(
+      "/tags/:problem",
+      async (request: FastifyRequest, reply: FastifyReply) => {
+        const { problem } = request.params as { problem: string };
+
+        try {
+          //query DB for problems created on apollo.
+          const problemTags = await this.db.getProblemTags(problem);
+
+          reply
+            .code(200)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .send(problemTags);
+        } catch (error) {
+          console.error(error);
+          reply
+            .code(500)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .send(error);
+        }
       }
     );
   }
