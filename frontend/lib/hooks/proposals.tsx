@@ -118,3 +118,32 @@ export function useCategorizedSolutions(
 
   return categorizedSolutions;
 }
+
+/** Returns a list of tags for a given problem
+ *
+ * If the corresponding problem does not have any tags associated to it, this will return
+ * an empty list.
+ */
+export function useTags(problemHash: string) {
+  const [tags, setTags] = useState(null);
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/tags/${problemHash}`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw Error(response.statusText);
+        }
+      })
+      .then(([data]) => {
+        if (!data.tags) {
+          setTags([]);
+        } else {
+          setTags(data.tags);
+        }
+      });
+  }, [problemHash]);
+
+  return tags;
+}

@@ -126,10 +126,10 @@ export default class Database {
   /**
    * Returns all hashes of solutions posted on apollo for a given space and problem.
    *
-   * @method getProblemIds
+   * @method getSolutionIds
    * @param {string} space - Name of space for which proposal is posted
    * @param {string} problem - Hash of the corresponding problem
-   * @returns {{ problemhash: string }[]}
+   * @returns {{ solutionhash: string }[]}
    * @public
    */
   public getSolutionIds(
@@ -139,6 +139,21 @@ export default class Database {
     return this.sql<{ solutionhash: string }[]>`
       SELECT DISTINCT solutionhash FROM reference
       WHERE problemhash=${problem} AND NOT solutionHash IS NULL AND spacename=${space};
+      `;
+  }
+
+  /**
+   * Returns all hashes of solutions posted on apollo for a given space and problem.
+   *
+   * @method getProblemTAgs
+   * @param {string} problem - Hash of the corresponding problem
+   * @returns {{ tags: string[] }}
+   * @public
+   */
+  public getProblemTags(problem: string): Promise<{ tags: string[] }> {
+    return this.sql<{ tags: string[] }>`
+      SELECT DISTINCT tags FROM reference
+      WHERE problemhash=${problem} AND solutionhash IS NULL;
       `;
   }
 }
