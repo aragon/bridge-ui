@@ -6,16 +6,19 @@ import {
   Field,
   TextInput,
   DateRangePicker,
-  LoadingRing 
+  LoadingRing,
+  Info  
 } from "@aragon/ui";
 import Title from "./Title";
 import CheckboxWrap from "./CheckboxWrap";
 import { FIXED_TAGS } from "../lib/constants";
 import { useNotificationContext } from "../lib/hooks/notification";
+import { useTags } from "../lib/hooks/proposals";
 
 type FormParams = {
   isCreateProblem: boolean;
   shouldToast: boolean;
+  problemId: string;
   title: string;
   setTitle(title: any): void;
   description: string;
@@ -30,6 +33,7 @@ type FormParams = {
 function CreateProblemOrSolutionForm({ 
   isCreateProblem, 
   shouldToast, 
+  problemId,
   title, 
   setTitle, 
   description, 
@@ -44,6 +48,10 @@ function CreateProblemOrSolutionForm({
   const { launchToast }  = useContext(useNotificationContext);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const formName = isCreateProblem ? 'Problem' : 'Solution';
+  let tags: Array<string> = [];
+  if (!isCreateProblem) {
+    tags = useTags(problemId);
+  }
 
   // HELPER ==============================================================================
   function areInputsMissing() {
@@ -98,6 +106,24 @@ function CreateProblemOrSolutionForm({
               marginTop: `${2 * GU}px`,
             }}
           >
+            {isCreateProblem ?
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-start",
+                  flexWrap: "wrap",
+                  alignContent: "space-between",
+                }}
+              >
+                {FIXED_TAGS.map((t, i) => (
+                  <CheckboxWrap
+                    label={t}
+                    cRef={checkedBoxesRef}
+                    index={i}
+                  ></CheckboxWrap>
+                ))}
+              </div>
+            :
             <div
               style={{
                 display: "flex",
@@ -106,15 +132,15 @@ function CreateProblemOrSolutionForm({
                 alignContent: "space-between",
               }}
             >
-              {FIXED_TAGS.map((t, i) => (
-                <CheckboxWrap
-                  label={t}
-                  cRef={checkedBoxesRef}
-                  index={i}
-                  isDisabled={checkedBoxesRef === null}
-                ></CheckboxWrap>
-              ))}
+              {!tags || (tags && tags.length === 0) ?
+              <Info>This problem has no tags</Info>
+              :
+              tags.map( tag => {
+                return <div style={{ padding: "5px"}}><Info >{tag}</Info></div>
+              })
+              }
             </div>
+            }
           </Box>
         </Field>
         <Field label={formName + " Description:"} required={true}>

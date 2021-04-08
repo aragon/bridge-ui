@@ -101,6 +101,7 @@ function ProposalForm() {
       <CreateProblemOrSolutionForm 
         isCreateProblem={false}
         shouldToast={true}
+        problemId={probId}
         title={title}
         setTitle={setTitle}
         description={description}

@@ -9,14 +9,13 @@ import { Checkbox } from "@aragon/ui";
 // each wrapper instace. When clicked, the reference is updated. This allows the parent to
 // know which of the children is checked at any time.
 
-function CheckboxWrap({ label, cRef, index, isDisabled = false }) {
+function CheckboxWrap({ label, cRef, index}) {
   const [checked, setChecked] = useState(false);
 
   return (
     <div style={{ width: "33%" }}>
       <label>
         <Checkbox
-          disabled={isDisabled}
           checked={checked}
           onChange={(checked) => {
             setChecked(checked);

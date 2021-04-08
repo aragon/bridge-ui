@@ -121,6 +121,7 @@ function ProposalForm() {
         isCreateProblem={true}
         shouldToast={true}
         title={title}
+        problemId={null}
         setTitle={setTitle}
         description={description}
         setDescription={setDescription}
