@@ -2,24 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useWallet } from "use-wallet";
-import {
-  GU,
-  Box,
-  Button,
-  Field,
-  TextInput,
-  DateRangePicker,
-  LoadingRing,
-  ToastHub, 
-  Toast,
-} from "@aragon/ui";
+import { LoadingRing } from "@aragon/ui";
 import snapshotPckg from "@snapshot-labs/snapshot.js/";
-
 import { BACKEND_URL, FIXED_TAGS } from "../../../lib/constants";
-import Title from "../../../components/Title";
 import "../../../styles/index.less";
 import { useSpace } from "../../../lib/hooks/spaces";
-import CheckboxWrap from "../../../components/CheckboxWrap";
 import CreateProblemOrSolutionForm from "../../../components/CreateProblemOrSolutionForm";
 
 function ProposalForm() {

@@ -2,18 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useWallet } from "use-wallet";
-import {
-  GU,
-  Button,
-  Field,
-  TextInput,
-  DateRangePicker,
-  LoadingRing,
-} from "@aragon/ui";
+import { LoadingRing } from "@aragon/ui";
 import snapshotPckg from "@snapshot-labs/snapshot.js/";
-
 import { BACKEND_URL } from "../../../../lib/constants";
-import Title from "../../../../components/Title";
 import "../../../../styles/index.less";
 import { useSpace } from "../../../../lib/hooks/spaces";
 import CreateProblemOrSolutionForm from "../../../../components/CreateProblemOrSolutionForm";
