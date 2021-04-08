@@ -157,7 +157,6 @@ export default class Bootstrap {
           body: body,
         };
 
-        // make it asyn/await
         const _request = async () => {
           try {
             const response = await fetch(this.POST_URL, init);
@@ -196,7 +195,6 @@ export default class Bootstrap {
           body: request.body,
         };
 
-        // make it asyn/await
         const _request = async () => {
           try {
             const response = await fetch(this.POST_URL, init);
