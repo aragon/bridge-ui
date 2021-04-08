@@ -2,24 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useSigner } from "@vocdoni/react-hooks";
 import { useWallet } from "use-wallet";
-import {
-  GU,
-  Box,
-  Button,
-  Field,
-  TextInput,
-  DateRangePicker,
-  LoadingRing,
-  ToastHub, 
-  Toast,
-} from "@aragon/ui";
+import { LoadingRing } from "@aragon/ui";
 import snapshotPckg from "@snapshot-labs/snapshot.js/";
-
-import { BACKEND_URL } from "../../../lib/constants";
-import Title from "../../../components/Title";
+import { BACKEND_URL, FIXED_TAGS } from "../../../lib/constants";
 import "../../../styles/index.less";
 import { useSpace } from "../../../lib/hooks/spaces";
-import CheckboxWrap from "../../../components/CheckboxWrap";
 import CreateProblemOrSolutionForm from "../../../components/CreateProblemOrSolutionForm";
 
 function ProposalForm() {
@@ -33,7 +20,7 @@ function ProposalForm() {
   if (typeof projectId === "string") pId = projectId;
 
   //reference for the state of the checkboxes. See CheckBoxWrap for more information.
-  const checkedBoxesRef = useRef(fixedTags.map((_) => false));
+  const checkedBoxesRef = useRef(FIXED_TAGS.map((_) => false));
   const space = useSpace(pId);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -82,7 +69,7 @@ function ProposalForm() {
     // filter tags selected by user
     const tags = [];
     checkedBoxesRef.current.forEach((c, i) => {
-      if (c) tags.push(fixedTags[i]);
+      if (c) tags.push(FIXED_TAGS[i]);
     });
 
     // Wrap tags and envelope into parcel
@@ -121,6 +108,7 @@ function ProposalForm() {
         isCreateProblem={true}
         shouldToast={true}
         title={title}
+        problemId={null}
         setTitle={setTitle}
         description={description}
         setDescription={setDescription}
@@ -129,23 +117,9 @@ function ProposalForm() {
         checkedBoxesRef={checkedBoxesRef}
         submitForm={postProblem}
         afterSubmissionAction={router.back}
-        waitBeforeAfterAction={4000}
       />
     </>
   );
 }
 
 export default ProposalForm;
-
-const fixedTags = [
-  "Development",
-  "Design",
-  "Finances",
-  "Admin",
-  "Customer Support",
-  "Tokenomics",
-  "Legal",
-  "Sales",
-  "Marketing",
-  "Communication",
-];

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   GU,
   Box,
@@ -6,17 +6,19 @@ import {
   Field,
   TextInput,
   DateRangePicker,
-  ToastHub, 
-  Toast,
-  LoadingRing 
+  LoadingRing,
+  Info  
 } from "@aragon/ui";
 import Title from "./Title";
 import CheckboxWrap from "./CheckboxWrap";
 import { FIXED_TAGS } from "../lib/constants";
+import { useNotificationContext } from "../lib/hooks/notification";
+import { useTags } from "../lib/hooks/proposals";
 
 type FormParams = {
   isCreateProblem: boolean;
   shouldToast: boolean;
+  problemId: string;
   title: string;
   setTitle(title: any): void;
   description: string;
@@ -26,13 +28,12 @@ type FormParams = {
   checkedBoxesRef: any;
   submitForm(): Promise<{result: boolean, message: string}>;
   afterSubmissionAction(): void;
-  waitBeforeAfterAction: number;
-  
 };
 
 function CreateProblemOrSolutionForm({ 
   isCreateProblem, 
   shouldToast, 
+  problemId,
   title, 
   setTitle, 
   description, 
@@ -41,12 +42,16 @@ function CreateProblemOrSolutionForm({
   setRange, 
   checkedBoxesRef, 
   submitForm, 
-  afterSubmissionAction, 
-  waitBeforeAfterAction }: FormParams) {
+  afterSubmissionAction }: FormParams) {
   
   // STATES ==============================================================================
+  const { launchToast }  = useContext(useNotificationContext);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const formName = isCreateProblem ? 'Problem' : 'Solution';
+  let tags: Array<string> = [];
+  if (!isCreateProblem) {
+    tags = useTags(problemId);
+  }
 
   // HELPER ==============================================================================
   function areInputsMissing() {
@@ -58,19 +63,16 @@ function CreateProblemOrSolutionForm({
     );
   }
 
-  async function submitingForm(toastLauncher: (message: string) => void) {
+  async function submitingForm() {
     setIsSubmitLoading(true);
     const submitingResponse = await submitForm();
     if (shouldToast) {
       if (submitingResponse.result === true) {
-        toastLauncher(submitingResponse.message);
-        setTimeout(() => 
-        {
-          afterSubmissionAction();
-        },
-        waitBeforeAfterAction);
+        afterSubmissionAction();
+        launchToast(submitingResponse.message);
       } else {
-        toastLauncher(submitingResponse.message);
+        // after submission does not need to be called if result is failed.
+        launchToast(submitingResponse.message);
       }
     }
     setIsSubmitLoading(false);
@@ -104,6 +106,24 @@ function CreateProblemOrSolutionForm({
               marginTop: `${2 * GU}px`,
             }}
           >
+            {isCreateProblem ?
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-start",
+                  flexWrap: "wrap",
+                  alignContent: "space-between",
+                }}
+              >
+                {FIXED_TAGS.map((t, i) => (
+                  <CheckboxWrap
+                    label={t}
+                    cRef={checkedBoxesRef}
+                    index={i}
+                  ></CheckboxWrap>
+                ))}
+              </div>
+            :
             <div
               style={{
                 display: "flex",
@@ -112,15 +132,15 @@ function CreateProblemOrSolutionForm({
                 alignContent: "space-between",
               }}
             >
-              {FIXED_TAGS.map((t, i) => (
-                <CheckboxWrap
-                  label={t}
-                  cRef={checkedBoxesRef}
-                  index={i}
-                  isDisabled={checkedBoxesRef === null}
-                ></CheckboxWrap>
-              ))}
+              {!tags || (tags && tags.length === 0) ?
+              <Info>This problem has no tags</Info>
+              :
+              tags.map( tag => {
+                return <div style={{ padding: "5px"}}><Info >{tag}</Info></div>
+              })
+              }
             </div>
+            }
           </Box>
         </Field>
         <Field label={formName + " Description:"} required={true}>
@@ -140,45 +160,35 @@ function CreateProblemOrSolutionForm({
             />
           </div>
         </Field>
-        <ToastHub 
-        timeout={2000}
-        showIndicator={true}
-        position={'center'}
+          <div
+          style={{
+            marginTop: `${5 * GU}px`,
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-evenly",
+            alignItems: "center",
+          }}
         >
-          <Toast>
-            {toast => (
-              <div
-              style={{
-                marginTop: `${5 * GU}px`,
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "space-evenly",
-                alignItems: "center",
-              }}
-            >
-              <Button
-                style={{ width: `33%` }}
-                mode="strong"
-                disabled={areInputsMissing() || isSubmitLoading}
-                external={false}
-                wide={false}
-                onClick={() => submitingForm(toast)}
-              >
-                {isSubmitLoading ? <LoadingRing /> : 'Submit' }
-              </Button>
-              <Button
-                style={{ width: `33%` }}
-                mode="negative"
-                external={false}
-                wide={false}
-                onClick={() => afterSubmissionAction()}
-              >
-                Cancel
-              </Button>
-            </div>
-            )}
-          </Toast>
-        </ToastHub>
+          <Button
+            style={{ width: `33%` }}
+            mode="strong"
+            disabled={areInputsMissing() || isSubmitLoading}
+            external={false}
+            wide={false}
+            onClick={() => submitingForm()}
+          >
+            {isSubmitLoading ? <LoadingRing /> : 'Submit' }
+          </Button>
+          <Button
+            style={{ width: `33%` }}
+            mode="negative"
+            external={false}
+            wide={false}
+            onClick={() => afterSubmissionAction()}
+          >
+            Cancel
+          </Button>
+        </div>
       </div>
     </>
   );

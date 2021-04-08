@@ -6,7 +6,7 @@ import { GU, Split, DropDown, LoadingRing } from "@aragon/ui";
 import Title from "../../../../components/Title";
 import { TEST_HUB_URL } from "../../../../lib/constants";
 import "../../../../styles/index.less";
-import ReportSolutionIndicator from "../../../../components/ReportSolutionIndicator";
+import ReportSolutionIndicator from "../../../../components/ReportIndicator";
 import {
   ProposalPayload,
   SnapshotData,

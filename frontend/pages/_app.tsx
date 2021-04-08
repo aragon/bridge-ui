@@ -10,6 +10,7 @@ import Footer from "../components/footer";
 import Navbar from "../components/Navbar";
 import "../styles/index.less";
 import { FAVICON } from "../lib/constants";
+import UseNotificationProvider from "../lib/hooks/notification"
 
 type NextAppProps = AppInitialProps & {
   Component: NextComponentType<NextPageContext, any, any>;
@@ -26,11 +27,15 @@ const BridgeApp: FC<NextAppProps> = ({ Component, pageProps }) => {
       </NextHead>
       <Main layout={false}>
         <Navbar />
-        <Layout>
-          <div>
-            <Component />
-          </div>
-        </Layout>
+          <UseNotificationProvider 
+            children={
+              <Layout>
+                <div>
+                  <Component />
+                </div>
+              </Layout>
+            }
+          />
         {/* <Footer /> */}
       </Main>
     </UseWalletProvider>

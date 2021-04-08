@@ -157,30 +157,23 @@ export default class Bootstrap {
           body: body,
         };
 
-        // make it asyn/await
         const _request = async () => {
           try {
             const response = await fetch(this.POST_URL, init);
             const data: ProposalResponse = await response.json();
-
-            try {
-              const hash = data.ipfsHash;
-              await this.db.addProblemProposal<String>(space, hash, tags);
-              reply
-                .code(200)
-                .header("Content-Type", "application/json; charset=utf-8")
-                .header("Access-Control-Allow-Origin", "*")
-                .send();
-            } catch (error) {
-              console.error(error);
-              reply
+            const hash = data.ipfsHash;
+            await this.db.addProblemProposal<String>(space, hash, tags);
+            reply
+              .code(200)
+              .header("Content-Type", "application/json; charset=utf-8")
+              .header("Access-Control-Allow-Origin", "*")
+              .send()
+          } catch (error) {
+            reply
                 .code(500)
                 .header("Access-Control-Allow-Origin", "*")
                 .header("Content-Type", "application/json; charset=utf-8")
                 .send(error);
-            }
-          } catch (error) {
-            throw Error("_request failed: " + error);
           }
         };
 
@@ -202,30 +195,23 @@ export default class Bootstrap {
           body: request.body,
         };
 
-        // make it asyn/await
         const _request = async () => {
           try {
             const response = await fetch(this.POST_URL, init);
             const data: ProposalResponse = await response.json();
-
-            try {
-              const hash = data.ipfsHash;
-              await this.db.addSolutionProposal<String>(space, problem, hash);
-              reply
-                .code(200)
-                .header("Content-Type", "application/json; charset=utf-8")
-                .header("Access-Control-Allow-Origin", "*")
-                .send();
-            } catch (error) {
-              console.error(error);
-              reply
-                .code(500)
-                .header("Access-Control-Allow-Origin", "*")
-                .header("Content-Type", "application/json; charset=utf-8")
-                .send(error);
-            }
+            const hash = data.ipfsHash;
+            await this.db.addSolutionProposal<String>(space, problem, hash);
+            reply
+              .code(200)
+              .header("Content-Type", "application/json; charset=utf-8")
+              .header("Access-Control-Allow-Origin", "*")
+              .send()
           } catch (error) {
-            throw Error("_request failed: " + error);
+            reply
+              .code(500)
+              .header("Access-Control-Allow-Origin", "*")
+              .header("Content-Type", "application/json; charset=utf-8")
+              .send(error);
           }
         };
 
