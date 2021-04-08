@@ -176,8 +176,8 @@ export default class Bootstrap {
                 .header("Content-Type", "application/json; charset=utf-8")
                 .send(error);
           }
-        }
-        
+        };
+
         _request();
       }
     );
@@ -215,8 +215,8 @@ export default class Bootstrap {
               .header("Content-Type", "application/json; charset=utf-8")
               .send(error);
           }
-        }
-        
+        };
+
         _request();
       }
     );
@@ -307,6 +307,30 @@ export default class Bootstrap {
               .header("Content-Type", "application/json; charset=utf-8")
               .send(error);
           });
+      }
+    );
+    this.server.get(
+      "/tags/:problem",
+      async (request: FastifyRequest, reply: FastifyReply) => {
+        const { problem } = request.params as { problem: string };
+
+        try {
+          //query DB for problems created on apollo.
+          const problemTags = await this.db.getProblemTags(problem);
+
+          reply
+            .code(200)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .send(problemTags);
+        } catch (error) {
+          console.error(error);
+          reply
+            .code(500)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Content-Type", "application/json; charset=utf-8")
+            .send(error);
+        }
       }
     );
   }
